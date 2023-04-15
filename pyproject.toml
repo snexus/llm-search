@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "llmplay"
+version = "0.1.0"
+description = "LLM Playground"
+authors = ["Denis L. <lepchev@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+llama-index = "^0.5.15"
+langchain = "^0.0.139"
+transformers = "^4.28.0"
+torch = "^2.0.0"
+torchvision = "^0.15.1"
+accelerate = "^0.18.0"
+sentence-transformers = "^2.2.2"
+pypdf2 = "^3.0.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+ipykernel = "^6.22.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
