@@ -15,6 +15,7 @@ torchvision = "^0.15.1"
 accelerate = "^0.18.0"
 sentence-transformers = "^2.2.2"
 pypdf2 = "^3.0.1"
+chromadb = "^0.3.21"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
