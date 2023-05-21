@@ -23,3 +23,7 @@ poetry install
 
 
 ## Docker based installation
+
+```bash
+docker build -t deepml:latest ./docker
+```
