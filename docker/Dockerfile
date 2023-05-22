@@ -27,6 +27,7 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
         unzip \
         unrar \
         cmake \
+        sudo \
         && \
 
 
@@ -39,6 +40,7 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
         pandas \
         matplotlib \
         tqdm \
+        python-dotenv \
         && \
 
 # ==================================================================
@@ -57,6 +59,16 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
         jupyterlab \
         && \
 
+# ==================================================================
+# LLM libraries
+# ------------------------------------------------------------------
+
+    $PIP_INSTALL \
+        chromadb==0.3.21 \
+        llama-index==0.6.9 \
+        langchain \
+        sentence-transformers==2.2.2 \
+        && \
 # ==================================================================
 # config & cleanup
 # ------------------------------------------------------------------

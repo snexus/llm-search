@@ -27,3 +27,10 @@ poetry install
 ```bash
 docker build -t deepml:latest ./docker
 ```
+
+
+### Running
+
+```bash
+docker run --runtime=nvidia --gpus all -p 8888:8888 deepml jupyter lab --ip 0.0.0.0 --port 8888 --no-browser --allow-root
+```
