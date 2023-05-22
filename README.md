@@ -24,13 +24,20 @@ poetry install
 
 ## Docker based installation
 
+### Enable NVIDIA GPU on Docker
+
+* https://linuxhint.com/use-nvidia-gpu-docker-containers-ubuntu-22-04-lts/
+* Setup nvidia container toolkit - https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#setting-up-nvidia-container-toolkit
+
+### Build the container
+
 ```bash
 docker build -t deepml:latest ./docker
 ```
 
 
-### Running
+### Run jupyter lab
 
 ```bash
-docker run --runtime=nvidia --gpus all -p 8888:8888 deepml jupyter lab --ip 0.0.0.0 --port 8888 --no-browser --allow-root
+./run_docker.sh
 ```
