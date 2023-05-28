@@ -5,5 +5,6 @@ docker run -it --runtime=nvidia \
 	-e HOST_UID="$(id -u)" \
 	-e HOST_GID="$(id -g)" \
 	deepml \
-	jupyter lab --ip 0.0.0.0 --port 8888 --no-browser 
+	/bin/bash
+	# jupyter lab --ip 0.0.0.0 --port 8888 --no-browser 
 

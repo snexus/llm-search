@@ -121,6 +121,7 @@ venv.bak/
 
 # mkdocs documentation
 /site
+sample_data/md_index
 
 # mypy
 .mypy_cache/
