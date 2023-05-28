@@ -7,6 +7,8 @@ __pycache__/
 # C extensions
 *.so
 sample_data/cache
+sample_data/md_index2/
+temp_data/
 
 # Distribution / packaging
 .Python
