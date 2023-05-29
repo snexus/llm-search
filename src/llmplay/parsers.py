@@ -4,7 +4,7 @@ from pathlib import Path
 from loguru import logger
 
 
-def markdown_parser(file_path: Path, max_size = 1024):
+def markdown_parser(file_path: Path, max_size = 2048):
     
     logger.info(f"Parsing {file_path}")
     

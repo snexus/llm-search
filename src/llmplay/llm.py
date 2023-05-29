@@ -7,18 +7,18 @@ from llama_index import (LangchainEmbedding, LLMPredictor, PromptHelper,
 load_dotenv()
 
 class LLMOpenAI:
-    def __init__(self, embedding_model_name: str, cache_fodler: str, llm_model_name: str):
+    def __init__(self, embedding_model_name: str, llm_model_name: str):
         self._llm_model_name = llm_model_name
         self._embedding_model_name = embedding_model_name
         self._service_context = None
-        self.cache_folder = cache_fodler
+     #   self.cache_folder = cache_folder
 
 
     @property
     def service_context(self):
         if self._service_context is None:
             embed_model = LangchainEmbedding(
-                HuggingFaceEmbeddings(model_name=self._embedding_model_name, cache_folder=self.cache_folder)
+                HuggingFaceEmbeddings(model_name=self._embedding_model_name) #, cache_folder=self.cache_folder)
             )
             llm_predictor = LLMPredictor(llm=ChatOpenAI(temperature=0, model_name=self._llm_model_name))
 
