@@ -3,8 +3,8 @@ requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2", "setuptools_scm_azure
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "llmplay"
-description = "LLM Playground Tools"
+name = "llmsearch"
+description = "LLM Powered Search Tool"
 
 dynamic = ["dependencies","version"]
 

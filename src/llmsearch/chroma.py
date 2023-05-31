@@ -9,7 +9,7 @@ from llama_index import GPTVectorStoreIndex, StorageContext, load_index_from_sto
 from llama_index.vector_stores import ChromaVectorStore
 from loguru import logger
 
-from llmplay.nodes import get_nodes_from_documents
+from llmsearch.nodes import get_nodes_from_documents
 
 
 class ChromaVS:

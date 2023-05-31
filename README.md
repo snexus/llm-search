@@ -35,9 +35,11 @@ poetry install
 docker build -t deepml:latest ./docker
 ```
 
+### Login interactively (bash) into container
 
-### Run jupyter lab
+* Run the following script with the argument specifying read-write folder for caching model. This folder will be mounted inside the container under `/storage`
 
 ```bash
-./run_docker.sh
+./run_docker.sh RW_CACHE_FOLDER_NAME
 ```
+
