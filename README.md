@@ -16,9 +16,13 @@ This example uses the smallest of Dolly 2.0 models, `databricks/dolly-v2-2-8b`, 
 git clone https://github.com/snexus/llm-playground.git
 cd llm-playground
 
-poetry env use 3.10
-poetry shell
-poetry install
+# Create a new environment
+python3 -m venv .venv 
+
+# Activate new environment
+source .venv/bin/activate
+# Install the dependencies
+pip install -r ./requirements.txt
 ```
 
 
@@ -43,3 +47,12 @@ docker build -t deepml:latest ./docker
 ./run_docker.sh RW_CACHE_FOLDER_NAME
 ```
 
+# LLM Search
+
+## Create embeddings from documents
+
+Scan a folder of markdown files and create embeddings
+
+```bash
+python3 ./cli.py index create -d /storage/llm/docs -o /storage/llm/embeddings --scan-extenstion md
+```

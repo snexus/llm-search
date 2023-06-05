@@ -45,9 +45,9 @@ if __name__ == "__main__":
     store = VectorStoreChroma(persist_folder=EMBEDDINGS_PERSIST_FOLDER, hf_embed_model_name="all-MiniLM-L6-v2")
     embed_retriever = store.load_retriever(search_type="similarity", search_kwargs={"k": 3})
 
-    # llm = ChatOpenAI(temperature = 0.0)
+    llm = ChatOpenAI(temperature = 0.0)
     print("CUDA: ", torch.cuda.is_available())
-    llm = LLMDatabricksDollyV2(cache_folder=CACHE_FOLDER_ROOT, model_name="databricks/dolly-v2-7b").model
+    # llm = LLMDatabricksDollyV2(cache_folder=CACHE_FOLDER_ROOT, model_name="databricks/dolly-v2-7b").model
     #llm = LLMMosaicMPT(cache_folder=CACHE_FOLDER_ROOT, device="cpu").model
 
     chain = load_qa_with_sources_chain(llm=llm, chain_type="stuff")
