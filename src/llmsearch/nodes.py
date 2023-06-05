@@ -30,3 +30,25 @@ def get_nodes_from_documents(document_paths: List[Path], chunk_parser: Callable[
 
     logger.info(f"Got {len(all_nodes)} nodes.")
     return all_nodes
+
+
+def get_documents_from_langchain_splitter(document_paths: List[Path], splitter) -> List[Node]:
+    """Gets list of nodes from a collection of documents
+
+    Examples: https://gpt-index.readthedocs.io/en/stable/guides/primer/usage_pattern.html
+    """
+
+    all_docs = []
+
+    for path in document_paths:
+        logger.info(f"Processing path: {path}")
+        with open(path, "r") as f:
+            text = f.read()
+            
+        docs = splitter.create_documents([text])
+        for d in docs:
+            d.metadata = {"source": str(path)}
+        all_docs.extend(docs)
+        
+    logger.info(f"Got {len(all_docs)} nodes.")
+    return all_docs
