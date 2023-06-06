@@ -1,66 +1,48 @@
-from typing import Any, List, Mapping, Optional
+import enum
+from pathlib import Path
+from typing import Any, List, Mapping, Optional, Union
 
 import torch
+import transformers
 from dotenv import load_dotenv
 from langchain import LLMChain, PromptTemplate
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.llms import HuggingFacePipeline
 from langchain.llms.base import LLM
-from llama_index import LangchainEmbedding, LLMPredictor, PromptHelper, ServiceContext
-from transformers import pipeline
-import transformers
-from transformers import StoppingCriteria, StoppingCriteriaList
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          StoppingCriteria, StoppingCriteriaList, pipeline)
 
 load_dotenv()
 
+class ModelConfig(enum.Enum):
+    OPENAI_GPT35 = "openai-gpt35"
+    DOLLY3B = "databricks-dolly3b"
+    DOLLY7B = 'databricks-dolly7b'
+    MPT7B = 'mosaic-mpt7b-instruct'
+    FALCON7B = 'falcon-7b-instruct'
+    
 
-class AbstractModel:
-    def __init__(
-        self,
-        embedding_model_name: str,
-        llm_model_name: str,
-        max_input_size: int,
-        num_output: int,
-        max_chunk_overlap: int = 20,
-        cache_folder=None,
-    ):
-        self._llm_model_name = llm_model_name
-        self._embedding_model_name = embedding_model_name
-        self._service_context = None
-        self._cache_folder = cache_folder
-
-        self._max_input_size = max_input_size
-        self._num_output = num_output
-        self._max_chunk_overlap = max_chunk_overlap
-
-    @property
-    def prompt_helper(self) -> PromptHelper:
-        return PromptHelper(
-            max_input_size=self._max_input_size, num_output=self._num_output, max_chunk_overlap=self._max_chunk_overlap
-        )
-
-
-class LLMOpenAIWrapper(AbstractModel):
-    def __init__(self, temperature: int = 0, **kwargs):
-        super().__init__(**kwargs)
-        self._temperature = temperature
-
-    @property
-    def service_context(self):
-        if self._service_context is None:
-            embed_model = LangchainEmbedding(HuggingFaceEmbeddings(model_name=self._embedding_model_name))
-            llm_predictor = LLMPredictor(
-                llm=ChatOpenAI(temperature=self._temperature, model_name=self._llm_model_name)
-            )
-
-            self._service_context = ServiceContext.from_defaults(
-                llm_predictor=llm_predictor,
-                embed_model=embed_model,
-                chunk_size_limit=512,
-                prompt_helper=self.prompt_helper,
-            )
-        return self._service_context
+def get_llm_model(model_name: str, cache_folder_root: Union[str, Path]):
+    
+    model = ModelConfig(model_name)
+    
+    if model == ModelConfig.OPENAI_GPT35:
+        llm = ChatOpenAI(temperature = 0.0)
+    
+    elif model == ModelConfig.DOLLY3B:
+        llm = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-3b").model
+    
+    elif model == ModelConfig.DOLLY7B:
+        llm = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-7b").model
+    
+    elif model == ModelConfig.MPT7B:
+        llm = LLMMosaicMPT(cache_folder=cache_folder_root, model_name="mosaicml/mpt-7b-instruct").model
+    elif model == ModelConfig.FALCON7B:
+        llm = LLMFalcon(cache_folder=cache_folder_root, model_name="tiiuae/falcon-7b-instruct").model
+    else:
+        raise TypeError(f"Invalid model type. Got {model_name}")
+    return llm
 
 
 class CustomLLM(LLM):
@@ -86,46 +68,6 @@ class CustomLLM(LLM):
         )
         return cls()
 
-
-class HuggingFaceWrapper(AbstractModel):
-    @property
-    def service_context(self):
-        if self._service_context is None:
-            embed_model = LangchainEmbedding(HuggingFaceEmbeddings(model_name=self._embedding_model_name))
-
-            llm_predictor = LLMPredictor(
-                llm=CustomLLM.from_custom_model(
-                    model_name=self._llm_model_name, model_kwargs={"cache_dir": self._cache_folder}
-                )
-            )
-
-            self._service_context = ServiceContext.from_defaults(
-                llm_predictor=llm_predictor,
-                embed_model=embed_model,
-                chunk_size_limit=512,
-                prompt_helper=self.prompt_helper,
-            )
-        return self._service_context
-
-
-class LLMDatabricksDolly:
-    pipeline_kwargs = dict(
-        torch_dtype=torch.bfloat16, trust_remote_code=True, device_map="auto", return_full_text=True
-    )
-
-    def __init__(self, cache_folder, model_name="databricks/dolly-v2-3b") -> None:
-        self.cache_folder = cache_folder
-        self.model_name = model_name
-
-    @property
-    def model(self):
-        llm = CustomLLM.from_custom_model(
-            model_name=self.model_name,
-            pipeline_kwargs=self.pipeline_kwargs,
-            model_kwargs={"cache_dir": self.cache_folder, "max_length": 2048},
-        )
-
-        return llm
 
 
 class LLMDatabricksDollyV2:
@@ -153,7 +95,7 @@ class LLMDatabricksDollyV2:
 
 
 class LLMMosaicMPT:
-    def __init__(self, cache_folder, model_name="mosaicml/mpt-7b-chat", device = "auto") -> None:
+    def __init__(self, cache_folder, model_name="mosaicml/mpt-7b-instruct", device = "auto") -> None:
         self.cache_folder = cache_folder
         self.model_name = model_name
         self.device = device
@@ -168,7 +110,7 @@ class LLMMosaicMPT:
             device = self.device
 
         model = transformers.AutoModelForCausalLM.from_pretrained(
-            "mosaicml/mpt-7b-instruct",
+            self.model_name,
             trust_remote_code=True,
             torch_dtype=torch.bfloat16,
             max_seq_len=2048,
@@ -211,3 +153,34 @@ class LLMMosaicMPT:
 
         hf_pipeline = HuggingFacePipeline(pipeline=generate_text)
         return hf_pipeline
+
+
+class LLMFalcon:
+    def __init__(self, cache_folder, model_name="tiiuae/falcon-7b-instruct", device = "auto") -> None:
+        self.cache_folder = cache_folder
+        self.model_name = model_name
+        self.device = device
+
+    @property
+    def model(self):
+        
+        tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        model_kwargs = {'temperature':0, "cache_dir": self.cache_folder}
+        
+        pipeline = transformers.pipeline(
+                "text-generation",
+                model=self.model_name,
+                tokenizer=tokenizer,
+                torch_dtype=torch.bfloat16,
+                trust_remote_code=True,
+                device_map="auto",
+                max_length=200,
+                do_sample=True,
+                top_k=10,
+                num_return_sequences=1,
+                eos_token_id=tokenizer.eos_token_id,
+                model_kwargs=model_kwargs,
+            )
+
+        llm = HuggingFacePipeline(pipeline = pipeline, model_kwargs = model_kwargs)
+        return llm

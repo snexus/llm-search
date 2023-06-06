@@ -49,10 +49,26 @@ docker build -t deepml:latest ./docker
 
 # LLM Search
 
+## Congifure cache folder for models and embeddings
+
+Cache folders will sllow
+
+```bash
+cd src/llmsearch
+python3 cli.py config cache -f /storage/llm/cache
+```
+
 ## Create embeddings from documents
 
 Scan a folder of markdown files and create embeddings
 
 ```bash
-python3 ./cli.py index create -d /storage/llm/docs -o /storage/llm/embeddings --scan-extenstion md
+cd src/llmsearch
+python3 cli.py index create -d /storage/llm/docs -o /storage/llm/embeddings --cache-folder /storage/llm/cache
+```
+
+## Interact with the model using one of the supported LLMs
+
+```bash
+python3 cli.py interact llm -f /storage/llm/embeddings -m falcon-7b-instruct -c /storage/llm/cache -k 2
 ```
