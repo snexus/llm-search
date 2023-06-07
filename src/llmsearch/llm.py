@@ -178,7 +178,7 @@ Use the following pieces of context to answer the question at the end. If you do
         
 
         
-        tokenizer = transformers.AutoTokenizer.from_pretrained("EleutherAI/gpt-neox-20b")
+        tokenizer = transformers.AutoTokenizer.from_pretrained("EleutherAI/gpt-neox-20b", device = device)
 
         stop_token_ids = tokenizer.convert_tokens_to_ids(["<|endoftext|>"])
 
@@ -202,9 +202,9 @@ Use the following pieces of context to answer the question at the end. If you do
             # we pass model parameters here too
             stopping_criteria=stopping_criteria,  # without this model will ramble
             temperature=0.0,  # 'randomness' of outputs, 0.0 is the min and 1.0 the max
-            top_p=0.15,  # select from top tokens whose probability add up to 15%
-            top_k=0,  # select from top 0 tokens (because zero, relies on top_p)
-            max_new_tokens=1024,  # mex number of tokens to generate in the output
+           # top_p=0.15,  # select from top tokens whose probability add up to 15%
+           # top_k=0,  # select from top 0 tokens (because zero, relies on top_p)
+            max_new_tokens=512,  # mex number of tokens to generate in the output
            # repetition_penalty=1.1,  # without this output begins repeating
             model_kwargs={"cache_dir": self.cache_folder},
         )
