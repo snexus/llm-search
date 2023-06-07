@@ -197,8 +197,8 @@ Use the following pieces of context to answer the question at the end. If you do
             tokenizer=tokenizer,
             return_full_text=True,  # langchain expects the full text
             task="text-generation",
-            #device=device,
-            device_map="auto",
+            device=device,
+            #device_map="auto",
             # we pass model parameters here too
             stopping_criteria=stopping_criteria,  # without this model will ramble
             temperature=0.0,  # 'randomness' of outputs, 0.0 is the min and 1.0 the max
@@ -225,7 +225,7 @@ class LLMFalcon:
     def model(self):
         
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-        model_kwargs = {'temperature':0, "cache_dir": self.cache_folder}
+        model_kwargs = {'temperature':0.01, "cache_dir": self.cache_folder}
         
         pipeline = transformers.pipeline(
                 "text-generation",
@@ -234,7 +234,7 @@ class LLMFalcon:
                 torch_dtype=torch.bfloat16,
                 trust_remote_code=True,
                 device_map="auto",
-                max_length=200,
+                max_length=2000,
                 do_sample=True,
                 top_k=10,
                 num_return_sequences=1,
