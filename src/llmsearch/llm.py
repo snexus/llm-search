@@ -50,7 +50,7 @@ def get_llm_model(model_name: str, cache_folder_root: Union[str, Path]):
         
     
     elif model == ModelConfig.DOLLY7B:
-        model_instance = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-7b").model
+        model_instance = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-7b")
 
         llm = model_instance.model
         template = model_instance.prompt_template
@@ -61,7 +61,7 @@ def get_llm_model(model_name: str, cache_folder_root: Union[str, Path]):
         
 
     elif model == ModelConfig.MPT7B:
-        model_instance = LLMMosaicMPT(cache_folder=cache_folder_root, model_name="mosaicml/mpt-7b-instruct").model
+        model_instance = LLMMosaicMPT(cache_folder=cache_folder_root, model_name="mosaicml/mpt-7b-instruct")
         
         llm = model_instance.model
         template = model_instance.prompt_template
