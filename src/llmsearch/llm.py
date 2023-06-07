@@ -1,3 +1,4 @@
+from collections import namedtuple
 import enum
 from pathlib import Path
 from typing import Any, List, Mapping, Optional, Union
@@ -15,34 +16,66 @@ from transformers import (AutoModelForCausalLM, AutoTokenizer,
 
 load_dotenv()
 
+
+
 class ModelConfig(enum.Enum):
     OPENAI_GPT35 = "openai-gpt35"
     DOLLY3B = "databricks-dolly3b"
     DOLLY7B = 'databricks-dolly7b'
     MPT7B = 'mosaic-mpt7b-instruct'
     FALCON7B = 'falcon-7b-instruct'
-    
+
+# USed to group llm settings for the caller
+LLMSettings = namedtuple("LLMSettins", "llm prompt")
 
 def get_llm_model(model_name: str, cache_folder_root: Union[str, Path]):
     
     model = ModelConfig(model_name)
     
+    
+    prompt = None
+    
     if model == ModelConfig.OPENAI_GPT35:
         llm = ChatOpenAI(temperature = 0.0)
+        prompt = None
     
     elif model == ModelConfig.DOLLY3B:
-        llm = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-3b").model
+        model_instance = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-3b")
+        llm = model_instance.model
+        template = model_instance.prompt_template
+        
+        prompt =  PromptTemplate(
+                        input_variables=["context", "question"],
+                            template=template)
+        
     
     elif model == ModelConfig.DOLLY7B:
-        llm = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-7b").model
-    
+        model_instance = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-7b").model
+
+        llm = model_instance.model
+        template = model_instance.prompt_template
+        
+        prompt =  PromptTemplate(
+                        input_variables=["context", "question"],
+                            template=template)
+        
+
     elif model == ModelConfig.MPT7B:
-        llm = LLMMosaicMPT(cache_folder=cache_folder_root, model_name="mosaicml/mpt-7b-instruct").model
+        model_instance = LLMMosaicMPT(cache_folder=cache_folder_root, model_name="mosaicml/mpt-7b-instruct").model
+        
+        llm = model_instance.model
+        template = model_instance.prompt_template
+        
+        prompt =  PromptTemplate(
+                        input_variables=["context", "question"],
+                            template=template)
+        
     elif model == ModelConfig.FALCON7B:
         llm = LLMFalcon(cache_folder=cache_folder_root, model_name="tiiuae/falcon-7b-instruct").model
+    
     else:
         raise TypeError(f"Invalid model type. Got {model_name}")
-    return llm
+    return LLMSettings(llm = llm, prompt=prompt)
 
 
 class CustomLLM(LLM):
@@ -74,6 +107,17 @@ class LLMDatabricksDollyV2:
     pipeline_kwargs = dict(
         torch_dtype=torch.bfloat16, trust_remote_code=True, device_map="auto", return_full_text=True
     )
+    
+    template = """### Instruction:
+Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+### Context: 
+---------------
+{context}
+---------------
+
+### Question: {question}
+"""
 
     def __init__(self, cache_folder, model_name="databricks/dolly-v2-3b") -> None:
         self.cache_folder = cache_folder
@@ -95,6 +139,17 @@ class LLMDatabricksDollyV2:
 
 
 class LLMMosaicMPT:
+    prompt_template = """### Instruction:
+Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+### Context: 
+---------------
+{context}
+---------------
+
+### Question: {question}
+"""
+
     def __init__(self, cache_folder, model_name="mosaicml/mpt-7b-instruct", device = "auto") -> None:
         self.cache_folder = cache_folder
         self.model_name = model_name
@@ -109,16 +164,19 @@ class LLMMosaicMPT:
         else:
             device = self.device
 
+        config = transformers.AutoConfig.from_pretrained(self.model_name, trust_remote_code=True)
+        
+        config.init_device = device
+
         model = transformers.AutoModelForCausalLM.from_pretrained(
             self.model_name,
-            trust_remote_code=True,
+            config=config,
             torch_dtype=torch.bfloat16,
-            max_seq_len=2048,
             cache_dir=self.cache_folder,
+            trust_remote_code=True
         )
         
-        model.eval()
-        model.to(device)
+
         
         tokenizer = transformers.AutoTokenizer.from_pretrained("EleutherAI/gpt-neox-20b")
 
@@ -144,8 +202,8 @@ class LLMMosaicMPT:
             # we pass model parameters here too
             stopping_criteria=stopping_criteria,  # without this model will ramble
             temperature=0.0,  # 'randomness' of outputs, 0.0 is the min and 1.0 the max
-            #top_p=0.15,  # select from top tokens whose probability add up to 15%
-            #top_k=0,  # select from top 0 tokens (because zero, relies on top_p)
+            top_p=0.15,  # select from top tokens whose probability add up to 15%
+            top_k=0,  # select from top 0 tokens (because zero, relies on top_p)
             max_new_tokens=1024,  # mex number of tokens to generate in the output
            # repetition_penalty=1.1,  # without this output begins repeating
             model_kwargs={"cache_dir": self.cache_folder},
@@ -156,6 +214,8 @@ class LLMMosaicMPT:
 
 
 class LLMFalcon:
+
+
     def __init__(self, cache_folder, model_name="tiiuae/falcon-7b-instruct", device = "auto") -> None:
         self.cache_folder = cache_folder
         self.model_name = model_name

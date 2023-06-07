@@ -12,8 +12,11 @@ from llmsearch.llm import LLMDatabricksDollyV2, LLMMosaicMPT
 from llmsearch.vector_stores import VectorStoreChroma
 
 load_dotenv()
-from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 
+from langchain.chains.question_answering import load_qa_chain
+
+import langchain
+langchain.debug = True
 
 URL_PREFIX = "obsidian://open?vault=knowledge-base&file="
 
@@ -33,10 +36,10 @@ def print_llm_response(r, prefix: str):
     print("------------------------------------------")
 
 
-def qa_with_llm(embedding_persist_folder: str, llm, k, embedding_model_name: str = "all-MiniLM-L6-v2", chain_type = "stuff"):
+def qa_with_llm(embedding_persist_folder: str, llm, k, prompt, embedding_model_name: str = "all-MiniLM-L6-v2", chain_type = "stuff"):
     store = VectorStoreChroma(persist_folder=embedding_persist_folder, hf_embed_model_name=embedding_model_name)
     embed_retriever = store.load_retriever(search_type="similarity", search_kwargs={"k": k})
-    chain = load_qa_with_sources_chain(llm=llm, chain_type=chain_type)
+    chain = load_qa_chain(llm=llm, chain_type=chain_type, prompt = prompt)
     while True:
         question = input("\nENTER QUESTION >> ")
         docs = embed_retriever.get_relevant_documents(query=question)

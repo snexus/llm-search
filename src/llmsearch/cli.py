@@ -145,11 +145,12 @@ def launch_qa_with_llm(
     model_cache_folder = os.environ.get("MODELS_CACHE_FOLDER")
     
     logger.info(f"Invoking Q&A tool using {model_name} LLM")
-    llm = get_llm_model(model_name, cache_folder_root = model_cache_folder)
+    llm_settings = get_llm_model(model_name, cache_folder_root = model_cache_folder)
     qa_with_llm(
         embedding_persist_folder=embedding_persist_folder,
-        llm=llm,
+        llm=llm_settings.llm,
         k=k,
+        prompt = llm_settings.prompt,
         embedding_model_name=embedding_model_name,
         chain_type=chain_type,
     )
