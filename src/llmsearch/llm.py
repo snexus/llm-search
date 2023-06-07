@@ -108,7 +108,7 @@ class LLMDatabricksDollyV2:
         torch_dtype=torch.bfloat16, trust_remote_code=True, device_map="auto", return_full_text=True
     )
     
-    template = """### Instruction:
+    prompt_template = """### Instruction:
 Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
 ### Context: 
@@ -176,7 +176,6 @@ Use the following pieces of context to answer the question at the end. If you do
             trust_remote_code=True
         )
         
-
         
         tokenizer = transformers.AutoTokenizer.from_pretrained("EleutherAI/gpt-neox-20b", device = device)
 
