@@ -103,6 +103,22 @@ def set_cache_folder(cache_folder_root: str):
     help="Choice of available LLM models",
 )
 @click.option(
+    "--cache-folder",
+    "-c",
+    "cache_folder_root",
+    required=True,
+    type=click.Path(exists=True, dir_okay=True, writable=True),
+    help="Specifies a cache folder",
+)
+@click.option(
+    "--quant-8bit",
+    "-q8",
+    "is_8bit",
+    default=False,
+    type=bool,
+    help="Turns on 8bit quantization. Significantly reduces memory usage.",
+)
+@click.option(
     "--k-neihgbours",
     "-k",
     "k",
@@ -119,19 +135,12 @@ def set_cache_folder(cache_folder_root: str):
 )
 @click.option(
     "--chain-type",
-    "-c",
+    "-t",
     "chain_type",
     default="stuff",
     help="Specifies how nodes are chained together, when passed to LLM",
 )
-@click.option(
-    "--cache-folder",
-    "-c",
-    "cache_folder_root",
-    required=True,
-    type=click.Path(exists=True, dir_okay=True, writable=True),
-    help="Specifies a cache folder",
-)
+
 def launch_qa_with_llm(
     embedding_persist_folder: str,
     model_name: str,
@@ -139,13 +148,14 @@ def launch_qa_with_llm(
     k=3,
     embedding_model_name: str = "all-MiniLM-L6-v2",
     chain_type="stuff",
+    is_8bit = False
 ):
 
     set_cache_folder(cache_folder_root)
     model_cache_folder = os.environ.get("MODELS_CACHE_FOLDER")
     
     logger.info(f"Invoking Q&A tool using {model_name} LLM")
-    llm_settings = get_llm_model(model_name, cache_folder_root = model_cache_folder)
+    llm_settings = get_llm_model(model_name, cache_folder_root = model_cache_folder, is_8bit = is_8bit)
     qa_with_llm(
         embedding_persist_folder=embedding_persist_folder,
         llm=llm_settings.llm,

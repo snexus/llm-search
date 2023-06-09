@@ -11,117 +11,100 @@ from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.llms import HuggingFacePipeline
 from langchain.llms.base import LLM
-from transformers import (AutoModelForCausalLM, AutoTokenizer,
-                          StoppingCriteria, StoppingCriteriaList, pipeline)
+from transformers import AutoModelForCausalLM, AutoTokenizer, StoppingCriteria, StoppingCriteriaList, pipeline
+
+from abc import ABC, abstractmethod
+from llmsearch.prompts import DOLLY_PROMPT_TEMPLATE, OPENAI_PROMPT_TEMPLATE
 
 load_dotenv()
-
 
 
 class ModelConfig(enum.Enum):
     OPENAI_GPT35 = "openai-gpt35"
     DOLLY3B = "databricks-dolly3b"
-    DOLLY7B = 'databricks-dolly7b'
-    MPT7B = 'mosaic-mpt7b-instruct'
-    FALCON7B = 'falcon-7b-instruct'
+    DOLLY7B = "databricks-dolly7b"
+    MPT7B = "mosaic-mpt7b-instruct"
+    FALCON7B = "falcon-7b-instruct"
+
 
 # USed to group llm settings for the caller
-LLMSettings = namedtuple("LLMSettins", "llm prompt")
+LLMSettings = namedtuple("LLMSettings", "llm prompt")
 
-def get_llm_model(model_name: str, cache_folder_root: Union[str, Path]):
-    
+
+def get_llm_model(model_name: str, cache_folder_root: Union[str, Path], is_8bit: bool):
     model = ModelConfig(model_name)
-    
-    
+
     prompt = None
-    
+
     if model == ModelConfig.OPENAI_GPT35:
-        llm = ChatOpenAI(temperature = 0.0)
-        prompt = None
-    
+        model_instance = LLMOpenAI()
+
     elif model == ModelConfig.DOLLY3B:
-        model_instance = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-3b")
-        llm = model_instance.model
-        template = model_instance.prompt_template
+        model_instance = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-3b", load_8bit=is_8bit)
         
-        prompt =  PromptTemplate(
-                        input_variables=["context", "question"],
-                            template=template)
-        
-    
     elif model == ModelConfig.DOLLY7B:
-        model_instance = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-7b")
-
-        llm = model_instance.model
-        template = model_instance.prompt_template
+        model_instance = LLMDatabricksDollyV2(cache_folder=cache_folder_root, model_name="databricks/dolly-v2-7b", load_8bit=is_8bit)
         
-        prompt =  PromptTemplate(
-                        input_variables=["context", "question"],
-                            template=template)
-        
-
     elif model == ModelConfig.MPT7B:
-        model_instance = LLMMosaicMPT(cache_folder=cache_folder_root, model_name="mosaicml/mpt-7b-instruct")
-        
-        llm = model_instance.model
-        template = model_instance.prompt_template
-        
-        prompt =  PromptTemplate(
-                        input_variables=["context", "question"],
-                            template=template)
-        
+        model_instance = LLMMosaicMPT(cache_folder=cache_folder_root, model_name="mosaicml/mpt-7b-instruct", load_8bit=is_8bit)
+
     elif model == ModelConfig.FALCON7B:
-        llm = LLMFalcon(cache_folder=cache_folder_root, model_name="tiiuae/falcon-7b-instruct").model
-    
+        model_instance = LLMFalcon(cache_folder=cache_folder_root, model_name="tiiuae/falcon-7b-instruct", load_8bit=is_8bit)
+
     else:
         raise TypeError(f"Invalid model type. Got {model_name}")
-    return LLMSettings(llm = llm, prompt=prompt)
+    return LLMSettings(llm = model_instance.model, prompt=model_instance.prompt)
 
 
-class CustomLLM(LLM):
-    def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
-        response = self.pipeline(prompt)
-        return response[0]["generated_text"]  # Hardcoded for the time being
-
-    @property
-    def _identifying_params(self) -> Mapping[str, Any]:
-        return {"name_of_model": self.model_name}
-
-    @property
-    def _llm_type(self) -> str:
-        return "custom"
-
-    @classmethod
-    def from_custom_model(cls, model_name: str, pipeline_kwargs, model_kwargs):
-        cls.model_name = model_name
-        cls.pipeline = pipeline(
-            model=model_name,
-            **pipeline_kwargs,
-            model_kwargs=model_kwargs,
-        )
-        return cls()
-
-
-
-class LLMDatabricksDollyV2:
-    pipeline_kwargs = dict(
-        torch_dtype=torch.bfloat16, trust_remote_code=True, device_map="auto", return_full_text=True
-    )
-    
-    prompt_template = """### Instruction:
-Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
-
-### Context: 
----------------
-{context}
----------------
-
-### Question: {question}
-"""
-
-    def __init__(self, cache_folder, model_name="databricks/dolly-v2-3b") -> None:
-        self.cache_folder = cache_folder
+class AbstractLLMModel(ABC):
+    def __init__(
+        self,
+        model_name: str,
+        cache_folder: Union[Path, str],
+        prompt_template: Optional[str] = None,
+        load_8bit: Optional[bool] = False,
+    ) -> None:
         self.model_name = model_name
+        self.cache_folder = cache_folder
+        self.prompt_template = prompt_template
+        self.load_8bit = load_8bit
+
+    @property
+    @abstractmethod
+    def model(self):
+        raise NotImplemented
+    
+    @property
+    def prompt(self) -> Optional[PromptTemplate]:
+        if self.prompt_template:
+            return PromptTemplate(input_variables=["context", "question"], template=self.prompt_template)
+        return None
+
+
+
+class LLMOpenAI(AbstractLLMModel):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(
+            cache_folder="",
+            model_name="chatgpt-3.5",
+            prompt_template=OPENAI_PROMPT_TEMPLATE,
+
+        )
+    
+    @property
+    def model(self):
+        return ChatOpenAI(temperature=0.0)
+    
+
+class LLMDatabricksDollyV2(AbstractLLMModel):
+    def __init__(self, cache_folder, model_name="databricks/dolly-v2-3b", load_8bit=False) -> None:
+        super().__init__(
+            cache_folder=cache_folder,
+            model_name=model_name,
+            prompt_template=DOLLY_PROMPT_TEMPLATE,
+            load_8bit=load_8bit,
+        )
+
 
     @property
     def model(self):
@@ -131,41 +114,37 @@ Use the following pieces of context to answer the question at the end. If you do
             trust_remote_code=True,
             device_map="auto",
             return_full_text=True,
-            model_kwargs={"cache_dir": self.cache_folder},
+            model_kwargs={"cache_dir": self.cache_folder, 'load_in_8bit': self.load_8bit},
         )
 
         hf_pipeline = HuggingFacePipeline(pipeline=generate_text)
         return hf_pipeline
+    
 
+    
 
-class LLMMosaicMPT:
-    prompt_template = """### Instruction:
-Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
-
-### Context: 
----------------
-{context}
----------------
-
-### Question: {question}
-"""
-
-    def __init__(self, cache_folder, model_name="mosaicml/mpt-7b-instruct", device = "auto") -> None:
-        self.cache_folder = cache_folder
-        self.model_name = model_name
+class LLMMosaicMPT(AbstractLLMModel):
+    def __init__(self, cache_folder, model_name="mosaicml/mpt-7b-instruct", load_8bit=False, device="auto") -> None:
+        super().__init__(
+            cache_folder=cache_folder,
+            model_name=model_name,
+            prompt_template=DOLLY_PROMPT_TEMPLATE,
+            load_8bit=load_8bit,
+        )
         self.device = device
+
 
     @property
     def model(self):
         # https://github.com/pinecone-io/examples/blob/master/generation/llm-field-guide/mpt-7b/mpt-7b-huggingface-langchain.ipynb
-        
+
         if self.device == "auto":
             device = f"cuda:{torch.cuda.current_device()}" if torch.cuda.is_available() else "cpu"
         else:
             device = self.device
 
         config = transformers.AutoConfig.from_pretrained(self.model_name, trust_remote_code=True)
-        
+
         config.init_device = device
 
         model = transformers.AutoModelForCausalLM.from_pretrained(
@@ -173,11 +152,12 @@ Use the following pieces of context to answer the question at the end. If you do
             config=config,
             torch_dtype=torch.bfloat16,
             cache_dir=self.cache_folder,
-            trust_remote_code=True
+            trust_remote_code=True,
+            device_map="auto",
+            load_in_8bit=self.load_8bit,
         )
-        
-        
-        tokenizer = transformers.AutoTokenizer.from_pretrained("EleutherAI/gpt-neox-20b", device = device)
+
+        tokenizer = transformers.AutoTokenizer.from_pretrained("EleutherAI/gpt-neox-20b", device=device)
 
         stop_token_ids = tokenizer.convert_tokens_to_ids(["<|endoftext|>"])
 
@@ -196,15 +176,15 @@ Use the following pieces of context to answer the question at the end. If you do
             tokenizer=tokenizer,
             return_full_text=True,  # langchain expects the full text
             task="text-generation",
-            device=device,
-            #device_map="auto",
+            # device=device,
+            device_map="auto",
             # we pass model parameters here too
             stopping_criteria=stopping_criteria,  # without this model will ramble
             temperature=0.0,  # 'randomness' of outputs, 0.0 is the min and 1.0 the max
-           # top_p=0.15,  # select from top tokens whose probability add up to 15%
-           # top_k=0,  # select from top 0 tokens (because zero, relies on top_p)
+            # top_p=0.15,  # select from top tokens whose probability add up to 15%
+            # top_k=0,  # select from top 0 tokens (because zero, relies on top_p)
             max_new_tokens=512,  # mex number of tokens to generate in the output
-           # repetition_penalty=1.1,  # without this output begins repeating
+            # repetition_penalty=1.1,  # without this output begins repeating
             model_kwargs={"cache_dir": self.cache_folder},
         )
 
@@ -212,34 +192,38 @@ Use the following pieces of context to answer the question at the end. If you do
         return hf_pipeline
 
 
-class LLMFalcon:
-
-
-    def __init__(self, cache_folder, model_name="tiiuae/falcon-7b-instruct", device = "auto") -> None:
-        self.cache_folder = cache_folder
-        self.model_name = model_name
+class LLMFalcon(AbstractLLMModel):
+    def __init__(self, cache_folder, model_name="tiiuae/falcon-7b-instruct", load_8bit=False, device="auto") -> None:
+        super().__init__(
+            cache_folder=cache_folder,
+            model_name=model_name,
+            #prompt_template=DOLLY_PROMPT_TEMPLATE,
+            prompt_template = None,
+            load_8bit=load_8bit,
+        )
         self.device = device
+
 
     @property
     def model(self):
-        
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-        model_kwargs = {'temperature':0.01, "cache_dir": self.cache_folder}
-        
-        pipeline = transformers.pipeline(
-                "text-generation",
-                model=self.model_name,
-                tokenizer=tokenizer,
-                torch_dtype=torch.bfloat16,
-                trust_remote_code=True,
-                device_map="auto",
-                max_length=2000,
-                do_sample=True,
-                top_k=10,
-                num_return_sequences=1,
-                eos_token_id=tokenizer.eos_token_id,
-                model_kwargs=model_kwargs,
-            )
+        model_kwargs = {"temperature": 0.01, "cache_dir": self.cache_folder, "load_in_8bit": self.load_8bit}
 
-        llm = HuggingFacePipeline(pipeline = pipeline, model_kwargs = model_kwargs)
+        pipeline = transformers.pipeline(
+            "text-generation",
+            model=self.model_name,
+            tokenizer=tokenizer,
+            torch_dtype=torch.bfloat16,
+            trust_remote_code=True,
+            device_map="auto",
+            max_length=1000,
+            do_sample=True,
+            top_k=10,
+            num_return_sequences=1,
+            eos_token_id=tokenizer.eos_token_id,
+            model_kwargs=model_kwargs,
+        )
+
+        llm = HuggingFacePipeline(pipeline=pipeline, model_kwargs=model_kwargs)
         return llm
+        
