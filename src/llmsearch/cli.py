@@ -119,14 +119,6 @@ def set_cache_folder(cache_folder_root: str):
     help="Turns on 8bit quantization. Significantly reduces memory usage.",
 )
 @click.option(
-    "--k-neihgbours",
-    "-k",
-    "k",
-    default=3,
-    type=click.IntRange(min=1, max=4),
-    help="Number of neighbours for embeddings nearest search",
-)
-@click.option(
     "--embedding-model-name",
     "-e",
     "embedding_model_name",
@@ -141,14 +133,22 @@ def set_cache_folder(cache_folder_root: str):
     help="Specifies how nodes are chained together, when passed to LLM",
 )
 
+@click.option(
+    "--max-context-size",
+    "-cs",
+    "max_context_size",
+    type = click.IntRange(min=512, max=4096),
+    default= 2048,
+    help="Specifies max context size",
+)
 def launch_qa_with_llm(
     embedding_persist_folder: str,
     model_name: str,
     cache_folder_root: str,
-    k=3,
     embedding_model_name: str = "all-MiniLM-L6-v2",
     chain_type="stuff",
-    is_8bit = False
+    is_8bit = False,
+    max_context_size = 2048
 ):
 
     set_cache_folder(cache_folder_root)
@@ -159,10 +159,10 @@ def launch_qa_with_llm(
     qa_with_llm(
         embedding_persist_folder=embedding_persist_folder,
         llm=llm_settings.llm,
-        k=k,
         prompt = llm_settings.prompt,
         embedding_model_name=embedding_model_name,
         chain_type=chain_type,
+         max_context_size = max_context_size
     )
 
 

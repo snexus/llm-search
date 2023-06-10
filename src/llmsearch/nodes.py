@@ -2,10 +2,17 @@ from pathlib import Path
 from typing import Callable, List
 
 from llama_index.data_structs.node import Node, DocumentRelationship
+from pydantic import BaseModel, Field
 
 # from llama_index.data_structs.node import DocumentRelationship, Node
 
 from loguru import logger
+
+class Document(BaseModel):
+    """Interface for interacting with a document."""
+
+    page_content: str
+    metadata: dict = Field(default_factory=dict)
 
 def get_nodes_from_documents(document_paths: List[Path], chunk_parser: Callable[[Path], List[str]]) -> List[Node]:
     """Gets list of nodes from a collection of documents
@@ -41,13 +48,34 @@ def get_documents_from_langchain_splitter(document_paths: List[Path], splitter) 
     all_docs = []
 
     for path in document_paths:
-        logger.info(f"Processing path: {path}")
+        logger.info(f"Processing path using langchain splitter: {path}")
         with open(path, "r") as f:
             text = f.read()
             
         docs = splitter.create_documents([text])
         for d in docs:
             d.metadata = {"source": str(path)}
+        all_docs.extend(docs)
+        
+    logger.info(f"Got {len(all_docs)} nodes.")
+    return all_docs
+
+
+def get_documents_from_custom_splitter(document_paths: List[Path], splitter_func, max_size) -> List[Node]:
+    """Gets list of nodes from a collection of documents
+
+    Examples: https://gpt-index.readthedocs.io/en/stable/guides/primer/usage_pattern.html
+    """
+
+    all_docs = []
+
+    for path in document_paths:
+        logger.info(f"Processing path using custom splitter: {path}")
+        with open(path, "r") as f:
+            text = f.read()
+            
+        docs_str = splitter_func(text, max_size)
+        docs = [Document(page_content=d, metadata={"source": str(path)}) for d in docs_str]
         all_docs.extend(docs)
         
     logger.info(f"Got {len(all_docs)} nodes.")

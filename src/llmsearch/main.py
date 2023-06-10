@@ -2,7 +2,7 @@ import os
 
 from llmsearch.chroma import ChromaVS
 from llmsearch.llm import HuggingFaceWrapper, LLMOpenAIWrapper
-from llmsearch.parsers import markdown_parser
+from llmsearch.parsers.markdown_v1 import markdown_parser
 from termcolor import colored, cprint
 
 ## Define fodlers

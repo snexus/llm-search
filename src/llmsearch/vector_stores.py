@@ -9,8 +9,8 @@ from langchain.text_splitter import Language, RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from loguru import logger
 
-from llmsearch.nodes import get_documents_from_langchain_splitter
-
+from llmsearch.nodes import get_documents_from_langchain_splitter, get_documents_from_custom_splitter
+from llmsearch.parsers.markdown import markdown_splitter
 
 
 class VectorStoreChroma:
@@ -19,18 +19,25 @@ class VectorStoreChroma:
     ):
         self._persist_folder = persist_folder
         self._embeddings = HuggingFaceEmbeddings(model_name=hf_embed_model_name)
+        # self._splitter_conf = {
+        #     "md": RecursiveCharacterTextSplitter.from_language(
+        #         language=Language.MARKDOWN, chunk_size=chunk_size, chunk_overlap=chunk_overlap
+        #     )
+        # }
+        
         self._splitter_conf = {
-            "md": RecursiveCharacterTextSplitter.from_language(
-                language=Language.MARKDOWN, chunk_size=chunk_size, chunk_overlap=chunk_overlap
-            )
+            "md": markdown_splitter
         }
+        self.chunk_size = chunk_size
+        
 
     def create_index_from_folder(self, folder_path: str, extension="md", clear_persist_folder = True):
         p = Path((folder_path))
         paths = list(p.glob(f"**/*.{extension}*"))
 
         splitter = self._splitter_conf[extension]
-        docs = get_documents_from_langchain_splitter(paths, splitter=splitter)
+        #docs = get_documents_from_langchain_splitter(paths, splitter=splitter)
+        docs = get_documents_from_custom_splitter(document_paths=paths, splitter_func=splitter, max_size=self.chunk_size)
         
         if clear_persist_folder:
             pf = Path(self._persist_folder)

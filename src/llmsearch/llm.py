@@ -197,8 +197,7 @@ class LLMFalcon(AbstractLLMModel):
         super().__init__(
             cache_folder=cache_folder,
             model_name=model_name,
-            #prompt_template=DOLLY_PROMPT_TEMPLATE,
-            prompt_template = None,
+            prompt_template=DOLLY_PROMPT_TEMPLATE,
             load_8bit=load_8bit,
         )
         self.device = device
