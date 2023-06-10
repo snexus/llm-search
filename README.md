@@ -29,11 +29,11 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
 
 
 
-## Installation
+## Virtualenv based installation
 
 ```bash
-git clone https://github.com/snexus/llm-playground.git
-cd llm-playground
+git clone https://github.com/snexus/llm-search.git
+cd llm-search
 
 # Create a new environment
 python3 -m venv .venv 
@@ -41,10 +41,7 @@ python3 -m venv .venv
 # Activate new environment
 source .venv/bin/activate
 
-# Install the dependencies
-pip install -r ./requirements.txt
-
-# Or, install in development mode
+# Install in development mode
 pip install -e .
 ```
 
@@ -74,7 +71,9 @@ docker build -t deepml:latest ./docker
 
 ## Create embeddings from documents
 
-Scan a folder of markdown files and create embeddings
+Scan a folder of markdown files and create an embeddings database.
+
+Assuming documents are stored in `/storage/llm/docs`, the following command will create an embedding database in `/storage/llm/embeddings`. In addition,  `/storage/llm/cache` folder will be used for local cache of embedding models, LLM models and tokenizers.
 
 ```bash
 cd src/llmsearch
@@ -97,7 +96,7 @@ python3 cli.py interact llm --help
 python3 cli.py interact llm -f /storage/llm/embeddings -m openai-gpt35 -c /storage/llm/cache  -cs 2048
 ```
 
-### Example interacting with document database using local (HugginhFace)
+### Example interacting with document database using local (HuggingFace)
 
 * `-q8 1` flag indicates to load the model in 8 bit (quantization). Useful for limited GPU memory.
 
