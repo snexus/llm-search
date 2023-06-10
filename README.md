@@ -89,7 +89,9 @@ python3 cli.py index --help
 python3 cli.py interact llm --help
 ```
 
-### Example interacting with document database using OpenAI model
+### Example interacting with document database using an OpenAI model
+
+* To interact with OpenAI models, create `.env` in the root directory of the repository, containing OpenAI API key. A template for the `.env` file is provided in `.env_template`
 
 * A code snippet below launches an OpenAI model and limits the context window to 2048 characters. The system will query and provide the most relevant context from the embeddings database, up to a maximum context size.
 ```bash
