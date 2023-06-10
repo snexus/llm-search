@@ -1,13 +1,32 @@
-# LLM Playground
+
+# LLM Search
+
+**WORK IN PROGRESS...**
+
+The goal of this package is to create a convenient experience for LLMs (both OpenAI and locally hosted) to interact with custom documents. 
+
+## Features
+
+* Supported formats
+    * `.md` - splits files on a logical level (headings, subheadings, code blocks, etc..). Currently is more advanced than Langchain's built-in parser.
+* Vector databses:
+    * ChromaDB
+* LLMs:
+    * OpenAI (ChatGPT 3.5/4)
+    * Databricks Dolly - 3b and 7b variants
+    * Mosaic MPT (7b)
+    * Falcon (7b)
+* Other features
+    * CLI
+    * Ability to load in 8 bit (quantization) to reduce memory footprint on older hardware.
+    * Ability to limit context window, to adapt to different requirements of llm models.
+
 
 ## Prerequisites
 
 * Python 3.10, including dev packages (python3-dev on Ubuntu)
 * poetry
 
-## Hardware requirements
-
-This example uses the smallest of Dolly 2.0 models, `databricks/dolly-v2-2-8b`, which runs successfully on Nvidia RTX 3060 (12GB).
 
 
 ## Installation
@@ -21,8 +40,12 @@ python3 -m venv .venv
 
 # Activate new environment
 source .venv/bin/activate
+
 # Install the dependencies
 pip install -r ./requirements.txt
+
+# Or, install in development mode
+pip install -e .
 ```
 
 
@@ -47,16 +70,7 @@ docker build -t deepml:latest ./docker
 ./run_docker.sh RW_CACHE_FOLDER_NAME
 ```
 
-# LLM Search
-
-## Congifure cache folder for models and embeddings
-
-Cache folders will sllow
-
-```bash
-cd src/llmsearch
-python3 cli.py config cache -f /storage/llm/cache
-```
+# Quickstart
 
 ## Create embeddings from documents
 
@@ -67,8 +81,26 @@ cd src/llmsearch
 python3 cli.py index create -d /storage/llm/docs -o /storage/llm/embeddings --cache-folder /storage/llm/cache
 ```
 
-## Interact with the model using one of the supported LLMs
+## Interact with the documents using one of the supported LLMs
+
+### Help on available options (including list of inegrated LLMs)
 
 ```bash
-python3 cli.py interact llm -f /storage/llm/embeddings -m falcon-7b-instruct -c /storage/llm/cache -k 2
+python3 cli.py index --help
+python3 cli.py interact llm --help
+```
+
+### Example interacting with document database using OpenAI model
+
+* A code snippet below launches an OpenAI model and limits the context window to 2048 characters. The system will query and provide the most relevant context from the embeddings database, up to a maximum context size.
+```bash
+python3 cli.py interact llm -f /storage/llm/embeddings -m openai-gpt35 -c /storage/llm/cache  -cs 2048
+```
+
+### Example interacting with document database using local (HugginhFace)
+
+* `-q8 1` flag indicates to load the model in 8 bit (quantization). Useful for limited GPU memory.
+
+```bash
+python3 cli.py interact llm -f /storage/llm/embeddings -m falcon-7b-instruct -c /storage/llm/cache  -q8 1 -cs 2048
 ```
