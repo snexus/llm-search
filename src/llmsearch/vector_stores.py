@@ -57,21 +57,3 @@ class VectorStoreChroma:
         retriever =  vectordb.as_retriever(**kwargs)
         vectordb = None
         return retriever
-
-
-if __name__ == "__main__":
-    STORAGE_FOLDER_ROOT = "/storage/llm/"
-    CACHE_FOLDER_ROOT = os.path.join(STORAGE_FOLDER_ROOT, "cache")
-    EMBEDDINGS_PERSIST_FOLDER = os.path.join(STORAGE_FOLDER_ROOT, "embeddings")
-
-    os.environ["SENTENCE_TRANSFORMERS_HOME"] = CACHE_FOLDER_ROOT
-    os.environ["TRANSFORMERS_CACHE"] = os.path.join(CACHE_FOLDER_ROOT, "transformers")
-    os.environ['HF_HOME'] = os.path.join(CACHE_FOLDER_ROOT,  "hf_home")
-
-    vs = VectorStoreChroma(persist_folder="/storage/llm/embeddings", hf_embed_model_name="all-MiniLM-L6-v2")
-    vs.create_index_from_folder(folder_path="/storage/llm/docs", extension="md")
-   # retriever = vs.load_retriever()
-    
-    # query = "How to update a delta table?"
-    # r = retriever.get_relevant_documents(query=query)
-    # print(r)

@@ -1,63 +1,63 @@
-import os
+# import os
 
-from llmsearch.chroma import ChromaVS
-from llmsearch.llm import HuggingFaceWrapper, LLMOpenAIWrapper
-from llmsearch.parsers.markdown_v1 import markdown_parser
-from termcolor import colored, cprint
+# from llmsearch.chroma import ChromaVS
+# from llmsearch.llm import HuggingFaceWrapper, LLMOpenAIWrapper
+# from llmsearch.parsers.markdown_v1 import markdown_parser
+# from termcolor import colored, cprint
 
-## Define fodlers
+# ## Define fodlers
 
-STORAGE_FOLDER_ROOT = "/storage/llm/"
-CACHE_FOLDER_ROOT = os.path.join(STORAGE_FOLDER_ROOT, "cache")
-INDEX_PERSIST_FOLDER = os.path.join(STORAGE_FOLDER_ROOT, "index")
-DOC_FOLDER = os.path.join(STORAGE_FOLDER_ROOT, "docs")
+# STORAGE_FOLDER_ROOT = "/storage/llm/"
+# CACHE_FOLDER_ROOT = os.path.join(STORAGE_FOLDER_ROOT, "cache")
+# INDEX_PERSIST_FOLDER = os.path.join(STORAGE_FOLDER_ROOT, "index")
+# DOC_FOLDER = os.path.join(STORAGE_FOLDER_ROOT, "docs")
 
-# Define embedding and LLM models
-# EMBEDDING_MODEL = "all-distilroberta-v1" # Assumes HuggingFace embedding.
-EMBEDDING_MODEL = "all-MiniLM-L6-v2" # Assumes HuggingFace embedding.
-URL_PREFIX = "obsidian://open?vault=knowledge-base&file="
+# # Define embedding and LLM models
+# # EMBEDDING_MODEL = "all-distilroberta-v1" # Assumes HuggingFace embedding.
+# EMBEDDING_MODEL = "all-MiniLM-L6-v2" # Assumes HuggingFace embedding.
+# URL_PREFIX = "obsidian://open?vault=knowledge-base&file="
 
-os.environ["SENTENCE_TRANSFORMERS_HOME"] = CACHE_FOLDER_ROOT
-os.environ['TRANSFORMERS_CACHE'] = os.path.join(CACHE_FOLDER_ROOT,  "transformers")
-os.environ['HF_HOME'] = os.path.join(CACHE_FOLDER_ROOT,  "hf_home")
+# os.environ["SENTENCE_TRANSFORMERS_HOME"] = CACHE_FOLDER_ROOT
+# os.environ['TRANSFORMERS_CACHE'] = os.path.join(CACHE_FOLDER_ROOT,  "transformers")
+# os.environ['HF_HOME'] = os.path.join(CACHE_FOLDER_ROOT,  "hf_home")
 
 
 
-if __name__ == "__main__":
-    persist_folder = INDEX_PERSIST_FOLDER
+# if __name__ == "__main__":
+#     persist_folder = INDEX_PERSIST_FOLDER
 
-    model = LLMOpenAIWrapper(
-        embedding_model_name=EMBEDDING_MODEL, llm_model_name="gpt-3.5-turbo",
-        temperature=0,
-        max_input_size = 4096,
-        num_output = 2048
-    )
+#     model = LLMOpenAIWrapper(
+#         embedding_model_name=EMBEDDING_MODEL, llm_model_name="gpt-3.5-turbo",
+#         temperature=0,
+#         max_input_size = 4096,
+#         num_output = 2048
+#     )
     
-    # model = HuggingFaceWrapper(
-    #     embedding_model_name=EMBEDDING_MODEL,
-    #     llm_model_name="databricks/dolly-v2-3b", 
-    #     cache_folder=CACHE_FOLDER_ROOT,
-    #     max_input_size = 2048,
-    #     num_output = 1024
-    # )
+#     # model = HuggingFaceWrapper(
+#     #     embedding_model_name=EMBEDDING_MODEL,
+#     #     llm_model_name="databricks/dolly-v2-3b", 
+#     #     cache_folder=CACHE_FOLDER_ROOT,
+#     #     max_input_size = 2048,
+#     #     num_output = 1024
+#     # )
 
-    vectordb = ChromaVS(
-        persist_folder=persist_folder,
-        collection_name="md_sample",
-        embedding_model_name=EMBEDDING_MODEL,
-        service_context=model.service_context,
-    )
+#     vectordb = ChromaVS(
+#         persist_folder=persist_folder,
+#         collection_name="md_sample",
+#         embedding_model_name=EMBEDDING_MODEL,
+#         service_context=model.service_context,
+#     )
 
-    # vectordb.create_index_from_folder(folder_path=DOC_FOLDER, extension="md", parser_func=markdown_parser)
+#     # vectordb.create_index_from_folder(folder_path=DOC_FOLDER, extension="md", parser_func=markdown_parser)
 
-    index = vectordb.load_index()
-    # #  index = vectordb.create_index_from_folder(folder_path=DOC_FOLDER, extension="md", parser_func=markdown_parser, service_context = service_context)
+#     index = vectordb.load_index()
+#     # #  index = vectordb.create_index_from_folder(folder_path=DOC_FOLDER, extension="md", parser_func=markdown_parser, service_context = service_context)
 
-    # print(index)
+#     # print(index)
 
-    query_engine = index.as_query_engine(mode="embedding", similarity_top_k=3, 
-                                         response_mode="compact",
-                                         verbose=True)
+#     query_engine = index.as_query_engine(mode="embedding", similarity_top_k=3, 
+#                                          response_mode="compact",
+#                                          verbose=True)
    #  r = query_engine.query("How to overwrite a table in Spark?")
    # r = query_engine.query("How to convert from string to timestamp in Spark?")
     # #r = query_engine.query("What is a difference between transformation and action in Spark?")
@@ -99,26 +99,4 @@ if __name__ == "__main__":
     
     # #r = query_engine.query("What is a difference between howto and tutorial in documentation?")
     
-    
-    def print_response(r, prefix: str):
-        print("\n============= RESPONSE =================")
-        cprint(r.response, 'red')
-        print("\n============= SOURCES ==================")
-        for node in r.source_nodes:
-            doc_name = node.node.doc_id[3:-5]
-            score = node.score
-            text = node.node.text
-            cprint(f'{prefix + doc_name}', 'blue')
-            cprint(f"Score: {score:.3f}", 'green')
-            print('******************* BEING EXTRACT *****************')
-            print(f"{text[:150]}\n")
-            # print(f"\nCONTEXT")
-            # print(text)
-        print('------------------------------------------')
-        
-#     print_response(r)
-    
-    while True:
-        question = input("\nENTER QUESTION >> ")
-        r = query_engine.query(question)
-        print_response(r, prefix = URL_PREFIX)
+
