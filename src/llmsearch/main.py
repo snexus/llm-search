@@ -69,7 +69,7 @@
     
     # r = query_engine.query("Provide minimum working skeleton for pyproject.toml")
     
-    # r = query_engine.query("What type of data should be container in bronze table?")
+    # r = query_engine.query("What type of data should be contained in bronze table?")
     
 #    r = query_engine.query("What is a difference between dataclass and regular classes in Python?")
     

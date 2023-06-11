@@ -16,7 +16,7 @@ from transformers import TextGenerationPipeline
 from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
 
 from abc import ABC, abstractmethod
-from llmsearch.prompts import DOLLY_PROMPT_TEMPLATE, OPENAI_PROMPT_TEMPLATE, TULU8_TEMPLATE
+from llmsearch.prompts import DOLLY_PROMPT_TEMPLATE, OPENAI_PROMPT_TEMPLATE, TULU8_TEMPLATE, REDPAJAMA_TEMPLATE
 
 load_dotenv()
 
@@ -28,6 +28,7 @@ class ModelConfig(enum.Enum):
     MPT7B = "mosaic-mpt7b-instruct"
     FALCON7B = "falcon-7b-instruct"
     GPTQTULU7B = "gptq-tulu-7b"
+    REDPAJAMAINCITE = "redpajama-incite-7b"
 
 
 # USed to group llm settings for the caller
@@ -66,10 +67,13 @@ def get_llm_model(
         model_instance = LLMFalcon(
             cache_folder=cache_folder_root, model_name="tiiuae/falcon-7b-instruct", load_8bit=is_8bit
         )
-
+    elif model == ModelConfig.REDPAJAMAINCITE:
+        model_instance = RedPajamaIncite(
+            cache_folder=cache_folder_root, model_name="togethercomputer/RedPajama-INCITE-7B-Instruct", load_8bit=is_8bit
+        )
     elif model == ModelConfig.GPTQTULU7B:
         if gptq_model_folder is None:
-            raise SystemError("Specify `gptq-model-folder` for GPTQ models.")
+            raise SystemError("Specify `--gptq-model-folder` for GPTQ models.")
         model_instance = BlokeTulu(
             cache_folder=cache_folder_root, model_name="TheBloke/tulu-7B-GPTQ", load_8bit=is_8bit, quantized_model_folder=gptq_model_folder
         )
@@ -294,3 +298,45 @@ class BlokeTulu(AbstractLLMModel):
 
         hf_pipeline = HuggingFacePipeline(pipeline=p)
         return hf_pipeline
+
+
+class RedPajamaIncite(AbstractLLMModel):
+    def __init__(self, cache_folder, model_name="togethercomputer/RedPajama-INCITE-7B-Instruct", load_8bit=False, device="auto") -> None:
+        super().__init__(
+            cache_folder=cache_folder,
+            model_name=model_name,
+            prompt_template=REDPAJAMA_TEMPLATE,
+            load_8bit=load_8bit,
+        )
+        self.device = device
+
+    @property
+    def model(self):
+        tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+
+     
+        model = transformers.AutoModelForCausalLM.from_pretrained(
+            self.model_name,
+            torch_dtype=torch.float16,
+            cache_dir=self.cache_folder,
+            device_map="auto",
+            load_in_8bit=self.load_8bit,
+        )
+
+
+        generate_text = transformers.pipeline(
+            model=model,
+            tokenizer=tokenizer,
+            task="text-generation",
+            # device=device,
+            device_map="auto",
+            do_sample=True, 
+            temperature=0.01, 
+            max_new_tokens=128,
+            top_p=0.2,
+            model_kwargs={"cache_dir": self.cache_folder},
+        )
+
+        hf_pipeline = HuggingFacePipeline(pipeline=generate_text)
+        return hf_pipeline
+

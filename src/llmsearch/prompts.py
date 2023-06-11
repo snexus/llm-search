@@ -30,3 +30,14 @@ TULU8_TEMPLATE = """### Human: Use information in the provided context to answer
 
 ### Assistant:
 """
+
+
+REDPAJAMA_TEMPLATE="""Given the context and no prior information, answer the question.
+
+# Context:
+------------
+{context}
+------------
+# Question: {question}
+# Answer:
+"""
