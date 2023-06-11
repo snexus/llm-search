@@ -165,7 +165,7 @@ class LLMMosaicMPT(AbstractLLMModel):
             device = self.device
 
         config = transformers.AutoConfig.from_pretrained(self.model_name, trust_remote_code=True)
-
+        config.attn_config['attn_impl'] = 'triton'
         config.init_device = device
 
         model = transformers.AutoModelForCausalLM.from_pretrained(
@@ -194,6 +194,7 @@ class LLMMosaicMPT(AbstractLLMModel):
 
         generate_text = transformers.pipeline(
             model=model,
+            config = config,
             tokenizer=tokenizer,
             return_full_text=True,  # langchain expects the full text
             task="text-generation",
@@ -204,7 +205,7 @@ class LLMMosaicMPT(AbstractLLMModel):
             temperature=0.0,  # 'randomness' of outputs, 0.0 is the min and 1.0 the max
             # top_p=0.15,  # select from top tokens whose probability add up to 15%
             # top_k=0,  # select from top 0 tokens (because zero, relies on top_p)
-            max_new_tokens=512,  # mex number of tokens to generate in the output
+            max_new_tokens=256,  # mex number of tokens to generate in the output
             # repetition_penalty=1.1,  # without this output begins repeating
             model_kwargs={"cache_dir": self.cache_folder},
         )
