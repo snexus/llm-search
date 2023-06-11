@@ -20,3 +20,13 @@ OPENAI_PROMPT_TEMPLATE = """"Context information is provided below. Given the co
 
 ### Question: {question}
 """
+
+TULU8_TEMPLATE = """### Human: Use information in the provided context to answer the following question: ```{question}```.
+
+### Context: 
+---------------
+{context}
+---------------
+
+### Assistant:
+"""
