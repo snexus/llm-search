@@ -2,7 +2,7 @@
 
 RW_STORAGE=$1
 
-docker run -it --runtime=nvidia \
+docker run --rm -it --runtime=nvidia \
 	--gpus all -p 8888:8888 \
 	--entrypoint /shared/docker/entrypoint.sh \
 	-v $RW_STORAGE:/storage:rw \

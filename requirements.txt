@@ -16,6 +16,7 @@ einops # required for Mosaic models
 click 
 bitsandbytes
 auto-gptq
+# llama-cpp-python
 six==1.16.0 ; python_version >= "3.10" and python_version < "4.0"
 sniffio==1.3.0 ; python_version >= "3.10" and python_version < "4.0"
 sqlalchemy==1.4.48 ; python_version >= "3.10" and python_version < "4.0"

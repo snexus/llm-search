@@ -9,13 +9,17 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
 
 * Supported formats
     * `.md` - splits files on a logical level (headings, subheadings, code blocks, etc..). Currently is more advanced than Langchain's built-in parser.
-* Vector databses:
+* Generates embeddings from folder of documents and stores in a vector databases:
     * ChromaDB
-* LLMs:
+* Interact with embedding using state-of-the-art LLMs, including local (private):
     * OpenAI (ChatGPT 3.5/4)
     * Databricks Dolly - 3b and 7b variants
     * Mosaic MPT (7b)
     * Falcon (7b)
+    * GPTQ models (AutoGPTQ)
+    * GGML models through LlamaCPP (not for commerical use due to licensing of the base Llama model)
+        * WizardLM 1.0 13B
+        * Nous Hermes 13B - https://huggingface.co/TheBloke/Nous-Hermes-13B-GGML
 * Other features
     * CLI
     * Ability to load in 8 bit (quantization) to reduce memory footprint on older hardware.
@@ -24,9 +28,7 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
 
 ## Prerequisites
 
-* Python 3.10, including dev packages (python3-dev on Ubuntu)
-* poetry
-
+* Python 3.8+, including dev packages (python3-dev on Ubuntu)
 
 
 ## Virtualenv based installation
@@ -41,8 +43,11 @@ python3 -m venv .venv
 # Activate new environment
 source .venv/bin/activate
 
-# Install in development mode
-pip install -e .
+# For CUDA BLAS support for LlamaCpp, together with other depedendencies
+./install.sh
+
+# # Or, Install in development mode
+# pip install -e .
 ```
 
 
@@ -104,4 +109,13 @@ python3 cli.py interact llm -f /storage/llm/embeddings -m openai-gpt35 -c /stora
 
 ```bash
 python3 cli.py interact llm -f /storage/llm/embeddings -m falcon-7b-instruct -c /storage/llm/cache  -q8 1 -cs 2048
+```
+
+
+## Example interacting with document database using llama-cpp / GGML model
+
+* Currently, GGML models are configured to offload 35 layers to GPU (hard-coded). In the future, there will be an ability to specify it in an external config.
+
+```bash
+python3 cli.py interact llm -f /storage/llm/embeddings -m wizardlm-1.0-ggml -c /storage/llm/cache  -cs 2048 --model-path /storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin
 ```

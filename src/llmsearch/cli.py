@@ -142,12 +142,12 @@ def set_cache_folder(cache_folder_root: str):
     help="Specifies max context size",
 )
 @click.option(
-    "--gptq-model-folder",
-    "-g",
-    "gptq_model_folder",
+    "--model-path",
+    "-mf",
+    "model_path",
     required=False,
     type=click.Path(exists=True, dir_okay=True),
-    help="Specifies a location of quantized GPTQ model",
+    help="Specifies a folder location of quantized GPTQ model or a path to a model for GGML model",
 )
 def launch_qa_with_llm(
     embedding_persist_folder: str,
@@ -157,14 +157,14 @@ def launch_qa_with_llm(
     chain_type="stuff",
     is_8bit = False,
     max_context_size = 2048, 
-    gptq_model_folder = None
+    model_path = None
 ):
 
     set_cache_folder(cache_folder_root)
     model_cache_folder = os.environ.get("MODELS_CACHE_FOLDER")
     
     logger.info(f"Invoking Q&A tool using {model_name} LLM")
-    llm_settings = get_llm_model(model_name, cache_folder_root = model_cache_folder, is_8bit = is_8bit, gptq_model_folder=gptq_model_folder)
+    llm_settings = get_llm_model(model_name, cache_folder_root = model_cache_folder, is_8bit = is_8bit, model_path=model_path)
     qa_with_llm(
         embedding_persist_folder=embedding_persist_folder,
         llm=llm_settings.llm,

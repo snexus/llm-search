@@ -1,22 +1,42 @@
-from collections import namedtuple
 import enum
+from abc import ABC, abstractmethod
+from collections import namedtuple
 from pathlib import Path
 from typing import Any, List, Mapping, Optional, Union
 
+
 import torch
 import transformers
+from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
 from dotenv import load_dotenv
 from langchain import LLMChain, PromptTemplate
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.llms import HuggingFacePipeline
 from langchain.llms.base import LLM
-from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaTokenizer, StoppingCriteria, StoppingCriteriaList, pipeline
-from transformers import TextGenerationPipeline
-from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    LlamaTokenizer,
+    StoppingCriteria,
+    StoppingCriteriaList,
+    TextGenerationPipeline,
+    pipeline,
+)
 
-from abc import ABC, abstractmethod
-from llmsearch.prompts import DOLLY_PROMPT_TEMPLATE, OPENAI_PROMPT_TEMPLATE, TULU8_TEMPLATE, REDPAJAMA_TEMPLATE
+from langchain.llms import LlamaCpp
+from langchain.callbacks.manager import CallbackManager
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+
+
+from llmsearch.prompts import (
+    DOLLY_PROMPT_TEMPLATE,
+    OPENAI_PROMPT_TEMPLATE,
+    REDPAJAMA_TEMPLATE,
+    TULU8_TEMPLATE,
+    LLAMA_TEMPLATE,
+    WIZARDLM10_TEMPLATE,
+)
 
 load_dotenv()
 
@@ -29,6 +49,8 @@ class ModelConfig(enum.Enum):
     FALCON7B = "falcon-7b-instruct"
     GPTQTULU7B = "gptq-tulu-7b"
     REDPAJAMAINCITE = "redpajama-incite-7b"
+    WIZARDLM = "wizardlm-1.0-ggml"
+    NOUSHERMES = "nous-hermes-ggml"
 
 
 # USed to group llm settings for the caller
@@ -39,7 +61,7 @@ def get_llm_model(
     model_name: str,
     cache_folder_root: Union[str, Path],
     is_8bit: bool,
-    gptq_model_folder: Optional[Union[str, Path]] = None,
+    model_path: Optional[Union[str, Path]] = None,
 ):
     model = ModelConfig(model_name)
 
@@ -69,13 +91,38 @@ def get_llm_model(
         )
     elif model == ModelConfig.REDPAJAMAINCITE:
         model_instance = RedPajamaIncite(
-            cache_folder=cache_folder_root, model_name="togethercomputer/RedPajama-INCITE-7B-Instruct", load_8bit=is_8bit
+            cache_folder=cache_folder_root,
+            model_name="togethercomputer/RedPajama-INCITE-7B-Instruct",
+            load_8bit=is_8bit,
         )
     elif model == ModelConfig.GPTQTULU7B:
-        if gptq_model_folder is None:
-            raise SystemError("Specify `--gptq-model-folder` for GPTQ models.")
+        if model_path is None:
+            raise SystemError("Specify `--model-path` for GPTQ models.")
         model_instance = BlokeTulu(
-            cache_folder=cache_folder_root, model_name="TheBloke/tulu-7B-GPTQ", load_8bit=is_8bit, quantized_model_folder=gptq_model_folder
+            cache_folder=cache_folder_root,
+            model_name="TheBloke/tulu-7B-GPTQ",
+            load_8bit=is_8bit,
+            quantized_model_folder=model_path,
+        )
+    elif model == ModelConfig.WIZARDLM:
+        if model_path is None:
+            raise SystemError("Specify `--model-path` for WIZARDLM models.")
+        model_instance = LlamaCPPModel(
+            cache_folder=cache_folder_root,
+            model_name="WizardLM",
+            model_path=model_path,
+            prompt_template=LLAMA_TEMPLATE,
+            llama_kwargs=dict(n_ctx=1024, max_tokens=512, temperature=0.0, n_gpu_layers=35, n_batch=512),
+        )
+    elif model == ModelConfig.NOUSHERMES:
+        if model_path is None:
+            raise SystemError("Specify `--model-path` for NOUS HERMES model.")
+        model_instance = LlamaCPPModel(
+            cache_folder=cache_folder_root,
+            model_name="NousHermes",
+            model_path=model_path,
+            prompt_template=LLAMA_TEMPLATE,
+            llama_kwargs=dict(n_ctx=1024, max_tokens=512, temperature=0.0, n_gpu_layers=35, n_batch=512),
         )
 
     else:
@@ -165,7 +212,7 @@ class LLMMosaicMPT(AbstractLLMModel):
             device = self.device
 
         config = transformers.AutoConfig.from_pretrained(self.model_name, trust_remote_code=True)
-        config.attn_config['attn_impl'] = 'triton'
+        config.attn_config["attn_impl"] = "triton"
         config.init_device = device
 
         model = transformers.AutoModelForCausalLM.from_pretrained(
@@ -194,7 +241,7 @@ class LLMMosaicMPT(AbstractLLMModel):
 
         generate_text = transformers.pipeline(
             model=model,
-            config = config,
+            config=config,
             tokenizer=tokenizer,
             return_full_text=True,  # langchain expects the full text
             task="text-generation",
@@ -236,8 +283,8 @@ class LLMFalcon(AbstractLLMModel):
             torch_dtype=torch.bfloat16,
             trust_remote_code=True,
             device_map="auto",
-            max_new_tokens = 512,
-            #max_length=512,
+            max_new_tokens=512,
+            # max_length=512,
             do_sample=True,
             top_k=10,
             num_return_sequences=1,
@@ -253,7 +300,7 @@ class BlokeTulu(AbstractLLMModel):
     def __init__(
         self,
         cache_folder: str,
-        quantized_model_folder: str, 
+        quantized_model_folder: str,
         model_name="TheBloke/tulu-7B-GPTQ",
         load_8bit=False,
         device="auto",
@@ -265,7 +312,7 @@ class BlokeTulu(AbstractLLMModel):
             load_8bit=load_8bit,
         )
         self.device = device
-        self.model_base_name=  "gptq_model-4bit-128g"
+        self.model_base_name = "gptq_model-4bit-128g"
         self.quantized_model_folder = quantized_model_folder
 
     @property
@@ -275,25 +322,25 @@ class BlokeTulu(AbstractLLMModel):
         else:
             device = self.device
 
-        
         tokenizer = AutoTokenizer.from_pretrained(self.quantized_model_folder, use_fast=True, device=device)
-        
-        model = AutoGPTQForCausalLM.from_quantized(self.quantized_model_folder,
+
+        model = AutoGPTQForCausalLM.from_quantized(
+            self.quantized_model_folder,
             model_basename=self.model_base_name,
             use_safetensors=True,
-            trust_remote_code=False, 
+            trust_remote_code=False,
             device=device,
             quantize_config=None,
-            use_triton = False
+            use_triton=False,
         )
-        
+
         p = pipeline(
             "text-generation",
-            model=model, 
+            model=model,
             tokenizer=tokenizer,
-            max_new_tokens=1024, 
+            max_new_tokens=1024,
             temperature=0,
-            top_p=0.2, 
+            top_p=0.2,
             repetition_penalty=1.15,
         )
 
@@ -302,7 +349,9 @@ class BlokeTulu(AbstractLLMModel):
 
 
 class RedPajamaIncite(AbstractLLMModel):
-    def __init__(self, cache_folder, model_name="togethercomputer/RedPajama-INCITE-7B-Instruct", load_8bit=False, device="auto") -> None:
+    def __init__(
+        self, cache_folder, model_name="togethercomputer/RedPajama-INCITE-7B-Instruct", load_8bit=False, device="auto"
+    ) -> None:
         super().__init__(
             cache_folder=cache_folder,
             model_name=model_name,
@@ -315,7 +364,6 @@ class RedPajamaIncite(AbstractLLMModel):
     def model(self):
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
 
-     
         model = transformers.AutoModelForCausalLM.from_pretrained(
             self.model_name,
             torch_dtype=torch.float16,
@@ -324,15 +372,14 @@ class RedPajamaIncite(AbstractLLMModel):
             load_in_8bit=self.load_8bit,
         )
 
-
         generate_text = transformers.pipeline(
             model=model,
             tokenizer=tokenizer,
             task="text-generation",
             # device=device,
             device_map="auto",
-            do_sample=True, 
-            temperature=0.01, 
+            do_sample=True,
+            temperature=0.01,
             max_new_tokens=128,
             top_p=0.2,
             model_kwargs={"cache_dir": self.cache_folder},
@@ -341,3 +388,26 @@ class RedPajamaIncite(AbstractLLMModel):
         hf_pipeline = HuggingFacePipeline(pipeline=generate_text)
         return hf_pipeline
 
+
+class LlamaCPPModel(AbstractLLMModel):
+    def __init__(
+        self,
+        model_name: str,
+        cache_folder: Path,
+        model_path: Union[Path, str],
+        prompt_template: str,
+        llama_kwargs: dict,
+        load_8bit: Optional[bool] = False,
+
+    ) -> None:
+        super().__init__(model_name, cache_folder, prompt_template, load_8bit)
+        self.model_path = model_path
+        self.llama_kwargs = llama_kwargs
+
+    @property
+    def model(self):
+        callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+        llm = LlamaCpp(
+            model_path=self.model_path, callback_manager=callback_manager, verbose=True, **self.llama_kwargs
+        )
+        return llm
