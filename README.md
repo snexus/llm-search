@@ -28,7 +28,11 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
 
 ## Prerequisites
 
+* Nvidia GPU (tested on 10GB VRAM). Less if working with GGML models.
+* Linux / WSL
 * Python 3.8+, including dev packages (python3-dev on Ubuntu)
+* Nvidia CUDA Toolkit - https://developer.nvidia.com/cuda-toolkit
+
 
 
 ## Virtualenv based installation
@@ -116,7 +120,7 @@ python3 cli.py interact llm -f /storage/llm/embeddings -m falcon-7b-instruct -c 
 ```
 
 
-## Example interacting with document database using llama-cpp / GGML model
+### Example interacting with document database using llama-cpp / GGML model
 
 * Currently, GGML models are configured to offload 35 layers to GPU (hard-coded). In the future, there will be an ability to specify it in an external config.
 
