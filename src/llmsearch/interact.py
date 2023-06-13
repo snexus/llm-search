@@ -33,7 +33,8 @@ def print_llm_response(r, prefix: str):
 
 def qa_with_llm(embedding_persist_folder: str, llm, max_context_size: int, prompt, embedding_model_name: str = "all-MiniLM-L6-v2", chain_type = "stuff"):
     store = VectorStoreChroma(persist_folder=embedding_persist_folder, hf_embed_model_name=embedding_model_name)
-    embed_retriever = store.load_retriever(search_type="similarity", search_kwargs={"k": 20})
+    #embed_retriever = store.load_retriever(search_type="similarity", search_kwargs={"k": 10})
+    embed_retriever = store.load_retriever(search_type="mmr", search_kwargs={"k": 10})
     chain = load_qa_chain(llm=llm, chain_type=chain_type, prompt = prompt)
     
 

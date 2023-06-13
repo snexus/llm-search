@@ -2,6 +2,7 @@ import re
 from collections import namedtuple
 from enum import Enum
 from typing import Generator, List
+from loguru import logger
 
 FORMATTING_SEQUENCES = {"*", "**", "***", "_", "__", "~~", "||"}
 CODE_BLOCK_SEQUENCES = {"`", "``", "```"}
@@ -175,11 +176,12 @@ def get_logical_blocks_recursively(
       if len(chunks) > 1:
         break
 
+    prefix = '\n\n'+'#'*(split_candidate_index + add_index+1)+' '
     for chunk in chunks:
         if not chunk.strip():
           continue
         if len(chunk) <= max_chunk_size:
-            all_sections.append(MarkdownChunk(string=chunk, level=split_candidate_index + add_index))
+            all_sections.append(MarkdownChunk(string=prefix + chunk, level=split_candidate_index + add_index))
         else:
             get_logical_blocks_recursively(
                 chunk, max_chunk_size, all_sections, split_candidate_index=split_candidate_index + add_index + 1
@@ -204,11 +206,6 @@ def markdown_splitter(markdown: str, max_chunk_size: int) -> List[str]:
         if i % 2 == 0:  # Every even element (0 indexed) is a non-code
             sections += get_logical_blocks_recursively(chunk, max_chunk_size=max_chunk_size, all_sections=[])
 
-            # headings = re.split(r'\n#\s+', chunk)
-            # sections[-1]+=headings[0] # first split belongs to previous section
-
-            # if len(headings) > 1: # All next splits belong to subsequent sections
-            #     sections += headings[1:]
         else:  # Process the code section
             rows = chunk.split("\n")
             code = rows[1:]
@@ -237,27 +234,52 @@ def markdown_splitter(markdown: str, max_chunk_size: int) -> List[str]:
                 sections.append(MarkdownChunk(string=all_code_str, level=CODE_BLOCK_LEVEL))
                 
     all_out = [s.string.strip() for s in sections if s.string.strip()]
-
+    
+    # current_section = sections[0].string
+    # all_out = [current_section]
+    
+    # if len(sections) <2: 
+    #     return all_out
+    
+    # prev_level = 0
+    
+    # for s in sections[1:]:
+        
+    #     # Skip empty sections
+    #     if not s.string.replace('#','').strip():
+    #         continue
+        
+    #     if len(current_section + s.string) > max_chunk_size or s.level < prev_level:
+    #         all_out.append(current_section)
+    #         current_section = ''
+    #         prev_level = 0
+    #     else:
+    #         current_section += s.string
+    #         prev_level = s.level if s.level != CODE_BLOCK_LEVEL else prev_level
+            
+    for s in all_out:
+        logger.info(f"Chunk length: {len(s)}")
+        #print(len(s))
     return all_out
 
 
-# if __name__ == "__main__":
-#     from pathlib import Path
+if __name__ == "__main__":
+    from pathlib import Path
 
-#     path = Path("sample_data/markdown/apache-spark-programming-dataframes.md")
-#     #path = Path("/home/snexus/Downloads/data-modelling-practices.md")
-#     with open(path, "r") as f:
-#         text = f.read()
+    path = Path("sample_data/markdown/apache-spark-programming-dataframes.md")
+    #path = Path("/home/snexus/Downloads/data-modelling-practices.md")
+    with open(path, "r") as f:
+        text = f.read()
 
-#     print("**************************************************")
-#     # chunks = get_logical_blocks_recursively(text, all_sections = [], max_chunk_size=1024)
-#     chunks = markdown_splitter(markdown=text, max_chunk_size=1024)
-#     print(len(chunks))
+    print("**************************************************")
+    # chunks = get_logical_blocks_recursively(text, all_sections = [], max_chunk_size=1024)
+    chunks = markdown_splitter(markdown=text, max_chunk_size=1024)
+    print(len(chunks))
 
-#     for chunk in chunks:
-#         print("\n\nSTART CHUNK ----------------")
-#         print(chunk)
-#         print("END CHUNK ----------------")
+    for chunk in chunks:
+        print("\n\nSTART CHUNK ----------------")
+        print(chunk)
+        print("END CHUNK ----------------")
 
-#     for chunk in chunks:
-#         print(len(chunk.string))
+    for chunk in chunks:
+        print(len(chunk.string))

@@ -16,10 +16,10 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
     * Databricks Dolly - 3b and 7b variants
     * Mosaic MPT (7b)
     * Falcon (7b)
-    * GPTQ models (AutoGPTQ)
+    * Quantized 4bit GPTQ models (AutoGPTQ)
     * GGML models through LlamaCPP (not for commerical use due to licensing of the base Llama model)
-        * WizardLM 1.0 13B
-        * Nous Hermes 13B - https://huggingface.co/TheBloke/Nous-Hermes-13B-GGML
+        * WizardLM-1.0 (13B)
+        * Nous-Hermes (13B) - https://huggingface.co/TheBloke/Nous-Hermes-13B-GGML
 * Other features
     * CLI
     * Ability to load in 8 bit (quantization) to reduce memory footprint on older hardware.
@@ -70,6 +70,10 @@ docker build -t deepml:latest ./docker
 
 ```bash
 ./run_docker.sh RW_CACHE_FOLDER_NAME
+
+# Install the package in development mode with CUDA BLAS support for LlamaCpp
+cd /shared
+./install.sh
 ```
 
 # Quickstart
