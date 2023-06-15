@@ -112,7 +112,7 @@ def get_llm_model(
             model_name="WizardLM",
             model_path=model_path,
             prompt_template=LLAMA_TEMPLATE,
-            llama_kwargs=dict(n_ctx=1024, max_tokens=512, temperature=0.0, n_gpu_layers=35, n_batch=512),
+            llama_kwargs=dict(n_ctx=1024, max_tokens=512, temperature=0.0, n_gpu_layers=25, n_batch=512),
         )
     elif model == ModelConfig.NOUSHERMES:
         if model_path is None:

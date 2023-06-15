@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from termcolor import cprint
 
-from llmsearch.vector_stores import VectorStoreChroma
+from llmsearch.chroma import VectorStoreChroma
 
 load_dotenv()
 

@@ -47,11 +47,9 @@ python3 -m venv .venv
 # Activate new environment
 source .venv/bin/activate
 
-# For CUDA BLAS support for LlamaCpp, together with other depedendencies
+# Install the dependencies
 ./install.sh
 
-# # Or, Install in development mode
-# pip install -e .
 ```
 
 

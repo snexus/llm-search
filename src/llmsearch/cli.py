@@ -6,7 +6,7 @@ from loguru import logger
 from llmsearch.interact import qa_with_llm
 from llmsearch.llm import get_llm_model
 from llmsearch.llm import ModelConfig
-from llmsearch.vector_stores import VectorStoreChroma
+from llmsearch.chroma import VectorStoreChroma
 
 
 @click.group(name="index")
