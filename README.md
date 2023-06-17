@@ -3,24 +3,24 @@
 
 **WORK IN PROGRESS...**
 
-The goal of this package is to create a convenient experience for LLMs (both OpenAI and locally hosted) to interact with custom documents. 
+The purpose of this package is to create a user-friendly and private question answering system that utilizes a context from local documents. It has the capability to interact with custom Language Models (LLMs), both those hosted by OpenAI or installed locally.
 
 ## Features
 
 * Supported formats
-    * `.md` - splits files on a logical level (headings, subheadings, code blocks, etc..). Currently is more advanced than Langchain's built-in parser.
-* Generates embeddings from folder of documents and stores in a vector database (ChromaDB).
-* Interact with embedded documents using state-of-the-art LLMs, supporting the following models and methods (including locally hosted):
+    * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Currently, this feature is more advanced compared to Langchain's built-in parser.
+* Generates embeddings from a folder of documents and stores them in a vector database (ChromaDB).
+* Allows interaction with embedded documents using cutting-edge LLMs, supporting the following models and methods (including locally hosted):
     * OpenAI (ChatGPT 3.5/4)
-    * HuggingFace models.
-    * GGML models through LlamaCPP (not for commerical use due to licensing of the base Llama model), e.g.
-        * WizardLM-1.0(13B).
-        * Nous-Hermes(13B).
+    * HuggingFace models
+    * GGML models through LlamaCPP (not for commercial use due to licensing restrictions of the base Llama model), for example:
+        * WizardLM-1.0(13B)
+        * Nous-Hermes(13B)
     * AutoGPTQ Models
 * Other features
-    * CLI
-    * Ability to load in 8 bit (quantization) to reduce memory footprint on older hardware.
-    * Ability to limit context window, to adapt to different requirements of llm models.
+    * CLI (Command Line Interface)
+    * Supports arbitrary quantization using AutoGPTQ/GGML or 8-bit quantization via bitsandbytes (https://github.com/TimDettmers/bitsandbytes) to reduce memory usage on older hardware. Quantization methods have been tested, and comfortable loading of 13B models on Nvidia RTX 3060 with 10GB VRAM has been achieved.
+    * Ability to limit the context window to accommodate different requirements of LLM models.
 
 
 ## Prerequisites
