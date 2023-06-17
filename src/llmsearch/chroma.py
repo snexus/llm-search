@@ -10,7 +10,7 @@ from llmsearch.parsers.markdown import markdown_splitter
 
 
 class VectorStoreChroma:
-    def __init__(self, persist_folder: str, hf_embed_model_name: str, chunk_size=1024, chunk_overlap=0):
+    def __init__(self, persist_folder: str,  chunk_size=1024, chunk_overlap=0):
         self._persist_folder = persist_folder
         self._embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-large")
         # InstructorEmbeddingFunction(model_name="hkunlp/instructor-large")

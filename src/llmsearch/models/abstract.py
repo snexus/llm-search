@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import Optional
+
 from langchain import PromptTemplate
 
 
 class AbstractLLMModel(ABC):
     def __init__(
         self,
-        prompt_template: Optional[str] = None,
+        prompt_template: Optional[str] = None
     ) -> None:
         self.prompt_template = prompt_template
 

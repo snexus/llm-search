@@ -7,7 +7,7 @@ from llmsearch.models.config import LlamaModelConfig
 
 
 class LlamaModel(AbstractLLMModel):
-    def __inot__(self, config: LlamaModelConfig):
+    def __init__(self, config: LlamaModelConfig):
         super().__init__(prompt_template=config.prompt_template)
         self.config = config
 
@@ -15,7 +15,7 @@ class LlamaModel(AbstractLLMModel):
     def model(self):
         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
         llm = LlamaCpp(
-            model_path=self.config.model_path, 
-            callback_manager=callback_manager, verbose=True, **self.confg.model_kwargs
+            model_path=str(self.config.model_path), 
+            callback_manager=callback_manager, verbose=True, **self.config.model_kwargs
         )
         return llm
