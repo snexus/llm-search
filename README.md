@@ -12,13 +12,11 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
 * Generates embeddings from folder of documents and stores in a vector database.
 * Interact with embedded documents using state-of-the-art LLMs, supporting the following models and methods (including locally hosted):
     * OpenAI (ChatGPT 3.5/4)
-    * HuggingFace models, e.g.
-        * Falcon7B, Dolly3B/7B
+    * HuggingFace models.
     * GGML models through LlamaCPP (not for commerical use due to licensing of the base Llama model), e.g.
-        * WizardLM-1.0 13B
-        * Nous-Hermes 13B
-    * AutoGPTQ Models, for example
-        * Tulu
+        * WizardLM-1.0(13B).
+        * Nous-Hermes(13B).
+    * AutoGPTQ Models
 * Other features
     * CLI
     * Ability to load in 8 bit (quantization) to reduce memory footprint on older hardware.
@@ -27,8 +25,8 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
 
 ## Prerequisites
 
-* Nvidia GPU (tested on 10GB VRAM). Less if working with GGML models.
-* Linux / WSL
+* Nvidia GPU. Tested loading 13B models on RTX3060 with 10GB VRAM, via GGML.
+* Linux / WSL.
 * Python 3.8+, including dev packages (python3-dev on Ubuntu)
 * Nvidia CUDA Toolkit - https://developer.nvidia.com/cuda-toolkit
 * To interact with OpenAI models, create `.env` in the root directory of the repository, containing OpenAI API key. A template for the `.env` file is provided in `.env_template`
@@ -81,9 +79,11 @@ cd /shared
 
 ## Create a configuration file
 
-Create a configuration .yaml file, check an example template in `sample_templates/config_template.yaml`
 
-Assuming documents are stored in `/storage/docs`, an example confgiration would be the following
+To create a configuration file in YAML format, you can refer to the example template provided in `sample_templates/config_template.yaml`.
+
+For the purpose of this explanation, let's assume that the documents are stored in the `/storage/docs` directory. An example configuration would look like the following:
+
 
 ```yaml
 cache_folder: /storage/llm/cache
@@ -129,33 +129,27 @@ llm:
 
 ## Create embeddings from documents
 
-```bash
-cd src/llmsearch
-python3 cli.py index create -c config.yaml
-```
+To create embeddings from documents, follow these steps:
 
-Scan a folder of markdown files and create an embeddings database.
+1. Open the command line interface.
+2. Navigate to the `src/llmsearch` directory.
+3. Run the following command: `python3 cli.py index create -c config.yaml`
 
-Based on the configuration above, documents in  `/storage/docs` will be scanned (.md files), and an embedding database will be generated in `/storage/embeddings`. In addition,  `/storage/cache` folder will be used for local cache of embedding models, LLM models and tokenizers.
+This command will scan a folder containing markdown files (`/storage/docs`) and generate an embeddings database in the `/storage/embeddings` directory. Additionally, a local cache folder (`/storage/cache`) will be used to store embedding models, LLM models, and tokenizers.
 
+## Interact with the documents using supported LLMs
 
+To interact with the documents using one of the supported LLMs, follow these steps:
 
-## Interact with the documents using one of the supported LLMs
+1. Open the command line interface.
+2. Navigate to the `src/llmsearch` directory.
+3. Run the following command: `python3 cli.py interact llm -c config.yaml`
 
-```bash
-cd src/llmsearch
-python3 cli.py interact llm -c config.yaml
-```
+Based on the example configuration provided in the `.yaml` file, the following actions will take place:
 
-Based on the example `.yaml` configuration above:
-
-* The system will load a quantized GGML model using LlamaCpp framework. The model is stored in `/storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin`. 
-
-* The model will be loaded partially into GPU (30 layers, based on `n_gpu_layers` and partially into CPU (rest of the layers). This parameter can be tweaked to suit limitations of a particular hardware.
-
-* Additional LlamaCpp specific parameters specified in `model_kwargs` from `llm->params` will be passed to the model.
-
-* To system will query the embeddings database using Maximal Marginal Relevance algorithm (`mmr` parameter in `semantic_search`) and provide and the most relevant context from different documents, up to a maximum context size of 2048 (`max_char_size` in `semantic_search`)
-
-* When displaying paths to relevant documents, the system will replace a part of the path `storage/llm/docs/` with `obsidian://open?vault=knowledge-base&file=`, based on `substring_search` and `substring_replace` in `semantic_search->replace_output_path` settings.
+- The system will load a quantized GGML model using the LlamaCpp framework. The model file is located at `/storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin`.
+- The model will be partially loaded into the GPU (30 layers) and partially into the CPU (remaining layers). The `n_gpu_layers` parameter can be adjusted according to the hardware limitations.
+- Additional LlamaCpp specific parameters specified in `model_kwargs` from the `llm->params` section will be passed to the model.
+- The system will query the embeddings database using the Maximal Marginal Relevance algorithm (`mmr` parameter in `semantic_search`). It will provide the most relevant context from different documents, up to a maximum context size of 2048 characters (`max_char_size` in `semantic_search`).
+- When displaying paths to relevant documents, the system will replace the part of the path `/storage/llm/docs/` with `obsidian://open?vault=knowledge-base&file=`. This replacement is based on the settings `substring_search` and `substring_replace` in `semantic_search->replace_output_path`.
 
