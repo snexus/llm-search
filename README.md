@@ -9,17 +9,16 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
 
 * Supported formats
     * `.md` - splits files on a logical level (headings, subheadings, code blocks, etc..). Currently is more advanced than Langchain's built-in parser.
-* Generates embeddings from folder of documents and stores in a vector databases:
-    * ChromaDB
-* Interact with embedding using state-of-the-art LLMs, including local (private):
+* Generates embeddings from folder of documents and stores in a vector database.
+* Interact with embedded documents using state-of-the-art LLMs, supporting the following models and methods (including locally hosted):
     * OpenAI (ChatGPT 3.5/4)
-    * Databricks Dolly - 3b and 7b variants
-    * Mosaic MPT (7b)
-    * Falcon (7b)
-    * Quantized 4bit GPTQ models (AutoGPTQ)
-    * GGML models through LlamaCPP (not for commerical use due to licensing of the base Llama model)
-        * WizardLM-1.0 (13B)
-        * Nous-Hermes (13B) - https://huggingface.co/TheBloke/Nous-Hermes-13B-GGML
+    * HuggingFace models, e.g.
+        * Falcon7B, Dolly3B/7B
+    * GGML models through LlamaCPP (not for commerical use due to licensing of the base Llama model), e.g.
+        * WizardLM-1.0 13B
+        * Nous-Hermes 13B
+    * AutoGPTQ Models, for example
+        * Tulu
 * Other features
     * CLI
     * Ability to load in 8 bit (quantization) to reduce memory footprint on older hardware.
@@ -32,7 +31,7 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
 * Linux / WSL
 * Python 3.8+, including dev packages (python3-dev on Ubuntu)
 * Nvidia CUDA Toolkit - https://developer.nvidia.com/cuda-toolkit
-
+* To interact with OpenAI models, create `.env` in the root directory of the repository, containing OpenAI API key. A template for the `.env` file is provided in `.env_template`
 
 
 ## Virtualenv based installation
@@ -47,11 +46,9 @@ python3 -m venv .venv
 # Activate new environment
 source .venv/bin/activate
 
-# For CUDA BLAS support for LlamaCpp, together with other depedendencies
+# Install the dependencies
 ./install.sh
 
-# # Or, Install in development mode
-# pip install -e .
 ```
 
 
@@ -82,48 +79,83 @@ cd /shared
 
 # Quickstart
 
+## Create a configuration file
+
+Create a configuration .yaml file, check an example template in `sample_templates/config_template.yaml`
+
+Assuming documents are stored in `/storage/docs`, an example confgiration would be the following
+
+```yaml
+cache_folder: /storage/llm/cache
+
+embeddings:
+  doc_path: /storage/docs
+  embeddings_path: /storage/embeddings
+  scan_extension: md
+
+semantic_search:
+  search_type: mmr
+  
+  replace_output_path:
+    substring_search: storage/docs
+    substring_replace: obsidian://open?vault=knowledge-base&file=
+  max_char_size: 2048
+
+
+llm:
+  type: llamacpp
+  params:
+    model_path: /storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin
+    prompt_template: |
+          ### Instruction:
+          Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
+
+          ### Context: 
+          ---------------
+          {context}
+          ---------------
+
+          ### Question: {question}
+          ### Response:
+    model_kwargs:
+      n_ctx: 1024
+      max_tokens: 512
+      temperature: 0.0
+      n_gpu_layers: 30
+      n_batch: 512
+```
+
+
+
 ## Create embeddings from documents
-
-Scan a folder of markdown files and create an embeddings database.
-
-Assuming documents are stored in `/storage/llm/docs`, the following command will create an embedding database in `/storage/llm/embeddings`. In addition,  `/storage/llm/cache` folder will be used for local cache of embedding models, LLM models and tokenizers.
 
 ```bash
 cd src/llmsearch
-python3 cli.py index create -d /storage/llm/docs -o /storage/llm/embeddings --cache-folder /storage/llm/cache
+python3 cli.py index create -c config.yaml
 ```
+
+Scan a folder of markdown files and create an embeddings database.
+
+Based on the configuration above, documents in  `/storage/docs` will be scanned (.md files), and an embedding database will be generated in `/storage/embeddings`. In addition,  `/storage/cache` folder will be used for local cache of embedding models, LLM models and tokenizers.
+
+
 
 ## Interact with the documents using one of the supported LLMs
 
-### Help on available options (including list of inegrated LLMs)
-
 ```bash
-python3 cli.py index --help
-python3 cli.py interact llm --help
+cd src/llmsearch
+python3 cli.py interact llm -c config.yaml
 ```
 
-### Example interacting with document database using an OpenAI model
+Based on the example `.yaml` configuration above:
 
-* To interact with OpenAI models, create `.env` in the root directory of the repository, containing OpenAI API key. A template for the `.env` file is provided in `.env_template`
+* The system will load a quantized GGML model using LlamaCpp framework. The model is stored in `/storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin`. 
 
-* A code snippet below launches an OpenAI model and limits the context window to 2048 characters. The system will query and provide the most relevant context from the embeddings database, up to a maximum context size.
-```bash
-python3 cli.py interact llm -f /storage/llm/embeddings -m openai-gpt35 -c /storage/llm/cache  -cs 2048
-```
+* The model will be loaded partially into GPU (30 layers, based on `n_gpu_layers` and partially into CPU (rest of the layers). This parameter can be tweaked to suit limitations of a particular hardware.
 
-### Example interacting with document database using local (HuggingFace)
+* Additional LlamaCpp specific parameters specified in `model_kwargs` from `llm->params` will be passed to the model.
 
-* `-q8 1` flag indicates to load the model in 8 bit (quantization). Useful for limited GPU memory.
+* To system will query the embeddings database using Maximal Marginal Relevance algorithm (`mmr` parameter in `semantic_search`) and provide and the most relevant context from different documents, up to a maximum context size of 2048 (`max_char_size` in `semantic_search`)
 
-```bash
-python3 cli.py interact llm -f /storage/llm/embeddings -m falcon-7b-instruct -c /storage/llm/cache  -q8 1 -cs 2048
-```
+* When displaying paths to relevant documents, the system will replace a part of the path `storage/llm/docs/` with `obsidian://open?vault=knowledge-base&file=`, based on `substring_search` and `substring_replace` in `semantic_search->replace_output_path` settings.
 
-
-### Example interacting with document database using llama-cpp / GGML model
-
-* Currently, GGML models are configured to offload 35 layers to GPU (hard-coded). In the future, there will be an ability to specify it in an external config.
-
-```bash
-python3 cli.py interact llm -f /storage/llm/embeddings -m wizardlm-1.0-ggml -c /storage/llm/cache  -cs 2048 --model-path /storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin
-```

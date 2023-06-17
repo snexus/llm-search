@@ -1,11 +1,7 @@
-import os
 from pathlib import Path
 import shutil
 
-
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import Language, RecursiveCharacterTextSplitter
+from langchain.embeddings import HuggingFaceInstructEmbeddings
 from langchain.vectorstores import Chroma
 from loguru import logger
 
@@ -14,31 +10,24 @@ from llmsearch.parsers.markdown import markdown_splitter
 
 
 class VectorStoreChroma:
-    def __init__(
-        self, persist_folder: str, hf_embed_model_name: str, chunk_size=1024, chunk_overlap=0
-    ):
+    def __init__(self, persist_folder: str,  chunk_size=1024, chunk_overlap=0):
         self._persist_folder = persist_folder
-        self._embeddings = HuggingFaceEmbeddings(model_name=hf_embed_model_name)
-        # self._splitter_conf = {
-        #     "md": RecursiveCharacterTextSplitter.from_language(
-        #         language=Language.MARKDOWN, chunk_size=chunk_size, chunk_overlap=chunk_overlap
-        #     )
-        # }
-        
-        self._splitter_conf = {
-            "md": markdown_splitter
-        }
+        self._embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-large")
+        # InstructorEmbeddingFunction(model_name="hkunlp/instructor-large")
+        # HuggingFaceEmbeddings(model_name=hf_embed_model_name)
+        self._splitter_conf = {"md": markdown_splitter}
         self.chunk_size = chunk_size
-        
 
-    def create_index_from_folder(self, folder_path: str, extension="md", clear_persist_folder = True):
+    def create_index_from_folder(self, folder_path: str, extension="md", clear_persist_folder=True):
         p = Path((folder_path))
         paths = list(p.glob(f"**/*.{extension}*"))
 
         splitter = self._splitter_conf[extension]
-        #docs = get_documents_from_langchain_splitter(paths, splitter=splitter)
-        docs = get_documents_from_custom_splitter(document_paths=paths, splitter_func=splitter, max_size=self.chunk_size)
-        
+        # docs = get_documents_from_langchain_splitter(paths, splitter=splitter)
+        docs = get_documents_from_custom_splitter(
+            document_paths=paths, splitter_func=splitter, max_size=self.chunk_size
+        )
+
         if clear_persist_folder:
             pf = Path(self._persist_folder)
             if pf.exists() and pf.is_dir():
@@ -54,6 +43,6 @@ class VectorStoreChroma:
 
     def load_retriever(self, **kwargs):
         vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
-        retriever =  vectordb.as_retriever(**kwargs)
+        retriever = vectordb.as_retriever(**kwargs)
         vectordb = None
         return retriever
