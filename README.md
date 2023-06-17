@@ -9,7 +9,7 @@ The goal of this package is to create a convenient experience for LLMs (both Ope
 
 * Supported formats
     * `.md` - splits files on a logical level (headings, subheadings, code blocks, etc..). Currently is more advanced than Langchain's built-in parser.
-* Generates embeddings from folder of documents and stores in a vector database.
+* Generates embeddings from folder of documents and stores in a vector database (ChromaDB).
 * Interact with embedded documents using state-of-the-art LLMs, supporting the following models and methods (including locally hosted):
     * OpenAI (ChatGPT 3.5/4)
     * HuggingFace models.
@@ -127,7 +127,7 @@ llm:
 
 
 
-## Create embeddings from documents
+## Creating Document Embeddings
 
 To create embeddings from documents, follow these steps:
 
@@ -135,7 +135,9 @@ To create embeddings from documents, follow these steps:
 2. Navigate to the `src/llmsearch` directory.
 3. Run the following command: `python3 cli.py index create -c config.yaml`
 
-This command will scan a folder containing markdown files (`/storage/docs`) and generate an embeddings database in the `/storage/embeddings` directory. Additionally, a local cache folder (`/storage/cache`) will be used to store embedding models, LLM models, and tokenizers.
+Executing this command will scan a folder containing markdown files (`/storage/docs`) and generate an embeddings database in the `/storage/embeddings` directory. Additionally, a local cache folder (`/storage/cache`) will be utilized to store embedding models, LLM models, and tokenizers.
+
+The default vector database is ChromaDB, and the embeddings are generated using the `instruct-xlarge` model, which is known for its high performance. You can find more information about this model at [https://huggingface.co/spaces/mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard).
 
 ## Interact with the documents using supported LLMs
 
