@@ -3,7 +3,7 @@
 
 **WORK IN PROGRESS...**
 
-The purpose of this package is to create a user-friendly and private question answering system that utilizes a context from local documents. It has the capability to interact with custom Language Models (LLMs), both those hosted by OpenAI or installed locally.
+The purpose of this package is to provide a convenient (and private) question answering system that allows interaction with local documents. It is designed to work seamlessly with custom Large Language Models (LLMs), whether they are hosted by OpenAI or installed locally.
 
 ## Features
 
