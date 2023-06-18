@@ -10,7 +10,10 @@ semantic_search:
   
   replace_output_path:
     substring_search: storage/llm/docs/
-    substring_replace: obsidian://open?vault=knowledge-base&file=
+    substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
+  
+  obsidian_advanced_uri:
+    append_heading_template: "&heading={heading}"
   
   max_char_size: 2048
 
@@ -23,7 +26,7 @@ llm:
           ### Instruction:
           Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
 
-          ### Context: 
+          ### Context:
           ---------------
           {context}
           ---------------
@@ -39,7 +42,7 @@ llm:
 
 
 
-# An attempt to load 33B model on RTX 3060 with 10GB VRAM
+### An attempt to load 33B model on RTX 3060 with 10GB VRAM
 # llm:
 #   type: llamacpp
 #   params:
@@ -47,12 +50,12 @@ llm:
 #     prompt_template: |
 #           ### Instruction:
 #           Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
-
-#           ### Context: 
+#
+#           ### Context:
 #           ---------------
 #           {context}
 #           ---------------
-
+#
 #           ### Question: {question}
 #           ### Response:
 #     model_kwargs:

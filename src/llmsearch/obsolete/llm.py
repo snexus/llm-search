@@ -29,7 +29,7 @@ from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 
-from llmsearch.prompts import (
+from llmsearch.obsolete.prompts import (
     DOLLY_PROMPT_TEMPLATE,
     OPENAI_PROMPT_TEMPLATE,
     REDPAJAMA_TEMPLATE,
