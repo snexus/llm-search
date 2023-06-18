@@ -74,8 +74,8 @@ def get_documents_from_custom_splitter(document_paths: List[Path], splitter_func
         with open(path, "r") as f:
             text = f.read()
             
-        docs_str = splitter_func(text, max_size)
-        docs = [Document(page_content=d, metadata={"source": str(path)}) for d in docs_str]
+        docs_data = splitter_func(text, max_size)                
+        docs = [Document(page_content=d['text'], metadata={**d['metadata'], **{"source": str(path)}}) for d in docs_data]
         all_docs.extend(docs)
         
     logger.info(f"Got {len(all_docs)} nodes.")

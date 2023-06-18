@@ -3,6 +3,7 @@ from collections import namedtuple
 from enum import Enum
 from typing import Generator, List
 from loguru import logger
+import urllib
 
 FORMATTING_SEQUENCES = {"*", "**", "***", "_", "__", "~~", "||"}
 CODE_BLOCK_SEQUENCES = {"`", "``", "```"}
@@ -151,7 +152,7 @@ def phsyical_split(markdown: str, max_chunk_size: int) -> Generator[str, None, N
 
 def get_logical_blocks_recursively(
     markdown: str, max_chunk_size: int, all_sections: list, split_candidate_index=0
-) -> List[str]:
+) -> List[MarkdownChunk]:
     """Recursively scans blocks, splittling the larger blocks using next available paragraph size
 
     Args:
@@ -232,8 +233,24 @@ def markdown_splitter(markdown: str, max_chunk_size: int) -> List[str]:
             # Otherwise, add as a single chunk
             else:
                 sections.append(MarkdownChunk(string=all_code_str, level=CODE_BLOCK_LEVEL))
-                
-    all_out = [s.string.strip() for s in sections if s.string.strip()]
+    
+    all_out = []
+    for s in sections:
+        stripped_string = s.string.strip()
+        metadata = {}
+        if len(stripped_string) > 0:
+            
+            if stripped_string.startswith('#'): # heading detected
+                heading =  stripped_string.split('\n')[0].replace('#','').strip()
+                stripped_heading =  heading.replace('#','').replace(' ', '').strip()
+                if not stripped_heading:
+                    heading = ''
+                metadata['heading'] = urllib.parse.quote(heading) # isolate the heading
+            else:
+                metadata['heading']=''
+            all_out.append({'text': stripped_string, 'metadata': metadata})
+       
+    # all_out = [s.string.strip() for s in sections if s.string.strip()]
     
     # current_section = sections[0].string
     # all_out = [current_section]
@@ -258,7 +275,7 @@ def markdown_splitter(markdown: str, max_chunk_size: int) -> List[str]:
     #         prev_level = s.level if s.level != CODE_BLOCK_LEVEL else prev_level
             
     for s in all_out:
-        logger.info(f"Chunk length: {len(s)}")
+        logger.info(f"Chunk length: {len(s['text'])}")
         #print(len(s))
     return all_out
 

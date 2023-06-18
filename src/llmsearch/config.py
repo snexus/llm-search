@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 import yaml
 from pydantic import BaseModel, DirectoryPath, validator, Extra
@@ -29,15 +29,19 @@ class EmbeddingsConfig(BaseModel):
     class Config:
         extra = Extra.forbid
 
+class ObsidianAdvancedURI(BaseModel):
+    append_heading_template: str
 
 class ReplaceOutputPath(BaseModel):
     substring_search: str
     substring_replace: str
 
 
+
 class SemanticSearchConfig(BaseModel):
-    search_type: Literal["mmr", "nearest_search"]
+    search_type: Literal["mmr", "similarity"]
     replace_output_path: ReplaceOutputPath
+    obsidian_advanced_uri: Optional[ObsidianAdvancedURI] = None
     max_char_size: int = 2048
 
     class Config:
@@ -70,6 +74,16 @@ class Config(BaseModel):
     embeddings: EmbeddingsConfig
     semantic_search: SemanticSearchConfig
     llm: LLMConfig
+
+
+class SemanticSearchOutput(BaseModel):
+    chunk_link: str
+    chunk_text: str
+
+class OutputModel(BaseModel):
+    response: str
+    semantic_search: List[SemanticSearchOutput] = []
+    
 
 
 def get_config(path: Union[str, Path]) -> Config:

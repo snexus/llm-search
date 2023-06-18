@@ -70,17 +70,19 @@ def set_cache_folder(cache_folder_root: str):
 def launch_qa_with_llm(config_file: str):
     config = get_config(config_file)
     set_cache_folder(str(config.cache_folder))
+    
     llm = get_llm(config.llm.params)  # type: ignore
+    qa_with_llm(llm = llm.model, prompt=llm.prompt, config = config)
 
-    qa_with_llm(
-        embedding_persist_folder=str(config.embeddings.embeddings_path),
-        llm=llm.model,
-        prompt=llm.prompt,
-        max_context_size=config.semantic_search.max_char_size,
-        substring_search= config.semantic_search.replace_output_path.substring_search,
-        substring_replace= config.semantic_search.replace_output_path.substring_replace
+    # qa_with_llm(
+    #     embedding_persist_folder=str(config.embeddings.embeddings_path),
+    #     llm=llm.model,
+    #     prompt=llm.prompt,
+    #     max_context_size=config.semantic_search.max_char_size,
+    #     substring_search= config.semantic_search.replace_output_path.substring_search,
+    #     substring_replace= config.semantic_search.replace_output_path.substring_replace
      
-    )
+    # )
 
 
 index_group.add_command(generate_index)
