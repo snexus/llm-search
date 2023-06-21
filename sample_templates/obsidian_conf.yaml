@@ -7,17 +7,34 @@ embeddings:
 
 semantic_search:
   search_type: mmr
-  
+
   replace_output_path:
     substring_search: storage/llm/docs/
     substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
-  
+
   obsidian_advanced_uri:
     append_heading_template: "&heading={heading}"
-  
+
   max_char_size: 2048
 
 
+# llm:
+#   type: openai
+#   params:
+#     prompt_template: |
+#         Context information is provided below. Given the context information and not prior knowledge, answer the question.
+#
+#         ### Context:
+#         ---------------------
+#         {context}
+#         ---------------------
+#
+#         ### Question: {question}
+#     model_kwargs:
+#       temperature: 0.7
+#       model_name: gpt-3.5-turbo-0613
+
+#
 llm:
   type: llamacpp
   params:
@@ -36,9 +53,12 @@ llm:
     model_kwargs:
       n_ctx: 1024
       max_tokens: 512
-      temperature: 0.0
       n_gpu_layers: 30
       n_batch: 512
+      top_p: 0.1
+      top_k: 40
+      temperature: 0.7
+
 
 
 
