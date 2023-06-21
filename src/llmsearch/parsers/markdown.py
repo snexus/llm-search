@@ -190,7 +190,7 @@ def get_logical_blocks_recursively(
     return all_sections
 
 
-def markdown_splitter(markdown: str, max_chunk_size: int) -> List[str]:
+def markdown_splitter(markdown: str, max_chunk_size: int) -> List[dict]:
     """Logical split based on top-level headings.
 
     Args:
@@ -198,6 +198,9 @@ def markdown_splitter(markdown: str, max_chunk_size: int) -> List[str]:
         max_chunk_size (int): Maximum chunk size
     """
 
+    if len(markdown) < max_chunk_size:
+        return [{'text': markdown, 'metadata': {'heading':''}}]
+    
     sections = [MarkdownChunk(string="", level=0)]
 
     # Split by code and non-code
