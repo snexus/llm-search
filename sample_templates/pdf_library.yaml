@@ -1,22 +1,24 @@
 cache_folder: /storage/llm/cache
 
 embeddings:
-  doc_path: /storage/llm/docs
-  embeddings_path: /storage/llm/embeddings
+  doc_path: /storage/llm/pdf_docs
+  embeddings_path: /storage/llm/embeddings_library
+  chunk_size: 1024
   scan_extensions: 
+    # - epub
+    - pdf
     - md
 
 semantic_search:
-  search_type: similarity # mmr
-
+  search_type: mmr # similarity
   replace_output_path:
-    substring_search: storage/llm/docs/
-    substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
+    substring_search: "/storage"
+    substring_replace: "file:///storage"
 
   append_suffix:
-    append_template: "&heading={heading}"
+    append_template: "#page={page}"
 
-  max_char_size: 2048
+  max_char_size: 4096
 
 
 llm:
@@ -52,7 +54,7 @@ llm:
 #           ### Question: {question}
 #           ### Response:
 #     model_init_params:
-#       n_ctx: 1024
+#       n_ctx: 2048
 #       n_batch: 512
 #       n_gpu_layers: 30
 
@@ -61,7 +63,7 @@ llm:
 #       top_p: 0.1
 #       top_k: 40
 #       temperature: 0.7
-#       mirostat_mode: 1
+#       #mirostat_mode: 1
 
 
 

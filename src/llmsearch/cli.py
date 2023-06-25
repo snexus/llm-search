@@ -38,7 +38,9 @@ def generate_index(config_file: str):
     set_cache_folder(str(config.cache_folder))
     vs = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path))
     vs.create_index_from_folder(
-        folder_path=str(config.embeddings.doc_path), extension=config.embeddings.scan_extension
+        folder_path=str(config.embeddings.doc_path), 
+        chunk_size=config.embeddings.chunk_size,
+        extensions=config.embeddings.scan_extensions
     )
 
 
@@ -73,16 +75,6 @@ def launch_qa_with_llm(config_file: str):
     
     llm = get_llm(config.llm.params)  # type: ignore
     qa_with_llm(llm = llm.model, prompt=llm.prompt, config = config)
-
-    # qa_with_llm(
-    #     embedding_persist_folder=str(config.embeddings.embeddings_path),
-    #     llm=llm.model,
-    #     prompt=llm.prompt,
-    #     max_context_size=config.semantic_search.max_char_size,
-    #     substring_search= config.semantic_search.replace_output_path.substring_search,
-    #     substring_replace= config.semantic_search.replace_output_path.substring_replace
-     
-    # )
 
 
 index_group.add_command(generate_index)

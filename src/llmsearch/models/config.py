@@ -6,6 +6,7 @@ from typing import Optional, Union
 class LlamaModelConfig(BaseModel):
     model_path: Union[Path, str]
     prompt_template: str
+    model_init_params: dict = {}
     model_kwargs: dict = {}
 
 

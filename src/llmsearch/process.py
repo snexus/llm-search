@@ -1,4 +1,4 @@
-from llmsearch.config import SemanticSearchConfig, ObsidianAdvancedURI, OutputModel, SemanticSearchOutput
+from llmsearch.config import SemanticSearchConfig, ObsidianAdvancedURI, AppendSuffix, OutputModel, SemanticSearchOutput
 
 
 def get_and_parse_response(prompt: str, chain, embed_retriever, config: SemanticSearchConfig) -> OutputModel:
@@ -22,9 +22,12 @@ def get_and_parse_response(prompt: str, chain, embed_retriever, config: Semantic
 
         if config.obsidian_advanced_uri is not None:
             doc_name = process_obsidian_uri(doc_name, config.obsidian_advanced_uri, doc.metadata)
+            
+        if config.append_suffix is not None:
+            doc_name = process_append_suffix(doc_name, config.append_suffix, doc.metadata)
         
         text = doc.page_content
-        out.semantic_search.append(SemanticSearchOutput(chunk_link=doc_name, chunk_text=text))
+        out.semantic_search.append(SemanticSearchOutput(chunk_link=doc_name, metadata = doc.metadata, chunk_text=text))
     return out
 
 def process_obsidian_uri(doc_name: str, adv_uri_config: ObsidianAdvancedURI, metadata: dict) -> str:
@@ -41,5 +44,8 @@ def process_obsidian_uri(doc_name: str, adv_uri_config: ObsidianAdvancedURI, met
     print(metadata)
     append_str = adv_uri_config.append_heading_template.format(heading = metadata['heading'])
     return doc_name + append_str
+
+def process_append_suffix(doc_name, suffix: AppendSuffix, metadata: dict):
+    return doc_name + suffix.append_template.format(**metadata)
     
     

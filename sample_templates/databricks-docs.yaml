@@ -1,0 +1,38 @@
+cache_folder: /storage/llm/cache
+
+embeddings:
+  doc_path: /storage/llm/databricks-docs
+  embeddings_path: /storage/llm/embeddings_databricks
+  chunk_size: 1024
+  scan_extensions: 
+    - pdf
+
+semantic_search:
+  search_type: mmr # similarity
+  replace_output_path:
+    substring_search: "/storage"
+    substring_replace: "file:///storage"
+
+  append_suffix:
+    append_template: "#page={page}"
+
+  max_char_size: 4096
+
+
+llm:
+  type: openai
+  params:
+    prompt_template: |
+        Context information is provided below. Given the context information and not prior knowledge, provide detailed answer to the question.
+
+        ### Context:
+        ---------------------
+        {context}
+        ---------------------
+
+        ### Question: {question}
+    model_kwargs:
+      temperature: 0.7
+      model_name: gpt-3.5-turbo-0613
+
+
