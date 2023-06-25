@@ -4,14 +4,14 @@ llm:
   type: openai
   params:
     prompt_template: |
-        Context information is provided below. Given the context information and not prior knowledge, answer the question. If answer isn't in the context, say that you don't know, don't try to make up an answer.
+        Context information is provided below. Given the context information and not prior knowledge, provide detailed answer to the question.
 
-        ### Context: 
+        ### Context:
         ---------------------
         {context}
         ---------------------
 
         ### Question: {question}
     model_kwargs:
-      temperature: 0.0
-      model_name: gpt-3.5-turbo
+      temperature: 0.7
+      model_name: gpt-3.5-turbo-0613

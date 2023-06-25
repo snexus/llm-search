@@ -1,7 +1,8 @@
 import re
 from collections import namedtuple
 from enum import Enum
-from typing import Generator, List
+from pathlib import Path
+from typing import Generator, List, Union
 from loguru import logger
 import urllib
 
@@ -172,6 +173,8 @@ def get_logical_blocks_recursively(
     # else:
     #     split_candidate = BLOCK_SPLIT_CANDIDATES[split_candidate_index]
 
+    chunks = []
+    add_index = 0
     for add_index, split_candidate in enumerate(BLOCK_SPLIT_CANDIDATES[split_candidate_index:]):
       chunks = re.split(split_candidate, markdown)
       if len(chunks) > 1:
@@ -190,13 +193,16 @@ def get_logical_blocks_recursively(
     return all_sections
 
 
-def markdown_splitter(markdown: str, max_chunk_size: int) -> List[dict]:
+def markdown_splitter(path: Union[str, Path], max_chunk_size: int) -> List[dict]:
     """Logical split based on top-level headings.
 
     Args:
         markdown (str): markdown string
         max_chunk_size (int): Maximum chunk size
     """
+    
+    with open(path, "r") as f:
+        markdown = f.read()
 
     if len(markdown) < max_chunk_size:
         return [{'text': markdown, 'metadata': {'heading':''}}]
@@ -287,13 +293,10 @@ if __name__ == "__main__":
     from pathlib import Path
 
     path = Path("sample_data/markdown/apache-spark-programming-dataframes.md")
-    #path = Path("/home/snexus/Downloads/data-modelling-practices.md")
-    with open(path, "r") as f:
-        text = f.read()
 
     print("**************************************************")
     # chunks = get_logical_blocks_recursively(text, all_sections = [], max_chunk_size=1024)
-    chunks = markdown_splitter(markdown=text, max_chunk_size=1024)
+    chunks = markdown_splitter(path=path, max_chunk_size=1024)
     print(len(chunks))
 
     for chunk in chunks:

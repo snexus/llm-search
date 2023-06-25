@@ -1,0 +1,67 @@
+cache_folder: ## specify a cache folder for embeddings models, huggingface and sentence transformers
+
+embeddings:
+  doc_path: ## specify the docs folder
+  embeddings_path: ## specify a folder where embeddings will be saves
+  chunk_size: ## specifies chunk sizes to split the documents
+  scan_extensions: # specifies files extensions to scan recursively in `doc_path`. Currently supproted - pdf, md, html, epub
+    - pdf
+    - md
+
+semantic_search:
+  search_type: mmr # mmr or similarity
+  replace_output_path:
+    substring_search: ## Specifies substring to replace  in the output path of the document
+    substring_replace: ## Replaces with this string
+
+  append_suffix: # Specifies additional template to append to an output path, useful for deep linking
+    append_template: "#page={page}" # For example will append a page from metadata of the document parser
+
+  max_char_size: 4096 # Will ensure that context provided to LLM is less than max_char_size. Useful for locally hosted models and limited hardware
+
+############ An example how to use OpenAI model, requires .env file with the OpenAI key
+llm:
+  type: openai
+  params:
+    prompt_template: |
+        Context information is provided below. Given the context information and not prior knowledge, provide detailed answer to the question.
+
+        ### Context:
+        ---------------------
+        {context}
+        ---------------------
+
+        ### Question: {question}
+    model_kwargs:
+      temperature: 0.7
+      model_name: gpt-3.5-turbo-0613
+
+############ An example how to specify a local model, supported types - llamacpp, huggingface, auto-gptq
+# llm:
+#   type: llamacpp
+#   params:
+#     model_path: /storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin
+#     prompt_template: |
+#           ### Instruction:
+#           Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
+
+#           ### Context:
+#           ---------------
+#           {context}
+#           ---------------
+
+#           ### Question: {question}
+#           ### Response:
+#     model_init_params:
+#       n_ctx: 2048
+#       n_batch: 512
+#       n_gpu_layers: 30
+
+#     model_kwargs:
+#       max_tokens: 512
+#       top_p: 0.1
+#       top_k: 40
+#       temperature: 0.7
+#       #mirostat_mode: 1
+
+

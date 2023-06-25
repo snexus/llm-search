@@ -3,11 +3,13 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 import yaml
-from pydantic import BaseModel, DirectoryPath, validator, Extra
-from pydantic.typing import Literal  # type: ignore
 from loguru import logger
+from pydantic import BaseModel, DirectoryPath, Extra, validator
+from pydantic.typing import Literal  # type: ignore
 
-from llmsearch.models.config import AutoGPTQModelConfig, HuggingFaceModelConfig, LlamaModelConfig, OpenAIModelConfig
+from llmsearch.models.config import (AutoGPTQModelConfig,
+                                     HuggingFaceModelConfig, LlamaModelConfig,
+                                     OpenAIModelConfig)
 
 models_config = {
     "llamacpp": LlamaModelConfig,
@@ -19,18 +21,25 @@ models_config = {
 
 class DocumentExtension(str, Enum):
     md = "md"
+    pdf = "pdf"
+    html = "html"
+    epub = "epub"
 
 
 class EmbeddingsConfig(BaseModel):
     doc_path: DirectoryPath
     embeddings_path: DirectoryPath
-    scan_extension: DocumentExtension
+    scan_extensions: List[DocumentExtension]
+    chunk_size: int = 1024
 
     class Config:
         extra = Extra.forbid
 
 class ObsidianAdvancedURI(BaseModel):
     append_heading_template: str
+    
+class AppendSuffix(BaseModel):
+    append_template: str
 
 class ReplaceOutputPath(BaseModel):
     substring_search: str
@@ -42,6 +51,7 @@ class SemanticSearchConfig(BaseModel):
     search_type: Literal["mmr", "similarity"]
     replace_output_path: ReplaceOutputPath
     obsidian_advanced_uri: Optional[ObsidianAdvancedURI] = None
+    append_suffix: Optional[AppendSuffix] = None
     max_char_size: int = 2048
 
     class Config:
@@ -51,7 +61,7 @@ class SemanticSearchConfig(BaseModel):
 
 class LLMConfig(BaseModel):
     type: str
-    params: dict  # Union[LlamaModelConfig, OpenAIModelConfig, HuggingFaceModelConfig, AutoGPTQModelConfig]
+    params: dict
 
     @validator("params")
     def validate_params(cls, value, values):
@@ -79,6 +89,7 @@ class Config(BaseModel):
 class SemanticSearchOutput(BaseModel):
     chunk_link: str
     chunk_text: str
+    metadata: dict
 
 class OutputModel(BaseModel):
     response: str

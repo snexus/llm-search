@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Callable, List
+import urllib
 
 from llama_index.data_structs.node import Node, DocumentRelationship
 from pydantic import BaseModel, Field
@@ -71,10 +72,11 @@ def get_documents_from_custom_splitter(document_paths: List[Path], splitter_func
 
     for path in document_paths:
         logger.info(f"Processing path using custom splitter: {path}")
-        with open(path, "r") as f:
-            text = f.read()
             
-        docs_data = splitter_func(text, max_size)                
+        # docs_data = splitter_func(text, max_size)                
+        docs_data = splitter_func(path, max_size)
+        path = urllib.parse.quote(str(path))
+        logger.info(path)
         docs = [Document(page_content=d['text'], metadata={**d['metadata'], **{"source": str(path)}}) for d in docs_data]
         all_docs.extend(docs)
         

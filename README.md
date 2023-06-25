@@ -3,33 +3,34 @@
 
 **WORK IN PROGRESS...**
 
-The purpose of this package is to provide a convenient (and private) question answering system that allows interaction with local documents. It is designed to work seamlessly with custom Large Language Models (LLMs), whether they are hosted by OpenAI or installed locally.
+The purpose of this package is to provide a convenient (and private) question answering system that allows interaction with local documents. It is designed to work seamlessly with custom Large Language Models (LLMs), both OpenAI or installed locally.
 
 ## Features
 
 * Supported formats
-    * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Currently, this feature is more advanced compared to Langchain's built-in parser.
+    * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. 
+    Currently, this feature is more advanced compared to Langchain's built-in parser.
+    * `.pdf`, `.html`, `.epub` - supported through `Unstructured` pre-processor - https://unstructured-io.github.io/unstructured/
 * Generates embeddings from a folder of documents and stores them in a vector database (ChromaDB).
 * Allows interaction with embedded documents using cutting-edge LLMs, supporting the following models and methods (including locally hosted):
     * OpenAI (ChatGPT 3.5/4)
     * HuggingFace models
-    * GGML models through LlamaCPP (not for commercial use due to licensing restrictions of the base Llama model), for example:
-        * WizardLM-1.0(13B)
-        * Nous-Hermes(13B)
+    * GGML models through LlamaCpp (not for commercial use due to licensing restrictions of the base Llama model).
     * AutoGPTQ Models
 * Other features
     * CLI (Command Line Interface)
-    * Supports arbitrary quantization using AutoGPTQ/GGML or 8-bit quantization via bitsandbytes (https://github.com/TimDettmers/bitsandbytes) to reduce memory usage on older hardware. Quantization methods have been tested, and comfortable loading of 13B models on Nvidia RTX 3060 with 10GB VRAM has been achieved.
+    * Supports quantized models through AutoGPTQ/GGML or 8-bit quantization via bitsandbytes (https://github.com/TimDettmers/bitsandbytes) to reduce memory usage on older hardware. Quantization methods have been tested, and comfortable loading of 13B models on Nvidia RTX 3060 with 10GB VRAM has been achieved.
     * Ability to limit the context window to accommodate different requirements of LLM models.
 
 
 ## Prerequisites
 
-* Nvidia GPU. Tested loading 13B models on RTX3060 with 10GB VRAM, via GGML.
-* Linux / WSL.
-* Python 3.8+, including dev packages (python3-dev on Ubuntu)
-* Nvidia CUDA Toolkit - https://developer.nvidia.com/cuda-toolkit
+* Tested on Ubuntu 22.04. Potentially will work with WSL.
+* Nvidia GPU is required for embeddings generation and usage of locally hosted models.
+* Python 3.8+, including dev packages (`python3-dev` on Ubuntu)
+* Nvidia CUDA Toolkit (v11.7 as a minimum) - https://developer.nvidia.com/cuda-toolkit
 * To interact with OpenAI models, create `.env` in the root directory of the repository, containing OpenAI API key. A template for the `.env` file is provided in `.env_template`
+* For parsing `.epub` documents, Pandoc is required - https://pandoc.org/installing.html
 
 
 ## Virtualenv based installation
@@ -48,7 +49,6 @@ source .venv/bin/activate
 ./install.sh
 
 ```
-
 
 ## Docker based installation
 
@@ -82,23 +82,30 @@ cd /shared
 
 To create a configuration file in YAML format, you can refer to the example template provided in `sample_templates/config_template.yaml`.
 
-For the purpose of this explanation, let's assume that the documents are stored in the `/storage/docs` directory. An example configuration would look like the following:
+For the purpose of this explanation, let's assume that the documents are stored in the `/storage/llm/docs` directory. The following configuration file specifies how to load one of the supported locally hosted models, downloaded from Huggingface - https://huggingface.co/TheBloke/wizardLM-13B-1.0-GGML/resolve/main/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin
 
+As an alternative uncomment the llm section for OpenAI model.
 
 ```yaml
 cache_folder: /storage/llm/cache
 
 embeddings:
-  doc_path: /storage/docs
-  embeddings_path: /storage/embeddings
-  scan_extension: md
+  doc_path: /storage/llm/docs
+  embeddings_path: /storage/llm/embeddings
+  chunk_size: 1024
+  scan_extensions: 
+    - md
 
 semantic_search:
-  search_type: mmr
-  
+  search_type: similarity # mmr
+
   replace_output_path:
-    substring_search: storage/docs
-    substring_replace: obsidian://open?vault=knowledge-base&file=
+    substring_search: storage/llm/docs/
+    substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
+
+  append_suffix:
+    append_template: "&heading={heading}"
+
   max_char_size: 2048
 
 
@@ -110,19 +117,41 @@ llm:
           ### Instruction:
           Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
 
-          ### Context: 
+          ### Context:
           ---------------
           {context}
           ---------------
 
           ### Question: {question}
           ### Response:
-    model_kwargs:
+    model_init_params:
       n_ctx: 1024
-      max_tokens: 512
-      temperature: 0.0
-      n_gpu_layers: 30
       n_batch: 512
+      n_gpu_layers: 30
+
+    model_kwargs:
+      max_tokens: 512
+      top_p: 0.1
+      top_k: 40
+      temperature: 0.7
+      # mirostat_mode: 1
+
+############ An example how to use OpenAI model, requires .env file with the OpenAI key
+# llm:
+#   type: openai
+#   params:
+#     prompt_template: |
+#         Context information is provided below. Given the context information and not prior knowledge, provide detailed answer to the question.
+
+#         ### Context:
+#         ---------------------
+#         {context}
+#         ---------------------
+
+#         ### Question: {question}
+#     model_kwargs:
+#       temperature: 0.7
+#       model_name: gpt-3.5-turbo-0613
 ```
 
 
