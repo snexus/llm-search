@@ -1,0 +1,2000 @@
+<NarrativeText - 1> Tell us about your PDF experience.
+<Title - 1> Azure Databricks documentation
+<UncategorizedText - 1> Learn Azure Databricks, a unified analytics platform for data analysts, data engineers, data scientists, and machine learning engineers.
+<Title - 1> About Azure Databricks
+<Title - 1> ｅ OVERVIEW
+<Title - 1> What is Azure Databricks?
+<Title - 1> ｐ CONCEPT
+<NarrativeText - 1> What is the Lakehouse?
+<Title - 1> What is Delta?
+<Title - 1> Databricks architecture
+<Title - 1> Data Lakehouse architecture framework
+<Title - 1> Start here
+<Title - 1> ｇ TUTORIAL
+<Title - 1> Free trial & setup
+<Title - 1> Query data from a notebook
+<NarrativeText - 1> Build a basic ETL pipeline
+<NarrativeText - 1> Build an end-to-end pipeline
+<NarrativeText - 1> Build a simple lakehouse pipeline
+<Title - 1> Integrations
+<Title - 1> ｃ HOW-TO GUIDE
+<Title - 1> Integrate with data sources
+<Title - 1> Integrate with data partners
+<Title - 1> Integrate with BI tools
+<PageBreak - None> <PAGE BREAK>
+<Title - 2> SQL warehousing
+<Title - 2> ｐ CONCEPT
+<NarrativeText - 2> What is data warehousing on Databricks?
+<Title - 2> Databricks SQL concepts
+<Title - 2> SQL tasks
+<Title - 2> ｇ TUTORIAL
+<NarrativeText - 2> Use a sample dashboard
+<NarrativeText - 2> Run queries and visualize data
+<Title - 2> SQL reference
+<Title - 2> ｉ REFERENCE
+<Title - 2> SQL reference
+<Title - 2> API reference
+<Title - 2> Release notes
+<Title - 2> Data engineering
+<Title - 2> ｐ CONCEPT
+<Title - 2> What is Delta Live Tables?
+<Title - 2> Work with clusters and compute
+<Title - 2> Source control with Git
+<Title - 2> Data engineering
+<PageBreak - None> <PAGE BREAK>
+<Title - 3> ｃ HOW-TO GUIDE
+<Title - 3> Overview
+<Title - 3> Develop code in notebooks
+<Title - 3> Storage: Where's my data?
+<Title - 3> Data engineering reference
+<Title - 3> ｉ REFERENCE
+<Title - 3> API reference
+<Title - 3> Release notes
+<Title - 3> Machine learning
+<Title - 3> ｇ TUTORIAL
+<Title - 3> Get started with Databricks Machine Learning
+<Title - 3> 10-minute tutorials
+<Title - 3> Machine learning tasks
+<Title - 3> ｃ HOW-TO GUIDE
+<Title - 3> Prepare data & your environment
+<Title - 3> Train models
+<Title - 3> ML reference solutions
+<Title - 3> Troubleshooting
+<Title - 3> ｃ HOW-TO GUIDE
+<Title - 3> Knowledge Base
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 4> Get started: Account and workspace setup
+<UncategorizedText - 4> Article • 06/16/2023
+<NarrativeText - 4> If you’re new to Azure Databricks, you’ve found the place to start. This article walks you
+<NarrativeText - 4> through the minimum steps required to create your account and get your first
+<NarrativeText - 4> workspace up and running.
+<NarrativeText - 4> For information about online training resources, see Get free Databricks training.
+<Title - 4> Create an Azure Databricks workspace
+<NarrativeText - 4> Databricks recommends you deploy your first Azure Databricks workspace using the
+<NarrativeText - 4> Azure portal. You can also deploy Azure Databricks with one of the following options:
+<Title - 4> Azure CLI
+<Title - 4> Powershell
+<Title - 4> ARM template
+<Title - 4> Bicep
+<Title - 4> ７ Note
+<NarrativeText - 4> When you create your Azure Databricks workspace, you can select the Trial
+<NarrativeText - 4> (Premium - 14-Days Free DBUs) pricing tier to give the workspace access to free
+<Title - 4> Premium Azure Databricks DBUs for 14 days.
+<NarrativeText - 4> Before you begin
+<NarrativeText - 4> You must have an Azure subscription that isn’t a Free Trial Subscription. If you
+<NarrativeText - 4> have a free account, complete the following steps:
+<NarrativeText - 4> Go to your profile and change your subscription to pay-as-you-go. See Azure
+<Title - 4> free account
+<UncategorizedText - 4> .
+<NarrativeText - 4> Remove the spending limit.
+<Title - 4> Request a quota increase for vCPUs in your region.
+<Title - 4> Sign in to the Azure portal
+<UncategorizedText - 4> .
+<NarrativeText - 4> You must be an Azure Contributor or Owner, or the Microsoft.ManagedIdentity
+<NarrativeText - 4> resource provider must be registered in your subscription. For instructions, follow
+<Title - 4> Register resource provider.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 5> Use the portal to create an Azure Databricks workspace
+<UncategorizedText - 5> 1. In the Azure portal, select Create a resource > Analytics > Azure Databricks.
+<NarrativeText - 5> 2. Under Azure Databricks Service, provide the values to create a Databricks
+<Title - 5> workspace.
+<Title - 5> Property
+<Title - 5> Description
+<Title - 5> Workspace name
+<NarrativeText - 5> Provide a name for your Databricks workspace
+<Title - 5> Subscription
+<NarrativeText - 5> From the drop-down, select your Azure subscription.
+<Title - 5> Resource
+<NarrativeText - 5> Specify whether you want to create a new resource group or use an existing
+<Title - 5> group
+<NarrativeText - 5> one. A resource group is a container that holds related resources for an
+<NarrativeText - 5> Azure solution. For more information, see Azure Resource Group overview.
+<Title - 5> Location
+<NarrativeText - 5> Select West US 2. For other available regions, see Azure services available by region .
+<Title - 5> Pricing Tier
+<NarrativeText - 5> Choose between Standard, Premium, or Trial. For more information on these tiers, see Databricks pricing page .
+<NarrativeText - 5> 3. Select Review + Create, and then Create. The workspace creation takes a few
+<NarrativeText - 5> minutes. During workspace creation, you can view the deployment status in
+<NarrativeText - 5> Notifications. Once this process is finished, your user account is automatically
+<NarrativeText - 5> added as an admin user in the workspace.
+<Title - 5> ７ Note
+<NarrativeText - 5> When a workspace deployment fails, the workspace is still created in a failed state.
+<NarrativeText - 5> Delete the failed workspace and create a new workspace that resolves the
+<NarrativeText - 5> deployment errors. When you delete the failed workspace, the managed resource
+<NarrativeText - 5> group and any successfully deployed resources are also deleted.
+<Title - 5> Next steps
+<NarrativeText - 5> Your next steps depend on whether you want to continue setting up your account
+<NarrativeText - 5> organization and security or want to start building out data pipelines:
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 6> To continuing building out your account organization and security, including Unity
+<NarrativeText - 6> Catalog enablement, follow the steps in Get started with Azure Databricks
+<Title - 6> administration.
+<UncategorizedText - 6> For a list of available Data Science & Engineering, Databricks Machine Learning,
+<NarrativeText - 6> and Databricks SQL tutorials, see Get started articles, tutorials, and best practices.
+<Title - 6> Get help
+<NarrativeText - 6> If you have any questions about setting up Azure Databricks and need live help, please
+<Title - 6> e-mail onboarding-help@databricks.com.
+<NarrativeText - 6> If you have an Azure Databricks support package, you can open and manage support
+<NarrativeText - 6> cases with Azure Databricks. See Learn how to use Databricks support.
+<NarrativeText - 6> If your organization does not have a Azure Databricks support subscription, or if you are
+<NarrativeText - 6> not an authorized contact for your company’s support subscription, you can get answers
+<Title - 6> to many questions in Databricks Office Hours
+<Title - 6> or from the Databricks Community
+<UncategorizedText - 6> .
+<NarrativeText - 6> If you need additional help, sign up for a live weekly demo to ask questions and
+<NarrativeText - 6> practice alongside Databricks experts. Or, follow this blog series on best practices for
+<NarrativeText - 6> managing and maintaining your environments
+<UncategorizedText - 6> .
+<PageBreak - None> <PAGE BREAK>
+<Title - 7> Navigate the workspace
+<UncategorizedText - 7> Article • 06/01/2023
+<Title - 7> ７ Note
+<NarrativeText - 7> The experience in this article is being replaced with the new unified navigation
+<Title - 7> experience.
+<NarrativeText - 7> This article walks you through the Azure Databricks workspace, an environment for
+<NarrativeText - 7> accessing all of your Azure Databricks objects.
+<NarrativeText - 7> You can manage the workspace using the workspace UI, the Databricks CLI, and the
+<Title - 7> Workspace API
+<Title - 7> . Most of the articles in the Azure Databricks documentation focus on
+<NarrativeText - 7> performing tasks using the workspace UI.
+<NarrativeText - 7> Use the sidebar
+<NarrativeText - 7> You can access all of your Azure Databricks assets using the sidebar. The sidebar’s
+<NarrativeText - 7> contents depend on the selected persona: Data Science & Engineering, Machine
+<Title - 7> Learning, or SQL.
+<NarrativeText - 7> By default, the sidebar appears in a collapsed state and only the icons are visible.
+<NarrativeText - 7> Move your cursor over the sidebar to expand to the full view.
+<NarrativeText - 7> To change the persona, click the icon below the Databricks logo
+<NarrativeText - 7> , and select a
+<Title - 7> persona.
+<NarrativeText - 7> To pin a persona so that it appears the next time you log in, click
+<Title - 7> next to the
+<NarrativeText - 7> persona. Click it again to remove the pin.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 8> Use Menu options at the bottom of the sidebar to set the sidebar mode to Auto
+<Title - 8> (default behavior), Expand, or Collapse.
+<NarrativeText - 8> When you open a machine learning-related page, the persona automatically
+<Title - 8> switches to Machine Learning.
+<Title - 8> Switch to a different workspace
+<NarrativeText - 8> If you have access to more than one workspace in the same account, you can quickly
+<Title - 8> switch among them.
+<UncategorizedText - 8> 1. Click the workspace name in the top bar of the Azure Databricks workspace.
+<NarrativeText - 8> 2. Select a workspace from the drop down to switch to it.
+<NarrativeText - 8> Change the workspace language settings
+<NarrativeText - 8> The workspace is available in multiple languages. To change the workspace language,
+<NarrativeText - 8> click your username in the top navigation bar, select User Settings and go to the
+<Title - 8> Language settings tab.
+<Title - 8> Get help
+<NarrativeText - 8> To get help:
+<Title - 8> 1. Click
+<Title - 8> in the top bar of the Azure Databricks workspace.
+<Title - 8> 2. Select one of the following options:
+<Title - 8> Help Center: Submit a help ticket or search across Azure Databricks
+<Title - 8> documentation, Azure Databricks Knowledge Base articles, Apache Spark
+<Title - 8> documentation, and Databricks forums.
+<Title - 8> Release Notes: View Azure Databricks Release notes.
+<Title - 8> Documentation: View Azure Databricks documentation.
+<Title - 8> Knowledge Base: View Azure Databricks Knowledge Base.
+<Title - 8> Databricks Status: View Azure Databricks status by region.
+<Title - 8> Privacy Policy: View Microsoft privacy statement.
+<Title - 8> Feedback: Provide Azure Databricks product feedback
+<UncategorizedText - 8> .
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 9> Unified navigation
+<UncategorizedText - 9> Article • 06/15/2023
+<Title - 9> ） Important
+<NarrativeText - 9> This feature is in Public Preview.
+<NarrativeText - 9> This article describes the new unified navigation experience, which reduces clicks and
+<NarrativeText - 9> context switches required to complete tasks across product areas. For the legacy
+<NarrativeText - 9> navigation experience, see Navigate the workspace.
+<NarrativeText - 9> Onboarding checklists are no longer available in unified navigation.
+<Title - 9> Opt in to unified navigation
+<NarrativeText - 9> To opt in to unified navigation, do the following:
+<NarrativeText - 9> 1. In the sidebar of your workspace, click Enable New UI.
+<Title - 9> 2. In the Try the new navigation UI dialog, click Enable.
+<Title - 9> Homepage
+<NarrativeText - 9> The following sections of the workspace homepage provide shortcuts to common tasks
+<NarrativeText - 9> and workspace objects to help you onboard to and navigate the Azure Databricks
+<Title - 9> Lakehouse:
+<NarrativeText - 9> Get started
+<NarrativeText - 9> This section provides shortcuts to the following common tasks across product areas:
+<NarrativeText - 9> Import data using the upload data UI
+<NarrativeText - 9> Create a notebook
+<NarrativeText - 9> Create a query
+<Title - 9> Configure an AutoML experiment
+<Title - 9> ７ Note
+<NarrativeText - 9> The tiles that display on your homepage depend on your assigned entitlements.
+<Title - 9> Recents
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 10> This section displays your recently viewed workspace objects across product areas,
+<NarrativeText - 10> including files, notebooks, experiments, queries, dashboards, and alerts.
+<UncategorizedText - 10> You can also access recents from the sidebar and from the search bar.
+<Title - 10> Popular
+<NarrativeText - 10> This section displays objects with the most user interactions in the last 30 days across
+<NarrativeText - 10> product areas, including files, notebooks, experiments, queries, dashboards, and alerts.
+<Title - 10> Sidebar
+<NarrativeText - 10> The following common Azure Databricks Lakehouse categories are visible at the top of
+<Title - 10> the sidebar:
+<Title - 10> Workspace
+<Title - 10> Recents
+<Title - 10> Data
+<Title - 10> Workflows
+<Title - 10> Compute
+<Title - 10> ７ Note
+<NarrativeText - 10> There is a lock icon next to items that require an entitlement you aren’t assigned.
+<NarrativeText - 10> The features in the following sections are also always visible in the sidebar, grouped by
+<Title - 10> product area:
+<Title - 10> SQL
+<PageBreak - None> <PAGE BREAK>
+<Title - 11> SQL Editor
+<Title - 11> Queries
+<Title - 11> Dashboards
+<Title - 11> Alerts
+<Title - 11> Query History
+<Title - 11> Previous UI
+<Title - 11> New UI
+<Title - 11> Data Engineering
+<PageBreak - None> <PAGE BREAK>
+<Title - 12> Delta Live Tables
+<Title - 12> Previous UI
+<Title - 12> New UI
+<Title - 12> Machine Learning
+<Title - 12> Experiments
+<Title - 12> Feature Store
+<Title - 12> Models
+<Title - 12> Serving
+<Title - 12> Previous UI
+<PageBreak - None> <PAGE BREAK>
+<Title - 13> New UI
+<Title - 13> + New menu
+<NarrativeText - 13> Click + New to complete the following tasks:
+<UncategorizedText - 13> Create workspace objects such as notebooks, queries, repos, dashboards, alerts,
+<NarrativeText - 13> jobs, experiments, models, and serving endpoints
+<NarrativeText - 13> Create compute resources such as clusters, SQL warehouses, and ML endpoints
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 14> Upload CSV or TSV files to Delta Lake using the upload data UI or load data from
+<NarrativeText - 14> various data sources using the add data UI
+<Title - 14> Previous UI
+<Title - 14> New UI
+<PageBreak - None> <PAGE BREAK>
+<Title - 15> Full-page workspace browser
+<Title - 15> The full-page workspace browser experience unifies Workspace and Repos.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 16> You can browse content in Databricks Repos alongside workspace objects by clicking
+<Title - 16> Workspace in the sidebar.
+<NarrativeText - 16> You can also browse workspace content and Repos content from within a notebook
+<NarrativeText - 16> using a contextual browser.
+<Title - 16> Search
+<NarrativeText - 16> Use the top bar to search for workspace objects such as notebooks, queries,
+<NarrativeText - 16> dashboards, alerts, files, folders, libraries, tables registered in Unity Catalog, jobs, and
+<NarrativeText - 16> repos in a single place. You can also access recently viewed objects in the search bar.
+<Title - 16> Workspace admin and user settings
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 17> Workspace admin and workspace user settings are unified across product areas. SQL
+<NarrativeText - 17> settings are combined with general settings to create a unified experience for admin
+<Title - 17> and non-admin users.
+<NarrativeText - 17> All workspace admin settings are now accessed from Admin Settings, including the
+<NarrativeText - 17> following tabs:
+<Title - 17> SQL settings
+<Title - 17> External data sources
+<Title - 17> SQL warehouse settings
+<NarrativeText - 17> All workspace user settings are now accessed from User Settings, including the
+<NarrativeText - 17> following tabs:
+<NarrativeText - 17> The Password tab is now the Account & Password tab.
+<NarrativeText - 17> The Query snippets tab is visible to users with the Databricks SQL access
+<Title - 17> entitlement.
+<Title - 17> Provide feedback about unified navigation
+<NarrativeText - 17> To provide feedback about the unified navigation experience, in the sidebar, click
+<Title - 17> Provide feedback.
+<PageBreak - None> <PAGE BREAK>
+<Title - 18> Workspace browser
+<UncategorizedText - 18> Article • 06/15/2023
+<NarrativeText - 18> With the workspace browser you can create, browse, and organize Azure Databricks
+<NarrativeText - 18> objects, including notebooks, libraries, experiments, queries, dashboards, and alerts, in a
+<UncategorizedText - 18> single place. You can then share objects and assign permissions at the folder level to
+<NarrativeText - 18> organize objects by team or project. You can also browse content in Databricks Repos.
+<NarrativeText - 18> The workspace browser introduces a contextual browser that allows you to browse
+<NarrativeText - 18> content, including content in Repos, from within a notebook.
+<Title - 18> ７ Note
+<NarrativeText - 18> Queries, dashboards, and alerts created before September 7, 2022 must be
+<NarrativeText - 18> migrated to the workspace browser. See Migrate queries, dashboards, and alerts.
+<Title - 18> ） Important
+<Title - 18> Starting on July 10, 2023, Azure Databricks will force-migrate all Databricks SQL
+<NarrativeText - 18> content (dashboards, queries, alerts) to the workspace browser. Visit My Queries,
+<NarrativeText - 18> My Alerts, and My dashboards and look for any un-migrated queries, alerts, or
+<NarrativeText - 18> dashboards, which will have a checkbox on the lefthand side. When a box is
+<NarrativeText - 18> checked, a Migrate button will appear that allows you to migrate multiple assets at
+<NarrativeText - 18> a time. If no action is taken, your Databricks SQL content (dashboards, queries,
+<NarrativeText - 18> alerts) will be moved to your user folder. Workspace admins should ensure that all
+<NarrativeText - 18> objects without a valid active owner are updated to have one. Starting on
+<NarrativeText - 18> September 10, 2023, we will delete all unmigrated objects without a valid owner.
+<Title - 18> ７ Note
+<NarrativeText - 18> If you haven’t enabled the new UI, you must opt in to the full-page workspace
+<NarrativeText - 18> browser described in this article. If you’ve enabled the new UI, the full-page
+<NarrativeText - 18> workspace browser is enabled by default.
+<Title - 18> Opt in to the full-page workspace browser
+<NarrativeText - 18> If you’ve enabled the new UI, you can skip this step. If you haven’t enabled the new UI,
+<NarrativeText - 18> do the following to opt in to the full-page workspace browser:
+<PageBreak - None> <PAGE BREAK>
+<Title - 19> 1. In the sidebar, click Workspace.
+<NarrativeText - 19> 2. Click Try the new Workspace Browser, and then click Opt-in.
+<NarrativeText - 19> You can also opt in or out of the full-page workspace browser by doing the following:
+<NarrativeText - 19> 1. Click your username at the top right of the workspace, and then click User Settings
+<Title - 19> in the dropdown list.
+<Title - 19> 2. Click the Editor settings tab.
+<NarrativeText - 19> 3. Click the New Workspace Browser experience setting to turn it on or off.
+<Title - 19> View objects in the workspace browser
+<NarrativeText - 19> You can view objects, including content in Repos, in the workspace browser by clicking
+<NarrativeText - 19> Workspace in the sidebar. Objects created outside the workspace browser (for
+<NarrativeText - 19> example, from the query list page) are viewable, by default, in the Home folder, where
+<NarrativeText - 19> you can organize them within subfolders if you want.
+<Title - 19> Work with folders and folder objects
+<NarrativeText - 19> The workspace enables you to create folders, move objects between folders, and share
+<Title - 19> objects to groups of users with a choice of permission levels.
+<NarrativeText - 19> To create a folder, click Add and then select Folder.
+<NarrativeText - 19> To move objects between folders, select the object you want to move and then
+<NarrativeText - 19> drag it to the folder where you want to move it.
+<UncategorizedText - 19> To share and grant permissions to all objects in a folder, right-click the folder and
+<NarrativeText - 19> select Share. Enter the users, groups or service principals to which you want to
+<NarrativeText - 19> share the folder and its objects, and then select the permission level. Click Add.
+<PageBreak - None> <PAGE BREAK>
+<Title - 20> Migrate queries, dashboards, and alerts
+<NarrativeText - 20> Queries, dashboards, and alerts created before September 7, 2022 are not visible in the
+<NarrativeText - 20> Databricks SQL workspace browser until they are migrated to the Databricks SQL
+<NarrativeText - 20> workspace browser. To view and organize these queries, dashboards, and alerts, do one
+<Title - 20> of the following:
+<NarrativeText - 20> Use the query, dashboard, or alert list page to migrate objects you own. To view
+<NarrativeText - 20> objects that you can migrate, click My queries, My dashboards, or My alerts on
+<NarrativeText - 20> the appropriate list page and then click Migrate. Workspace admins can change
+<NarrativeText - 20> ownership of an object to themselves if they would like to perform the migration.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 21> Open the query, dashboard, or alert object itself and then click the
+<Title - 21> next to the
+<Title - 21> object. In the displayed list, select Migrate to Workspace.
+<NarrativeText - 21> After you click Migrate, you can select an existing folder into which to migrate the
+<NarrativeText - 21> object or you can simply migrate it to the Home folder. In addition to the permissions
+<NarrativeText - 21> that are already on the object, the migrated object inherits permission on the folder into
+<NarrativeText - 21> which it’s being organized. Additionally, moving an object to a folder where another
+<NarrativeText - 21> object with the same name already exists automatically updates the newly moved
+<Title - 21> object’s name with the suffix “ (1)”.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 22> Objects like dashboards, alerts, and query-based dropdown lists are referenceable
+<NarrativeText - 22> regardless of whether the objects are new, existing, migrated, or unmigrated.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 23> Introduction to workspace objects
+<UncategorizedText - 23> Article • 06/01/2023
+<NarrativeText - 23> This article provides a high-level introduction to Azure Databricks workspace objects.
+<NarrativeText - 23> You can create, view, and organize workspace objects in the workspace browser across
+<Title - 23> personas.
+<Title - 23> ７ Note
+<NarrativeText - 23> Databricks SQL queries, dashboards, and alerts created after September 7, 2022 are
+<NarrativeText - 23> automatically discoverable in the workspace browser. To view and organize queries,
+<NarrativeText - 23> dashboards, and articles in the workspace browser that were created before
+<NarrativeText - 23> September 7, 2022, you must migrate them to the workspace browser. For
+<NarrativeText - 23> information about migration, see Migrate queries, dashboards, and alerts.
+<Title - 23> Clusters
+<Title - 23> Azure Databricks Data Science & Engineering and Databricks Machine Learning clusters
+<NarrativeText - 23> provide a unified platform for various use cases such as running production ETL
+<NarrativeText - 23> pipelines, streaming analytics, ad-hoc analytics, and machine learning. A cluster is a type
+<NarrativeText - 23> of Azure Databricks compute resource. Other compute resource types include Azure
+<Title - 23> Databricks SQL warehouses.
+<NarrativeText - 23> For detailed information on managing and using clusters, see Clusters.
+<Title - 23> Notebooks
+<NarrativeText - 23> A notebook is a web-based interface to documents containing a series of runnable cells
+<NarrativeText - 23> (commands) that operate on files and tables, visualizations, and narrative text.
+<NarrativeText - 23> Commands can be run in sequence, referring to the output of one or more previously
+<NarrativeText - 23> run commands.
+<NarrativeText - 23> Notebooks are one mechanism for running code in Azure Databricks. The other
+<NarrativeText - 23> mechanism is jobs.
+<NarrativeText - 23> For detailed information on managing and using notebooks, see Introduction to
+<Title - 23> Databricks notebooks.
+<Title - 23> Jobs
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 24> Jobs are one mechanism for running code in Azure Databricks. The other mechanism is
+<Title - 24> notebooks.
+<NarrativeText - 24> For detailed information on managing and using jobs, see Create and run Azure
+<Title - 24> Databricks Jobs.
+<Title - 24> Libraries
+<NarrativeText - 24> A library makes third-party or locally-built code available to notebooks and jobs running
+<Title - 24> on your clusters.
+<NarrativeText - 24> For detailed information on managing and using libraries, see Libraries.
+<Title - 24> Data
+<NarrativeText - 24> You can import data into a distributed file system mounted into an Azure Databricks
+<NarrativeText - 24> workspace and work with it in Azure Databricks notebooks and clusters. You can also
+<NarrativeText - 24> use a wide variety of Apache Spark data sources to access data.
+<NarrativeText - 24> For detailed information on loading data, see Load data into the Azure Databricks
+<Title - 24> Lakehouse.
+<Title - 24> Files
+<Title - 24> ） Important
+<NarrativeText - 24> This feature is in Public Preview.
+<NarrativeText - 24> In Databricks Runtime 11.2 and above, you can create and use arbitrary files in the
+<NarrativeText - 24> Databricks workspace. Files can be any file type. Common examples include:
+<NarrativeText - 24> .py files used in custom modules.
+<Title - 24> .md files, such as README.md .
+<Title - 24> .csv or other small data files.
+<Title - 24> .txt files.
+<Title - 24> Log files.
+<NarrativeText - 24> For detailed information on using files, see How to work with files on Azure Databricks.
+<NarrativeText - 24> For information about how to use files to modularize your code as you develop with
+<NarrativeText - 24> Databricks notebooks, see Share code between Databricks notebooks
+<PageBreak - None> <PAGE BREAK>
+<Title - 25> Repos
+<NarrativeText - 25> Repos are Azure Databricks folders whose contents are co-versioned together by
+<NarrativeText - 25> syncing them to a remote Git repository. Using an Azure Databricks repo, you can
+<NarrativeText - 25> develop notebooks in Azure Databricks and use a remote Git repository for
+<Title - 25> collaboration and version control.
+<NarrativeText - 25> For detailed information on using repos, see Git integration with Databricks Repos.
+<Title - 25> Models
+<NarrativeText - 25> Model refers to a model registered in MLflow Model Registry. Model Registry is a
+<NarrativeText - 25> centralized model store that enables you to manage the full lifecycle of MLflow models.
+<NarrativeText - 25> It provides chronological model lineage, model versioning, stage transitions, and model
+<Title - 25> and model version annotations and descriptions.
+<NarrativeText - 25> For detailed information on managing and using models, see MLflow Model Registry on
+<Title - 25> Azure Databricks.
+<Title - 25> Experiments
+<NarrativeText - 25> An MLflow experiment is the primary unit of organization and access control for MLflow
+<NarrativeText - 25> machine learning model training runs; all MLflow runs belong to an experiment. Each
+<NarrativeText - 25> experiment lets you visualize, search, and compare runs, as well as download run
+<Title - 25> artifacts or metadata for analysis in other tools.
+<NarrativeText - 25> For detailed information on managing and using experiments, see Organize training
+<Title - 25> runs with MLflow experiments.
+<Title - 25> Queries
+<NarrativeText - 25> Queries are SQL statements that allow you to interact with your data. For more
+<Title - 25> information, see Queries.
+<Title - 25> Dashboards
+<NarrativeText - 25> Dashboards are presentations of query visualizations and commentary. For more
+<NarrativeText - 25> information, see Databricks SQL dashboards.
+<PageBreak - None> <PAGE BREAK>
+<Title - 26> Alerts
+<NarrativeText - 26> Alerts are notifications that a field returned by a query has reached a threshold. For
+<Title - 26> more information, see Alerts.
+<PageBreak - None> <PAGE BREAK>
+<Title - 27> Search for workspace objects
+<UncategorizedText - 27> Article • 06/01/2023
+<NarrativeText - 27> This article describes how to search for notebooks, queries, dashboards, alerts, files,
+<NarrativeText - 27> folders, libraries, jobs, and repos in your Azure Databricks workspace.
+<NarrativeText - 27> It also describes how to search for tables registered in Unity Catalog.
+<Title - 27> ７ Note
+<NarrativeText - 27> The search behavior described in this section is not supported for non-E2
+<NarrativeText - 27> workspaces or workspaces that use customer-managed keys for encryption. In
+<NarrativeText - 27> those workspaces, you can click
+<NarrativeText - 27> Search in the sidebar and type a search string
+<NarrativeText - 27> in the Search Workspace field. As you type, objects whose name contains the
+<NarrativeText - 27> search string are listed. Click a name from the list to open that item in the
+<Title - 27> workspace.
+<Title - 27> Access the search dialog
+<NarrativeText - 27> To search the workspace, do the following:
+<NarrativeText - 27> 1. Click the Search field in the top bar of the Azure Databricks workspace or use the
+<NarrativeText - 27> keyboard shortcut Command-P.
+<NarrativeText - 27> Your recent files, notebooks, queries, alerts, and dashboards are listed under
+<NarrativeText - 27> Recents, sorted by the last opened date.
+<Title - 27> 2. Enter your search criteria.
+<NarrativeText - 27> Recent objects in the list are filtered to match your search criteria.
+<NarrativeText - 27> 3. Select an item from the list, or press Enter to display the search dialog.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 28> You can search by text string, by object type, or both. After you type your search criteria
+<NarrativeText - 28> and press Enter, the system searches the names of all queries, dashboards, alerts, files,
+<NarrativeText - 28> folders, notebooks, libraries, and repos in the workspace that you have access to. If your
+<NarrativeText - 28> workspace is enabled for Unity Catalog, the system also searches table names, table
+<Title - 28> comments, column names, and column comments.
+<NarrativeText - 28> When you click an item in the search results, the item automatically opens in the
+<NarrativeText - 28> appropriate persona-based environment. For example, when you click a query, it opens
+<Title - 28> in Databricks SQL.
+<Title - 28> Search by text string
+<NarrativeText - 28> To search for a text string, type the string into the search field and then press Enter. The
+<NarrativeText - 28> system searches the names of all objects in the workspace that you have access to. It
+<NarrativeText - 28> also searches text in notebook commands, but not in non-notebook files.
+<NarrativeText - 28> You can place quotation marks around your search entry to narrow search results to
+<NarrativeText - 28> only documents that contain your exact phrase.
+<NarrativeText - 28> Exact match search supports the following:
+<PageBreak - None> <PAGE BREAK>
+<Title - 29> Basic quotation marks (for example, "spark.sql(" )
+<Title - 29> Escaped quotation marks (for example, "spark.sql(\"select" )
+<Title - 29> Exact match search doesn’t support the following:
+<Title - 29> With quotation marks and without quotation marks (for example, "spark.sql"
+<Title - 29> partition )
+<Title - 29> Multiple quotation marks (for example, "spark.sql" "partition" )
+<Title - 29> Limit search to a specific object type
+<NarrativeText - 29> You can also search for items by type (file, folder, notebooks, libraries, table, or repo). A
+<NarrativeText - 29> text string is not required. To limit your search to a specific type of item, click the
+<NarrativeText - 29> corresponding tab in the Search dialog. If you leave the text field blank and then press
+<NarrativeText - 29> Enter, the system searches for all objects of that type. Click a name from the list to open
+<NarrativeText - 29> that item in the workspace. You can also use the dropdown menus to search for items
+<Title - 29> by owner or by the last modified date.
+<Title - 29> Search tables in Unity Catalog-enabled workspaces
+<NarrativeText - 29> In workspaces enabled for Unity Catalog, you can search for tables registered in Unity
+<NarrativeText - 29> Catalog. You can search on table names, table comments, column names, and column
+<NarrativeText - 29> comments. You can filter search results by parent catalog and database (schema).
+<NarrativeText - 29> Search results don’t include:
+<NarrativeText - 29> Tables that you don’t have permission to see.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 30> In other words, for a table to appear in your search results, you must have at least
+<UncategorizedText - 30> the SELECT privilege on that table, the USE SCHEMA privilege on its parent schema,
+<NarrativeText - 30> and the USE CATALOG privilege on its parent catalog. Metastore admins have those
+<NarrativeText - 30> privileges by default. All other users must be granted those privileges. See Unity
+<Title - 30> Catalog privileges and securable objects.
+<NarrativeText - 30> Tables in the legacy Hive metastore (that is, in the hive_metastore catalog).
+<NarrativeText - 30> To upgrade these tables to Unity Catalog and make them available for search,
+<NarrativeText - 30> follow the instructions in Upgrade tables and views to Unity Catalog.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 31> Organize workspace objects into folders
+<UncategorizedText - 31> Article • 06/09/2023
+<NarrativeText - 31> This article explains how to use folders to organize your workspace objects.
+<Title - 31> Folders
+<NarrativeText - 31> Folders contain all static assets within a workspace: notebooks, libraries, files (in
+<NarrativeText - 31> Databricks Runtime 11.2 and above), experiments, and other folders. Icons indicate the
+<NarrativeText - 31> type of the object contained in a folder. Click a folder name to open or close the folder
+<NarrativeText - 31> and view its contents.
+<NarrativeText - 31> To perform an action on a folder, click the
+<NarrativeText - 31> at the right side of a folder and select a
+<Title - 31> menu item.
+<Title - 31> Special folders
+<NarrativeText - 31> An Azure Databricks workspace has three special folders: Workspace, Shared, and Users.
+<NarrativeText - 31> You cannot rename or move a special folder.
+<PageBreak - None> <PAGE BREAK>
+<Title - 32> Workspace root folder
+<NarrativeText - 32> To navigate to the Workspace root folder:
+<Title - 32> 1. Click
+<Title - 32> Workspace.
+<Title - 32> 2. Click the
+<Title - 32> icon.
+<NarrativeText - 32> The Workspace root folder is a container for all of your organization’s Azure Databricks
+<Title - 32> static assets.
+<Title - 32> Within the Workspace root folder:
+<NarrativeText - 32> Shared is for sharing objects across your organization. All users have full
+<Title - 32> permissions for all objects in Shared.
+<NarrativeText - 32> Users contains a folder for each user.
+<NarrativeText - 32> By default, the Workspace root folder and all of its contained objects are available to all
+<NarrativeText - 32> users. You can control who can manage and access objects by enabling workspace
+<NarrativeText - 32> access control and setting permissions.
+<NarrativeText - 32> To sort all objects alphabetically or by type across all folders, click the
+<Title - 32> to the right of
+<Title - 32> the Workspace folder and select Sort > [Alphabetical | Type]:
+<Title - 32> User home folders
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 33> Each user has a home folder for their notebooks and libraries:
+<UncategorizedText - 33> >
+<NarrativeText - 33> If workspace access control is enabled, by default objects in this folder are private to
+<Title - 33> that user.
+<Title - 33> ７ Note
+<NarrativeText - 33> When you remove a user from a workspace, the user’s home folder is retained. If
+<NarrativeText - 33> you re-add a user to the workspace, their home folder is restored.
+<NarrativeText - 33> Workspace object operations
+<NarrativeText - 33> The objects stored in the Workspace root folder are folders, notebooks, files (in
+<NarrativeText - 33> Databricks Runtime 11.2 and above), libraries, and experiments. To perform an action on
+<NarrativeText - 33> a Workspace object, right-click the object or click the
+<Title - 33> at the right side of an
+<Title - 33> object.
+<Title - 33> From the drop-down menu you can:
+<NarrativeText - 33> If the object is a folder:
+<NarrativeText - 33> Create a notebook, library, file (in Databricks Runtime 11.2 and above), MLflow
+<Title - 33> experiment, or folder.
+<NarrativeText - 33> Import a notebook or Databricks archive.
+<NarrativeText - 33> Clone the object. (Files cannot be cloned.)
+<NarrativeText - 33> Rename the object.
+<NarrativeText - 33> Move the object to another folder.
+<NarrativeText - 33> Move the object to Trash. See Delete an object.
+<Title - 33> Export a folder or notebook as a Databricks archive.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 34> If the object is a notebook, copy the notebook’s file path.
+<NarrativeText - 34> If you have Workspace access control enabled, set permissions on the object.
+<NarrativeText - 34> In addition to the procedures listed in this article, you can also do the following:
+<NarrativeText - 34> Create a folder with the databricks workspace mkdirs command in the Databricks
+<Title - 34> CLI, the POST /api/2.0/workspace/mkdirs
+<UncategorizedText - 34> operation in the Workspace API 2.0,
+<Title - 34> and the Databricks Terraform provider and databricks_directory
+<UncategorizedText - 34> .
+<NarrativeText - 34> Create a notebook with the Databricks Terraform provider and
+<Title - 34> databricks_notebook
+<UncategorizedText - 34> .
+<NarrativeText - 34> Export a folder or notebook with the databricks workspace export_dir or databricks
+<Title - 34> workspace export commands in the Databricks CLI, and the GET
+<Title - 34> /api/2.0/workspace/export
+<Title - 34> operation in the Workspace API 2.0.
+<Title - 34> Set permissions on the following workspace objects:
+<Title - 34> For notebooks, with the PUT
+<Title - 34> /api/2.0/preview/permissions/notebooks/{notebook_id}
+<NarrativeText - 34> or PATCH
+<Title - 34> /api/2.0/preview/permissions/notebooks/{notebook_id}
+<Title - 34> operations in the
+<Title - 34> Permissions API 2.0.
+<Title - 34> For folders, with the PUT
+<Title - 34> /api/2.0/preview/permissions/directories/{directory_id}
+<NarrativeText - 34> or PATCH
+<Title - 34> /api/2.0/preview/permissions/directories/{directory_id}
+<Title - 34> operations in the
+<Title - 34> Permissions API 2.0.
+<NarrativeText - 34> Access recently used objects
+<NarrativeText - 34> You can access recently used objects by clicking
+<Title - 34> Recents in the sidebar or the
+<Title - 34> Recents column on the workspace landing page.
+<Title - 34> ７ Note
+<NarrativeText - 34> The Recents list is cleared after deleting the browser cache and cookies.
+<Title - 34> Move an object
+<NarrativeText - 34> To move an object, you can drag-and-drop the object or click the
+<Title - 34> or
+<Title - 34> at the
+<Title - 34> right side of the object and select Move:
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 35> To move all the objects inside a folder to another folder, select the Move action on the
+<NarrativeText - 35> source folder and select the Move all items in ‘’ rather than the folder itself checkbox.
+<Title - 35> Delete an object
+<NarrativeText - 35> To delete a folder, notebook, library or experiment, click the
+<Title - 35> or
+<Title - 35> at the right side
+<NarrativeText - 35> of the object and select Move to Trash. The Trash folder is automatically emptied
+<NarrativeText - 35> (purged) after 30 days.
+<NarrativeText - 35> You can permanently delete an object in the Trash by selecting the
+<Title - 35> to the right of
+<NarrativeText - 35> the object and selecting Delete Immediately.
+<NarrativeText - 35> You can permanently delete all objects in the Trash by selecting the
+<Title - 35> to the right of
+<NarrativeText - 35> the Trash folder and selecting Empty Trash.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 36> You can also delete objects with the databricks workspace delete or databricks
+<Title - 36> workspace rm commands in the Databricks CLI, and the POST
+<Title - 36> /api/2.0/workspace/delete operation in the Workspace API 2.0.
+<Title - 36> ７ Note
+<NarrativeText - 36> If you delete an object using the Databricks CLI or the Workspace API 2.0, the
+<Title - 36> object doesn’t appear in the Trash folder.
+<Title - 36> Restore an object
+<NarrativeText - 36> You restore an object by dragging it from the
+<Title - 36> Trash folder to another folder.
+<PageBreak - None> <PAGE BREAK>
+<Title - 37> Get identifiers for workspace objects
+<UncategorizedText - 37> Article • 06/01/2023
+<NarrativeText - 37> This article explains how to get workspace, cluster, directory, model, notebook, and job
+<Title - 37> identifiers and URLs in Azure Databricks.
+<Title - 37> Workspace instance names, URLs, and IDs
+<NarrativeText - 37> A unique instance name, also known as a per-workspace URL, is assigned to each Azure
+<NarrativeText - 37> Databricks deployment. It is the fully-qualified domain name used to log into your Azure
+<NarrativeText - 37> Databricks deployment and make API requests.
+<NarrativeText - 37> An Azure Databricks workspace is where the Azure Databricks platform runs and where
+<NarrativeText - 37> you can create Spark clusters and schedule workloads. A workspace has a unique
+<Title - 37> numerical workspace ID.
+<Title - 37> Per-workspace URL
+<NarrativeText - 37> The unique per-workspace URL has the format adb-<workspace-id>.<random-
+<NarrativeText - 37> number>.azuredatabricks.net . The workspace ID appears immediately after adb- and
+<NarrativeText - 37> before the “dot” (.). For the per-workspace URL https://adb-
+<UncategorizedText - 37> 5555555555555555.19.azuredatabricks.net/ :
+<NarrativeText - 37> The instance name is adb-5555555555555555.19.azuredatabricks.net .
+<UncategorizedText - 37> The workspace ID is 5555555555555555 .
+<Title - 37> Determine per-workspace URL
+<NarrativeText - 37> You can determine the per-workspace URL for your workspace:
+<NarrativeText - 37> In your browser when you are logged in:
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 38> In the Azure portal, by selecting the resource and noting the value in the URL field:
+<NarrativeText - 38> Using the Azure API. See Get a per-workspace URL using the Azure API.
+<Title - 38> Legacy regional URL
+<Title - 38> ） Important
+<NarrativeText - 38> Avoid using legacy regional URLs. They may not work for new workspaces, are less
+<NarrativeText - 38> reliable, and exhibit lower performance than per-workspace URLs.
+<NarrativeText - 38> The legacy regional URL is composed of the region where the Azure Databricks
+<NarrativeText - 38> workspace is deployed plus the domain azuredatabricks.net , for example,
+<Title - 38> https://westus.azuredatabricks.net/ .
+<NarrativeText - 38> If you log in to a legacy regional URL like https://westus.azuredatabricks.net/ ,
+<NarrativeText - 38> the instance name is westus.azuredatabricks.net .
+<NarrativeText - 38> The workspace ID appears in the URL only after you have logged in using a legacy
+<NarrativeText - 38> regional URL. It appears after the o= . In the URL https://<databricks-instance>/?
+<UncategorizedText - 38> o=6280049833385130 , the workspace ID is 6280049833385130 .
+<Title - 38> Cluster URL and ID
+<NarrativeText - 38> An Azure Databricks cluster provides a unified platform for various use cases such as
+<NarrativeText - 38> running production ETL pipelines, streaming analytics, ad-hoc analytics, and machine
+<NarrativeText - 38> learning. Each cluster has a unique ID called the cluster ID. This applies to both all-
+<NarrativeText - 38> purpose and job clusters. To get the details of a cluster using the REST API, the cluster ID
+<NarrativeText - 38> is essential.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 39> To get the cluster ID, click the Clusters tab in sidebar and then select a cluster name. The
+<NarrativeText - 39> cluster ID is the number after the /clusters/ component in the URL of this page
+<Title - 39> https://<databricks-instance>/#/setting/clusters/<cluster-id>
+<NarrativeText - 39> In the following screenshot, the cluster ID is 0831-211914-clean632 .
+<Title - 39> Notebook URL and ID
+<NarrativeText - 39> A notebook is a web-based interface to a document that contains runnable code,
+<NarrativeText - 39> visualizations, and narrative text. Notebooks are one interface for interacting with Azure
+<NarrativeText - 39> Databricks. Each notebook has a unique ID. The notebook URL has the notebook ID,
+<NarrativeText - 39> hence the notebook URL is unique to a notebook. It can be shared with anyone on
+<NarrativeText - 39> Azure Databricks platform with permission to view and edit the notebook. In addition,
+<NarrativeText - 39> each notebook command (cell) has a different URL.
+<NarrativeText - 39> To find a notebook URL or ID, open a notebook. To find a cell URL, click the contents of
+<Title - 39> the command.
+<Title - 39> Example notebook URL:
+<UncategorizedText - 39> https://adb-62800498333851.30.azuredatabricks.net/? o=6280049833385130#notebook/1940481404050342`
+<UncategorizedText - 39> Example notebook ID: 1940481404050342 .
+<Title - 39> Example command (cell) URL:
+<UncategorizedText - 39> https://adb-62800498333851.30.azuredatabricks.net/? o=6280049833385130#notebook/1940481404050342/command/2432220274659491
+<PageBreak - None> <PAGE BREAK>
+<Title - 40> Folder ID
+<NarrativeText - 40> A folder is a directory used to store files that can used in the Azure Databricks
+<NarrativeText - 40> workspace. These files can be notebooks, libraries or subfolders. There is a specific id
+<NarrativeText - 40> associated with each folder and each individual sub-folder. The Permissions API refers to
+<NarrativeText - 40> this id as a directory_id and is used in setting and updating permissions for a folder.
+<NarrativeText - 40> To retrieve the directory_id , use the Workspace API:
+<Title - 40> Bash
+<Title - 40> curl -n -X GET -H 'Content-Type: application/json' -d '{"path": "/Users/me@example.com/MyFolder"}' \ https://<databricks-instance>/api/2.0/workspace/get-status
+<NarrativeText - 40> This is an example of the API call response:
+<Title - 40> JSON
+<Title - 40> { "object_type": "DIRECTORY", "path": "/Users/me@example.com/MyFolder", "object_id": 123456789012345 }
+<Title - 40> Model ID
+<NarrativeText - 40> A model refers to an MLflow registered model, which lets you manage MLflow Models in
+<NarrativeText - 40> production through stage transitions and versioning. The registered model ID is
+<NarrativeText - 40> required for changing the permissions on the model programmatically through the
+<Title - 40> Permissions API
+<UncategorizedText - 40> .
+<NarrativeText - 40> To get the ID of a registered model, you can use the Workspace API
+<Title - 40> endpoint
+<NarrativeText - 40> mlflow/databricks/registered-models/get . For example, the following code returns the
+<NarrativeText - 40> registered model object with its properties, including its ID:
+<Title - 40> Bash
+<UncategorizedText - 40> curl -n -X GET -H 'Content-Type: application/json' -d '{"name": "model_name"}' \ https://<databricks-instance>/api/2.0/mlflow/databricks/registered- models/get
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 41> The returned value has the format:
+<Title - 41> JSON
+<Title - 41> { "registered_model_databricks": { "name":"model_name", "id":"ceb0477eba94418e973f170e626f4471" } }
+<Title - 41> Job URL and ID
+<NarrativeText - 41> A job is a way of running a notebook or JAR either immediately or on a scheduled basis.
+<NarrativeText - 41> To get a job URL, click
+<NarrativeText - 41> Workflows in the sidebar and click a job name. The job ID is
+<NarrativeText - 41> after the text #job/ in the URL. The job URL is required to troubleshoot the root cause
+<Title - 41> of failed job runs.
+<NarrativeText - 41> In the following screenshot, the job URL is:
+<Title - 41> https://westus.azuredatabricks.net/?o=6280049833385130#job/1
+<NarrativeText - 41> In this example, the job ID is 1 .
+<PageBreak - None> <PAGE BREAK>
+<Title - 42> Troubleshoot Azure Databricks workspace creation
+<UncategorizedText - 42> Article • 09/28/2022
+<NarrativeText - 42> This article describes common errors during Azure Databricks workspace creation and
+<NarrativeText - 42> how to fix the errors.
+<NarrativeText - 42> Not authorized to perform action Microsoft.ManagedIdentity/register/action
+<NarrativeText - 42> Issue: You see the following error when you try to create an Azure Databricks workspace:
+<NarrativeText - 42> The client '<client-id>' with object id '<object-id>' does not have authorization to perform action 'Microsoft.ManagedIdentity/register/action' over scope '/subscriptions/<subscription-id>' or the scope is invalid. If access was recently granted, please refresh your credentials.
+<NarrativeText - 42> Recommended fix: Make sure you meet one of the following requirements for Azure
+<NarrativeText - 42> Databricks workspace creation:
+<NarrativeText - 42> You must be an Azure Contributor or Owner.
+<NarrativeText - 42> The Microsoft.ManagedIdentity resource provider must be registered in your
+<NarrativeText - 42> subscription. See Register resource provider in the Azure documentation.
+<PageBreak - None> <PAGE BREAK>
+<Title - 43> Tutorial: Query data with notebooks
+<UncategorizedText - 43> Article • 06/12/2023
+<NarrativeText - 43> This tutorial walks you through using the Databricks Data Science & Engineering
+<NarrativeText - 43> workspace to create a cluster and a notebook, create a table from a dataset, query the
+<NarrativeText - 43> table, and display the query results.
+<Title - 43>  Tip
+<NarrativeText - 43> As a supplement to this article, try the Quickstart Tutorial, available on your
+<NarrativeText - 43> Databricks Data Science & Engineering landing page. It is a 5-minute hands-on
+<NarrativeText - 43> introduction to Azure Databricks. When you log in to Azure Databricks, look for
+<Title - 43> Guide: Quickstart tutorial on the home page and click Start Tutorial.
+<NarrativeText - 43> If you don’t see the tutorial, select Data Science & Engineering from the persona
+<Title - 43> switcher in the sidebar.
+<NarrativeText - 43> You can also use the Databricks Terraform provider to create this article’s
+<NarrativeText - 43> resources. See Create clusters, notebooks, and jobs with Terraform.
+<Title - 43> Requirements
+<NarrativeText - 43> You are logged into Databricks, and you’re in the Data Science & Engineering
+<Title - 43> workspace.
+<Title - 43> Data Science & Engineering UI
+<PageBreak - None> <PAGE BREAK>
+<UncategorizedText - 44> From the left sidebar and the Common Tasks list on the landing page, you access
+<UncategorizedText - 44> fundamental Databricks Data Science & Engineering entities: the Workspace, clusters,
+<NarrativeText - 44> tables, notebooks, jobs, and libraries. The workspace is the special root folder that stores
+<UncategorizedText - 44> your Azure Databricks assets, such as notebooks and libraries, and the data that you
+<Title - 44> import.
+<NarrativeText - 44> Use the sidebar
+<NarrativeText - 44> You can access all of your Azure Databricks assets using the sidebar. The sidebar’s
+<NarrativeText - 44> contents depend on the selected persona: Data Science & Engineering, Machine
+<Title - 44> Learning, or SQL.
+<NarrativeText - 44> By default, the sidebar appears in a collapsed state and only the icons are visible.
+<NarrativeText - 44> Move your cursor over the sidebar to expand to the full view.
+<NarrativeText - 44> To change the persona, click the icon below the Databricks logo
+<NarrativeText - 44> , and select a
+<Title - 44> persona.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 45> To pin a persona so that it appears the next time you log in, click
+<Title - 45> next to the
+<NarrativeText - 45> persona. Click it again to remove the pin.
+<NarrativeText - 45> Use Menu options at the bottom of the sidebar to set the sidebar mode to Auto
+<Title - 45> (default behavior), Expand, or Collapse.
+<NarrativeText - 45> When you open a machine learning-related page, the persona automatically
+<Title - 45> switches to Machine Learning.
+<Title - 45> Get help
+<NarrativeText - 45> To get help, click
+<NarrativeText - 45> Help in the lower left corner.
+<NarrativeText - 45> Step 1: Create a cluster
+<NarrativeText - 45> A cluster is a collection of Azure Databricks computation resources. To create a cluster:
+<Title - 45> 1. In the sidebar, click
+<Title - 45> Compute.
+<Title - 45> 2. On the Compute page, click Create Compute.
+<PageBreak - None> <PAGE BREAK>
+<UncategorizedText - 46> 3. On the New Compute page, select 11.3 LTS ML (Scala 2.12, Spark 3.3.0) or higher
+<Title - 46> from the Databricks Runtime version dropdown.
+<Title - 46> 4. Click Create Cluster.
+<NarrativeText - 46> Step 2: Create a notebook
+<NarrativeText - 46> A notebook is a collection of cells that run computations on an Apache Spark cluster. To
+<NarrativeText - 46> create a notebook in the workspace:
+<Title - 46> 1. In the sidebar, click
+<Title - 46> Workspace.
+<Title - 46> 2. In the Workspace folder, select
+<Title - 46> Create > Notebook.
+<NarrativeText - 46> 3. On the Create Notebook dialog, enter a name and select SQL in the Language
+<NarrativeText - 46> drop-down. This selection determines the default language of the notebook.
+<NarrativeText - 46> 4. Click Create. The notebook opens with an empty cell at the top.
+<NarrativeText - 46> 5. Attach the notebook to the cluster you created. Click the cluster selector in the
+<NarrativeText - 46> notebook toolbar and select your cluster from the dropdown menu. If you don’t
+<NarrativeText - 46> see your cluster, click More… and select the cluster from the dropdown menu in
+<Title - 46> the dialog.
+<NarrativeText - 46> Step 3: Create a table
+<NarrativeText - 46> Create a table using data from a sample CSV data file available in Sample datasets, a
+<NarrativeText - 46> collection of datasets mounted to What is the Databricks File System (DBFS)?, a
+<NarrativeText - 46> distributed file system installed on Azure Databricks clusters. You have two options for
+<NarrativeText - 46> creating the table.
+<NarrativeText - 46> Option 1: Create a Spark table from the CSV data
+<NarrativeText - 46> Use this option if you want to get going quickly, and you only need standard levels of
+<Title - 46> performance. Copy and paste this code snippet into a notebook cell:
+<Title - 46> SQL
+<Title - 46> DROP TABLE IF EXISTS diamonds;
+<PageBreak - None> <PAGE BREAK>
+<Title - 47> CREATE TABLE diamonds USING CSV OPTIONS (path "/databricks- datasets/Rdatasets/data-001/csv/ggplot2/diamonds.csv", header "true")
+<NarrativeText - 47> Option 2: Write the CSV data to Delta Lake format and create a Delta table
+<NarrativeText - 47> Delta Lake offers a powerful transactional storage layer that enables fast reads and other
+<NarrativeText - 47> benefits. Delta Lake format consists of Parquet files plus a transaction log. Use this
+<NarrativeText - 47> option to get the best performance on future operations on the table.
+<NarrativeText - 47> 1. Read the CSV data into a DataFrame and write out in Delta Lake format. This
+<NarrativeText - 47> command uses a Python language magic command, which allows you to interleave
+<Title - 47> commands in languages other than the notebook default language (SQL). Copy
+<Title - 47> and paste this code snippet into a notebook cell:
+<Title - 47> Python
+<Title - 47> %python
+<NarrativeText - 47> diamonds = (spark.read .format("csv") .option("header", "true") .option("inferSchema", "true") .load("/databricks-datasets/Rdatasets/data- 001/csv/ggplot2/diamonds.csv") )
+<NarrativeText - 47> diamonds.write.format("delta").mode("overwrite").save("/mnt/delta/diamo nds")
+<NarrativeText - 47> 2. Create a Delta table at the stored location. Copy and paste this code snippet into a
+<Title - 47> notebook cell:
+<Title - 47> SQL
+<Title - 47> DROP TABLE IF EXISTS diamonds;
+<Title - 47> CREATE TABLE diamonds USING DELTA LOCATION '/mnt/delta/diamonds/'
+<NarrativeText - 47> Run cells by pressing SHIFT + ENTER. The notebook automatically attaches to the
+<NarrativeText - 47> cluster you created in Step 2 and runs the command in the cell.
+<Title - 47> Step 4: Query the table
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 48> Run a SQL statement to query the table for the average diamond price by color.
+<NarrativeText - 48> 1. To add a cell to the notebook, mouse over the cell bottom and click the
+<Title - 48> icon.
+<Title - 48> 2. Copy this snippet and paste it in the cell.
+<Title - 48> SQL
+<UncategorizedText - 48> SELECT color, avg(price) AS price FROM diamonds GROUP BY color ORDER BY COLOR
+<NarrativeText - 48> 3. Press SHIFT + ENTER. The notebook displays a table of diamond color and
+<Title - 48> average price.
+<Title - 48> Step 5: Display the data
+<NarrativeText - 48> Display a chart of the average diamond price by color.
+<Title - 48> 1. Next to the Table tab, click + and then click Visualization.
+<Title - 48> The visualization editor displays.
+<NarrativeText - 48> 2. In the Visualization Type drop-down, verify that Bar is selected.
+<Title - 48> 3. Clear the Horizontal chart checkbox.
+<NarrativeText - 48> 4. Change the aggregation type from Sum to Average.
+<Title - 48> 5. Click Save.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 49> 6. Click Apply to display the bar chart.
+<Title - 49> Next steps
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 50> To learn more about the primary tools you use and tasks you can perform with
+<Title - 50> Databricks Data Science & Engineering workspace, see:
+<Title - 50> What is Azure Databricks?
+<Title - 50> Navigate the workspace
+<Title - 50> Introduction to Databricks notebooks and Visualizations in Databricks notebooks
+<Title - 50> Libraries
+<Title - 50> Clusters and What is Azure Databricks Workflows?
+<NarrativeText - 50> Load data using the add data UI and Upload data to Azure Databricks
+<NarrativeText - 50> Discover and manage data using Data Explorer
+<Title - 50> Developer tools and guidance
+<Title - 50> Technology partners
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 51> Run your first ETL workload on Azure Databricks
+<UncategorizedText - 51> Article • 06/01/2023
+<NarrativeText - 51> Learn how to use production-ready tools from Azure Databricks to develop and deploy
+<Title - 51> your first extract, transform, and load (ETL) pipelines for data orchestration.
+<NarrativeText - 51> By the end of this article, you will feel comfortable:
+<NarrativeText - 51> 1. Launching a Databricks all-purpose compute cluster.
+<NarrativeText - 51> 2. Creating a Databricks notebook.
+<NarrativeText - 51> 3. Configuring incremental data ingestion to Delta Lake with Auto Loader.
+<NarrativeText - 51> 4. Executing notebook cells to process, query, and preview data.
+<NarrativeText - 51> 5. Scheduling a notebook as a Databricks job.
+<NarrativeText - 51> This tutorial uses interactive notebooks to complete common ETL tasks in Python or
+<Title - 51> Scala.
+<NarrativeText - 51> You can also use Delta Live Tables to build ETL pipelines. Databricks created Delta Live
+<NarrativeText - 51> Tables to reduce the complexity of building, deploying, and maintaining production ETL
+<UncategorizedText - 51> pipelines. See Tutorial: Declare a data pipeline with SQL in Delta Live Tables.
+<NarrativeText - 51> You can also use the Databricks Terraform provider to create this article’s resources. See
+<Title - 51> Create clusters, notebooks, and jobs with Terraform.
+<Title - 51> Requirements
+<NarrativeText - 51> You are logged into a Azure Databricks workspace.
+<NarrativeText - 51> You have permission to create a cluster.
+<Title - 51> ７ Note
+<NarrativeText - 51> If you do not have cluster control privileges, you can still complete most of the
+<NarrativeText - 51> steps below as long as you have access to a cluster.
+<NarrativeText - 51> If you only have access to the Databricks SQL workspace, see Set up your
+<NarrativeText - 51> workspace to use Databricks SQL.
+<NarrativeText - 51> Step 1: Create a cluster
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 52> To do exploratory data analysis and data engineering, create a cluster to provide the
+<NarrativeText - 52> compute resources needed to execute commands.
+<Title - 52> 1. Click
+<Title - 52> Compute in the sidebar.
+<NarrativeText - 52> 2. On the Compute page, click Create Cluster. This opens the New Cluster page.
+<NarrativeText - 52> 3. Specify a unique name for the cluster, leave the remaining values in their default
+<Title - 52> state, and click Create Cluster.
+<NarrativeText - 52> To learn more about Databricks clusters, see Clusters.
+<Title - 52> Step 2: Create a Databricks notebook
+<NarrativeText - 52> To get started writing and executing interactive code on Azure Databricks, create a
+<Title - 52> notebook.
+<Title - 52> 1. Click
+<Title - 52> New in the sidebar, then click Notebook.
+<Title - 52> 2. On the Create Notebook page:
+<NarrativeText - 52> Specify a unique name for your notebook.
+<NarrativeText - 52> Make sure the default language is set to Python or Scala.
+<NarrativeText - 52> Select the cluster you created in step 1 from the Cluster dropdown.
+<Title - 52> Click Create.
+<NarrativeText - 52> A notebook opens with an empty cell at the top.
+<NarrativeText - 52> To learn more about creating and managing notebooks, see Manage notebooks.
+<Title - 52> Step 3: Configure Auto Loader to ingest data to Delta Lake
+<NarrativeText - 52> Databricks recommends using Auto Loader for incremental data ingestion. Auto Loader
+<NarrativeText - 52> automatically detects and processes new files as they arrive in cloud object storage.
+<NarrativeText - 52> Databricks recommends storing data with Delta Lake. Delta Lake is an open source
+<NarrativeText - 52> storage layer that provides ACID transactions and enables the data lakehouse. Delta
+<NarrativeText - 52> Lake is the default format for tables created in Databricks.
+<NarrativeText - 52> To configure Auto Loader to ingest data to a Delta Lake table, copy and paste the
+<NarrativeText - 52> following code into the empty cell in your notebook:
+<Title - 52> Python
+<PageBreak - None> <PAGE BREAK>
+<Title - 53> Python
+<Title - 53> # Import functions from pyspark.sql.functions import input_file_name, current_timestamp
+<NarrativeText - 53> # Define variables used in code below file_path = "/databricks-datasets/structured-streaming/events" username = spark.sql("SELECT regexp_replace(current_user(), '[^a-zA-Z0-9]', '_')").first()[0] table_name = f"{username}_etl_quickstart" checkpoint_path = f"/tmp/{username}/_checkpoint/etl_quickstart"
+<UncategorizedText - 53> # Clear out data from previous demo execution spark.sql(f"DROP TABLE IF EXISTS {table_name}") dbutils.fs.rm(checkpoint_path, True)
+<NarrativeText - 53> # Configure Auto Loader to ingest JSON data to a Delta table (spark.readStream .format("cloudFiles") .option("cloudFiles.format", "json") .option("cloudFiles.schemaLocation", checkpoint_path) .load(file_path) .select("*", input_file_name().alias("source_file"), current_timestamp().alias("processing_time")) .writeStream .option("checkpointLocation", checkpoint_path) .trigger(availableNow=True) .toTable(table_name))
+<Title - 53> Scala
+<Title - 53> Scala
+<NarrativeText - 53> // Imports import org.apache.spark.sql.functions.{input_file_name, current_timestamp} import org.apache.spark.sql.streaming.Trigger import spark.implicits._
+<NarrativeText - 53> // Define variables used in code below val file_path = "/databricks-datasets/structured-streaming/events" val username = spark.sql("SELECT regexp_replace(current_user(), '[^a-zA-Z0- 9]', '_')").first.get(0) val table_name = s"${username}_etl_quickstart" val checkpoint_path = s"/tmp/${username}/_checkpoint"
+<UncategorizedText - 53> // Clear out data from previous demo execution spark.sql(s"DROP TABLE IF EXISTS ${table_name}") dbutils.fs.rm(checkpoint_path, true)
+<NarrativeText - 53> // Configure Auto Loader to ingest JSON data to a Delta table spark.readStream
+<PageBreak - None> <PAGE BREAK>
+<UncategorizedText - 54> .format("cloudFiles") .option("cloudFiles.format", "json") .option("cloudFiles.schemaLocation", checkpoint_path) .load(file_path) .select($"*", input_file_name.as("source_file"), current_timestamp.as("processing_time")) .writeStream .option("checkpointLocation", checkpoint_path) .trigger(Trigger.AvailableNow) .toTable(table_name)
+<Title - 54> ７ Note
+<NarrativeText - 54> The variables defined in this code should allow you to safely execute it without risk
+<NarrativeText - 54> of conflicting with existing workspace assets or other users. Restricted network or
+<NarrativeText - 54> storage permissions will raise errors when executing this code; contact your
+<NarrativeText - 54> workspace administrator to troubleshoot these restrictions.
+<Title - 54> To learn more about Auto Loader, see What is Auto Loader?.
+<Title - 54> Step 4: Process and interact with data
+<NarrativeText - 54> Notebooks execute logic cell-by-cell. To execute the logic in your cell:
+<NarrativeText - 54> 1. To run the cell you completed in the previous step, select the cell and press
+<UncategorizedText - 54> SHIFT+ENTER.
+<NarrativeText - 54> 2. To query the table you’ve just created, copy and paste the following code into an
+<NarrativeText - 54> empty cell, then press SHIFT+ENTER to run the cell.
+<Title - 54> Python
+<Title - 54> Python
+<Title - 54> df = spark.read.table(table_name)
+<Title - 54> Scala
+<Title - 54> Scala
+<Title - 54> val df = spark.read.table(table_name)
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 55> 3. To preview the data in your DataFrame, copy and paste the following code into an
+<NarrativeText - 55> empty cell, then press SHIFT+ENTER to run the cell.
+<Title - 55> Python
+<Title - 55> Python
+<Title - 55> display(df)
+<Title - 55> Scala
+<Title - 55> Scala
+<Title - 55> display(df)
+<NarrativeText - 55> To learn more about interactive options for visualizing data, see Visualizations in
+<Title - 55> Databricks notebooks.
+<Title - 55> Step 5: Schedule a job
+<NarrativeText - 55> You can run Databricks notebooks as production scripts by adding them as a task in a
+<NarrativeText - 55> Databricks job. In this step, you will create a new job that you can trigger manually.
+<NarrativeText - 55> To schedule your notebook as a task:
+<Title - 55> 1. Click Schedule on the right side of the header bar.
+<Title - 55> 2. Enter a unique name for the Job name.
+<Title - 55> 3. Click Manual.
+<NarrativeText - 55> 4. In the Cluster drop-down, select the cluster you created in step 1.
+<Title - 55> 5. Click Create.
+<NarrativeText - 55> 6. In the window that appears, click Run now.
+<NarrativeText - 55> 7. To see the job run results, click the
+<Title - 55> icon next to the Last run timestamp.
+<NarrativeText - 55> For more information on jobs, see What is Azure Databricks Jobs?.
+<Title - 55> Additional Integrations
+<Title - 55> Learn more about integrations and tools for data engineering with Azure Databricks:
+<NarrativeText - 55> Connect your favorite IDE
+<Title - 55> Use dbt with Databricks
+<PageBreak - None> <PAGE BREAK>
+<Title - 56> Learn about the Databricks Command Line Interface (CLI)
+<Title - 56> Learn about the Databricks Terraform Provider
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 57> Build an end-to-end data pipeline in Databricks
+<UncategorizedText - 57> Article • 06/08/2023
+<NarrativeText - 57> This article provides an example of creating and deploying an end-to-end data
+<NarrativeText - 57> processing pipeline, including ingesting raw data, transforming the data, and running
+<NarrativeText - 57> analyses on the processed data.
+<Title - 57> ７ Note
+<NarrativeText - 57> This article demonstrates creating a complete data pipeline using Databricks
+<NarrativeText - 57> notebooks and an Azure Databricks job to orchestrate a workflow. Databricks also
+<NarrativeText - 57> provides Delta Live Tables to facilitate the implementation of data processing
+<NarrativeText - 57> pipelines. Delta Live Tables is a framework that provides a declarative interface for
+<NarrativeText - 57> implementing data processing pipelines, and Databricks recommends using Delta
+<NarrativeText - 57> Live Tables to build reliable, maintainable, and testable data processing pipelines.
+<NarrativeText - 57> What is a data pipeline?
+<NarrativeText - 57> A data pipeline implements the steps required to move data from source systems,
+<NarrativeText - 57> transform that data based on requirements, and store the data in a target system. A
+<NarrativeText - 57> data pipeline includes all the processes necessary to turn raw data into prepared data
+<NarrativeText - 57> that users can consume. For example, a data pipeline might prepare data so data
+<NarrativeText - 57> analysts and data scientists can extract value from the data through analysis and
+<Title - 57> reporting.
+<NarrativeText - 57> An extract, transform, and load (ETL) workflow is a common example of a data pipeline.
+<NarrativeText - 57> In ETL processing, data is ingested from source systems and written to a staging area,
+<NarrativeText - 57> transformed based on requirements (ensuring data quality, deduplicating records, and
+<NarrativeText - 57> so forth), and then written to a target system such as a data warehouse or data lake.
+<Title - 57> Data pipeline steps
+<NarrativeText - 57> To help you get started building data pipelines on Azure Databricks, the example
+<NarrativeText - 57> included in this article walks through creating a data processing workflow:
+<NarrativeText - 57> Use Azure Databricks features to explore a raw dataset.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 58> Create a Databricks notebook to ingest raw source data and write the raw data to
+<Title - 58> a target table.
+<NarrativeText - 58> Create a Databricks notebook to transform the raw source data and write the
+<NarrativeText - 58> transformed data to a target table.
+<NarrativeText - 58> Create a Databricks notebook to query the transformed data.
+<NarrativeText - 58> Automate the data pipeline with an Azure Databricks job.
+<Title - 58> Requirements
+<NarrativeText - 58> You’re logged into Azure Databricks and in the Data Science & Engineering
+<Title - 58> workspace.
+<NarrativeText - 58> You have permission to create a cluster.
+<Title - 58> ７ Note
+<NarrativeText - 58> If you do not have cluster create permissions, you can still complete most of the
+<NarrativeText - 58> steps below as long as you have access to a cluster.
+<Title - 58> Example: Million Song dataset
+<NarrativeText - 58> The dataset used in this example is a subset of the Million Song Dataset
+<Title - 58> , a collection
+<NarrativeText - 58> of features and metadata for contemporary music tracks. This dataset is available in the
+<NarrativeText - 58> sample datasets included in your Azure Databricks workspace.
+<NarrativeText - 58> Step 1: Create a cluster
+<NarrativeText - 58> To perform the data processing and analysis in this example, create a cluster to provide
+<NarrativeText - 58> the compute resources needed to run commands.
+<Title - 58> 1. Click Compute in the sidebar.
+<NarrativeText - 58> 2. On the Compute page, click Create Cluster. The New Cluster page appears.
+<NarrativeText - 58> 3. Specify a unique name for the cluster, leave the remaining values in their default
+<Title - 58> state, and click Create Cluster.
+<NarrativeText - 58> To learn more about Databricks clusters, see Clusters.
+<NarrativeText - 58> Step 2: Explore the source data
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 59> A common first step in creating a data pipeline is understanding the source data for the
+<NarrativeText - 59> pipeline. In this step, you will run Databricks Utilities commands in a notebook to
+<NarrativeText - 59> examine the source data and artifacts.
+<Title - 59> For an introduction to Databricks notebooks, watch this video:
+<Title - 59> https://www.youtube-nocookie.com/embed/zhUtu0J8LWg?rel=0
+<Title - 59> 1. In the sidebar, click
+<Title - 59> New and select Notebook from the menu. The notebook
+<NarrativeText - 59> opens with a default name that you can replace.
+<UncategorizedText - 59> 2. Enter a name for the notebook, for example, Explore songs data . By default:
+<NarrativeText - 59> Python is the selected language.
+<NarrativeText - 59> The notebook is attached to the last cluster you used - in this case, the cluster
+<NarrativeText - 59> you just created.
+<NarrativeText - 59> 3. To view the contents of the directory containing the dataset, enter the following in
+<Title - 59> the first cell of the notebook, click
+<Title - 59> , and select Run Cell.
+<Title - 59> Python
+<Title - 59> display(dbutils.fs.ls("/databricks-datasets/songs/"))
+<Title - 59> path
+<Title - 59> name
+<Title - 59> size modificationTime
+<Title - 59> 1 dbfs:/databricks-
+<Title - 59> README.md
+<UncategorizedText - 59> 1719
+<UncategorizedText - 59> 1454620183000
+<Title - 59> datasets/songs/README.md
+<Title - 59> 2 dbfs:/databricks-datasets/songs/data-001/
+<UncategorizedText - 59> data-001/
+<UncategorizedText - 59> 0
+<UncategorizedText - 59> 1672791237846
+<Title - 59> 3 dbfs:/databricks-datasets/songs/data-002/
+<UncategorizedText - 59> data-002/
+<UncategorizedText - 59> 0
+<UncategorizedText - 59> 1672791237846
+<NarrativeText - 59> 4. The README file has information about the dataset, including a description of the
+<NarrativeText - 59> data schema. The schema information is used in the next step when ingesting the
+<NarrativeText - 59> data. To view the contents of the README, click
+<NarrativeText - 59> in the cell actions menu, select
+<NarrativeText - 59> Add Cell Below, enter the following in the new cell, click
+<Title - 59> , and select Run Cell.
+<Title - 59> Python
+<Title - 59> with open("/dbfs/databricks-datasets/songs/README.md") as f: x = ''.join(f.readlines())
+<Title - 59> print(x)
+<PageBreak - None> <PAGE BREAK>
+<UncategorizedText - 60> Sample of Million Song Dataset ===============================
+<NarrativeText - 60> ## Source This data is a small subset of the [Million Song Dataset] (http://labrosa.ee.columbia.edu/millionsong/). The original data was contributed by The Echo Nest. Prepared by T. Bertin-Mahieux <tb2332 '@' columbia.edu>
+<UncategorizedText - 60> ## Attribute Information - artist_id:string - artist_latitude:double - artist_longitude:double - artist_location:string - artist_name:string - duration:double - end_of_fade_in:double - key:int - key_confidence:double - loudness:double - release:string - song_hotnes:double - song_id:string - start_of_fade_out:double - tempo:double - time_signature:double - time_signature_confidence:double - title:string - year:double - partial_sequence:int ...
+<NarrativeText - 60> 5. The records used in this example are in the /databricks-datasets/songs/data-001/
+<NarrativeText - 60> directory. To view the contents of this directory, click
+<NarrativeText - 60> in the cell actions menu,
+<NarrativeText - 60> select Add Cell Below, enter the following in the new cell, click
+<Title - 60> , and select Run
+<Title - 60> Cell.
+<Title - 60> Python
+<Title - 60> display(dbutils.fs.ls("/databricks-datasets/songs/data-001"))
+<Title - 60> path
+<Title - 60> name
+<Title - 60> size
+<Title - 60> modificationTime
+<Title - 60> 1 dbfs:/databricks-datasets/songs/data-
+<Title - 60> header.txt
+<UncategorizedText - 60> 377
+<UncategorizedText - 60> 1454633901000
+<Title - 60> 001/header.txt
+<Title - 60> 2 dbfs:/databricks-datasets/songs/data-
+<Title - 60> part-
+<UncategorizedText - 60> 52837
+<UncategorizedText - 60> 1454547464000
+<UncategorizedText - 60> 001/part-00000
+<UncategorizedText - 60> 00000
+<PageBreak - None> <PAGE BREAK>
+<Title - 61> path
+<Title - 61> name
+<Title - 61> size
+<Title - 61> modificationTime
+<Title - 61> 3 dbfs:/databricks-datasets/songs/data-
+<Title - 61> part-
+<UncategorizedText - 61> 52469
+<UncategorizedText - 61> 1454547465000
+<UncategorizedText - 61> 001/part-00001
+<UncategorizedText - 61> 00001
+<NarrativeText - 61> 6. To view a sample of the records, click
+<NarrativeText - 61> in the cell actions menu, select Add Cell
+<NarrativeText - 61> Below, enter the following in the new cell, click
+<Title - 61> , and select Run Cell.
+<Title - 61> Python
+<Title - 61> with open("/dbfs/databricks-datasets/songs/data-001/part-00000") as f: x = ''.join(f.readlines())
+<Title - 61> print(x)
+<UncategorizedText - 61> AR81V6H1187FB48872 nan nan Earl Sixteen 213.7073 0.0 11 0.419 -12.106 Soldier of Jah Army nan SOVNZSZ12AB018A9B8 208.289 125.882 1 0.0 Rastaman 2003 -- ARVVZQP11E2835DBCB nan nan Wavves 133.25016 0.0 0 0.282 0.596 Wavvves 0.471578247701 SOJTQHQ12A8C143C5F 128.116 89.519 1 0.0 I Want To See You (And Go To The Movies) 2009 -- ARFG9M11187FB3BBCB nan nan Nashua USA C-Side 247.32689 0.0 9 0.612 -4.896 Santa Festival Compilation 2008 vol.1 nan SOAJSQL12AB0180501 242.196 171.278 5 1.0 Loose on the Dancefloor 0 225261 ...
+<NarrativeText - 61> From viewing a sample of the records, you can observe a few things about the
+<NarrativeText - 61> data. You’ll use these observations later when processing the data:
+<NarrativeText - 61> The records do not contain a header. Instead, the header is stored in a
+<Title - 61> separate file in the same directory.
+<NarrativeText - 61> The files are in tab-separated value (TSV) format.
+<NarrativeText - 61> Some fields are missing or invalid.
+<Title - 61> Step 3: Ingest raw data to Delta Lake
+<NarrativeText - 61> Databricks recommends using Auto Loader for data ingestion. Auto Loader
+<NarrativeText - 61> automatically detects and processes new files as they arrive in cloud object storage.
+<NarrativeText - 61> Databricks recommends storing data with Delta Lake. Delta Lake is an open source
+<NarrativeText - 61> storage layer that provides ACID transactions and enables the data lakehouse. Delta
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 62> Lake is the default format for tables created in Databricks.
+<NarrativeText - 62> You can configure Auto Loader to automatically detect the schema of loaded data,
+<NarrativeText - 62> allowing you to initialize tables without explicitly declaring the data schema and evolve
+<NarrativeText - 62> the table schema as new columns are introduced. This eliminates the need to manually
+<NarrativeText - 62> track and apply schema changes over time. Databricks recommends schema inference
+<NarrativeText - 62> when using Auto Loader. However, as seen in the data exploration step, the songs data
+<NarrativeText - 62> does not contain header information. Because the header is not stored with the data,
+<NarrativeText - 62> you’ll need to explicitly define the schema, as shown in the next example.
+<Title - 62> 1. In the sidebar, click
+<Title - 62> New and select Notebook from the menu. The Create
+<NarrativeText - 62> Notebook dialog appears.
+<NarrativeText - 62> 2. Enter a name for the notebook, for example, Ingest songs data . In Default
+<NarrativeText - 62> Language, select Python. In Cluster, select the cluster you created or an existing
+<Title - 62> cluster.
+<Title - 62> 3. Click Create.
+<Title - 62> 4. Enter the following in the first cell of the notebook:
+<Title - 62> Python
+<Title - 62> from pyspark.sql.types import DoubleType, IntegerType, StringType, StructType, StructField
+<NarrativeText - 62> # Define variables used in code below file_path = "/databricks-datasets/songs/data-001/" table_name = "<table-name>" checkpoint_path = "<checkpoint-path>"
+<NarrativeText - 62> # For purposes of this example, clear out data from previous runs. Because Auto Loader # is intended for incremental loading, in production applications you normally won't drop # target tables and checkpoints between runs. spark.sql(f"DROP TABLE IF EXISTS {table_name}") dbutils.fs.rm(checkpoint_path, True)
+<UncategorizedText - 62> schema = StructType( [ StructField("artist_id", StringType(), True), StructField("artist_lat", DoubleType(), True), StructField("artist_long", DoubleType(), True), StructField("artist_location", StringType(), True), StructField("artist_name", StringType(), True), StructField("duration", DoubleType(), True), StructField("end_of_fade_in", DoubleType(), True), StructField("key", IntegerType(), True),
+<PageBreak - None> <PAGE BREAK>
+<UncategorizedText - 63> StructField("key_confidence", DoubleType(), True), StructField("loudness", DoubleType(), True), StructField("release", StringType(), True), StructField("song_hotnes", DoubleType(), True), StructField("song_id", StringType(), True), StructField("start_of_fade_out", DoubleType(), True), StructField("tempo", DoubleType(), True), StructField("time_signature", DoubleType(), True), StructField("time_signature_confidence", DoubleType(), True), StructField("title", StringType(), True), StructField("year", IntegerType(), True), StructField("partial_sequence", IntegerType(), True) ] )
+<Title - 63> (spark.readStream .format("cloudFiles") .schema(schema) .option("cloudFiles.format", "csv") .option("sep","\t") .load(file_path) .writeStream .option("checkpointLocation", checkpoint_path) .trigger(availableNow=True) .toTable(table_name))
+<Title - 63> Replace:
+<NarrativeText - 63> <table-name> with the name of the Delta table to contain the ingested
+<Title - 63> records, for example, pipeline_get_started_raw_song_data .
+<NarrativeText - 63> <checkpoint-path> with a path to a directory in DBFS to maintain checkpoint
+<Title - 63> files, for example, /tmp/pipeline_get_started/_checkpoint/song_data .
+<Title - 63> 5. Click
+<NarrativeText - 63> , and select Run Cell. This example defines the data schema using the
+<NarrativeText - 63> information from the README , ingests the songs data from all of the files contained
+<NarrativeText - 63> in file_path , and writes the data to the Delta table specified by table_name .
+<NarrativeText - 63> Step 4: Prepare raw data and write to Delta Lake
+<NarrativeText - 63> In this step, you transform the raw songs data by filtering out unneeded columns and
+<NarrativeText - 63> adding a new field containing a timestamp for the creation of the new record.
+<Title - 63> 1. In the sidebar, click
+<Title - 63> New and select Notebook from the menu. The Create
+<NarrativeText - 63> Notebook dialog appears.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 64> 2. Enter a name for the notebook, for example, Prepare songs data . In Default
+<NarrativeText - 64> Language, select SQL. In Cluster, select the cluster you created or an existing
+<Title - 64> cluster.
+<Title - 64> 3. Click Create.
+<Title - 64> 4. Enter the following in the first cell of the notebook:
+<Title - 64> SQL
+<UncategorizedText - 64> CREATE OR REPLACE TABLE <table-name> ( artist_id STRING, artist_name STRING, duration DOUBLE, release STRING, tempo DOUBLE, time_signature DOUBLE, title STRING, year DOUBLE, processed_time TIMESTAMP );
+<UncategorizedText - 64> INSERT INTO <table-name> SELECT artist_id, artist_name, duration, release, tempo, time_signature, title, year, current_timestamp() FROM <raw-songs-table-name>
+<Title - 64> Replace
+<NarrativeText - 64> <table-name> with the name of the Delta table to contain the filtered and
+<NarrativeText - 64> transformed records, for example, pipeline_get_started_prepared_song_data .
+<NarrativeText - 64> <raw-songs-table-name> with the name of the Delta table containing the raw
+<NarrativeText - 64> songs records ingested in the previous step, for example,
+<Title - 64> pipeline_get_started_raw_song_data .
+<Title - 64> 5. Click
+<Title - 64> , and select Run Cell.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 65> Step 5: Query the transformed data
+<NarrativeText - 65> In this step, you extend the processing pipeline by adding queries to analyze the songs
+<NarrativeText - 65> data. These queries use the prepared records created in the previous step.
+<Title - 65> 1. In the sidebar, click
+<Title - 65> New and select Notebook from the menu. The Create
+<NarrativeText - 65> Notebook dialog appears.
+<NarrativeText - 65> 2. Enter a name for the notebook, for example, Analyze songs data . In Default
+<NarrativeText - 65> Language, select SQL. In Cluster, select the cluster you created or an existing
+<Title - 65> cluster.
+<Title - 65> 3. Click Create.
+<Title - 65> 4. Enter the following in the first cell of the notebook:
+<Title - 65> SQL
+<NarrativeText - 65> CREATE OR REPLACE VIEW artists_by_year AS SELECT artist_name, year FROM <prepared-songs-table-name> -- Remove records where the year field isn't populated WHERE year > 0;
+<ListItem - 65> - Which artists released the most songs in each year? SELECT artist_name, count(artist_name) AS num_songs, year FROM artists_by_year GROUP BY artist_name, year ORDER BY num_songs DESC, year DESC
+<Title - 65> Replace
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 66> <prepared-songs-table-name> with the name of the prepared table created in
+<Title - 66> the previous step, for example pipeline_get_started_prepared_song_data .
+<Title - 66> 5. Click
+<NarrativeText - 66> in the cell actions menu, select Add Cell Below and enter the following in
+<Title - 66> the new cell:
+<Title - 66> SQL
+<ListItem - 66> - Find songs for your DJ list CREATE OR REPLACE VIEW danceable_songs AS SELECT artist_name, title, tempo FROM <prepared-songs-table-name> WHERE time_signature = 4 AND tempo between 100 and 140;
+<Title - 66> SELECT * FROM danceable_songs limit 100
+<Title - 66> Replace
+<NarrativeText - 66> <prepared-songs-table-name> with the name of the prepared table created in
+<Title - 66> the previous step, for example pipeline_get_started_prepared_song_data .
+<NarrativeText - 66> 6. To run the queries and view the output, click Run all.
+<NarrativeText - 66> Step 6: Create an Azure Databricks job to run the pipeline
+<NarrativeText - 66> You can create a workflow to automate running the data ingestion, processing, and
+<NarrativeText - 66> analysis steps using an Azure Databricks job.
+<NarrativeText - 66> 1. In your Data Science & Engineering workspace, do one of the following:
+<Title - 66> Click
+<Title - 66> Workflows in the sidebar and click
+<UncategorizedText - 66> .
+<Title - 66> In the sidebar, click
+<Title - 66> New and select Job.
+<NarrativeText - 66> 2. In the task dialog box that appears on the Tasks tab, replace Add a name for your
+<Title - 66> job… with your job name, for example, “Songs workflow”.
+<NarrativeText - 66> 3. In Task name, enter a name for the first task, for example, Ingest_songs_data .
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 67> 4. In Type, select the Notebook task type.
+<Title - 67> 5. In Source, select Workspace.
+<NarrativeText - 67> 6. Use the file browser to find the data ingestion notebook, click the notebook name,
+<Title - 67> and click Confirm.
+<NarrativeText - 67> 7. In Cluster, select Shared_job_cluster or the cluster you created in the Create a
+<Title - 67> cluster step.
+<Title - 67> 8. Click Create.
+<Title - 67> 9. Click
+<NarrativeText - 67> below the task you just created.
+<NarrativeText - 67> 10. In Task name, enter a name for the task, for example, Prepare_songs_data .
+<NarrativeText - 67> 11. In Type, select the Notebook task type.
+<Title - 67> 12. In Source, select Workspace.
+<NarrativeText - 67> 13. Use the file browser to find the data preparation notebook, click the notebook
+<Title - 67> name, and click Confirm.
+<NarrativeText - 67> 14. In Cluster, select Shared_job_cluster or the cluster you created in the Create a
+<Title - 67> cluster step.
+<Title - 67> 15. Click Create.
+<Title - 67> 16. Click
+<NarrativeText - 67> below the task you just created.
+<NarrativeText - 67> 17. In Task name, enter a name for the task, for example, Analyze_songs_data .
+<NarrativeText - 67> 18. In Type, select the Notebook task type.
+<Title - 67> 19. In Source, select Workspace.
+<NarrativeText - 67> 20. Use the file browser to find the data analysis notebook, click the notebook name,
+<Title - 67> and click Confirm.
+<NarrativeText - 67> 21. In Cluster, select Shared_job_cluster or the cluster you created in the Create a
+<Title - 67> cluster step.
+<Title - 67> 22. Click Create.
+<NarrativeText - 67> 23. To run the workflow, Click
+<NarrativeText - 67> . To view details for the run, click the link in
+<NarrativeText - 67> the Start time column for the run in the job runs view. Click each task to view
+<Title - 67> details for the task run.
+<NarrativeText - 67> 24. To view the results when the workflow completes, click the final data analysis task.
+<NarrativeText - 67> The Output page appears and displays the query results.
+<Title - 67> Step 7: Schedule the data pipeline job
+<NarrativeText - 67> A common requirement is to run a data pipeline on a scheduled basis. To define a
+<NarrativeText - 67> schedule for the job that runs the pipeline:
+<Title - 67> 1. Click
+<Title - 67> Workflows in the sidebar.
+<NarrativeText - 67> 2. In the Name column, click the job name. The side panel displays the Job details.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 68> 3. Click Add trigger in the Job details panel and select Scheduled in Trigger type.
+<NarrativeText - 68> 4. Specify the period, starting time, and time zone. Optionally select the Show Cron
+<NarrativeText - 68> Syntax checkbox to display and edit the schedule in Quartz Cron Syntax
+<UncategorizedText - 68> .
+<Title - 68> 5. Click Save.
+<Title - 68> Learn more
+<NarrativeText - 68> To learn more about Databricks notebooks, see Introduction to Databricks
+<Title - 68> notebooks.
+<UncategorizedText - 68> To learn more about Azure Databricks Jobs, see What is Azure Databricks Jobs?.
+<Title - 68> To learn more about Delta Lake, see What is Delta Lake?.
+<UncategorizedText - 68> To learn more about Delta Live Tables, see the What is Delta Live Tables?.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 69> Tutorial: Run an end-to-end lakehouse analytics pipeline
+<UncategorizedText - 69> Article • 06/12/2023
+<NarrativeText - 69> This tutorial shows you how to set up an end-to-end analytics pipeline for an Azure
+<NarrativeText - 69> Databricks lakehouse.
+<Title - 69> ） Important
+<NarrativeText - 69> This tutorial uses interactive notebooks to complete common ETL tasks in Python
+<NarrativeText - 69> on Unity Catalog enabled clusters. If you are not using Unity Catalog, see Run your
+<Title - 69> first ETL workload on Azure Databricks.
+<Title - 69> Tasks in this tutorial
+<NarrativeText - 69> By the end of this article, you will feel comfortable:
+<NarrativeText - 69> 1. Launching a Unity Catalog enabled compute cluster.
+<NarrativeText - 69> 2. Creating a Databricks notebook.
+<NarrativeText - 69> 3. Writing and reading data from a Unity Catalog external location.
+<NarrativeText - 69> 4. Configuring incremental data ingestion to a Unity Catalog table with Auto Loader.
+<NarrativeText - 69> 5. Executing notebook cells to process, query, and preview data.
+<NarrativeText - 69> 6. Scheduling a notebook as a Databricks job.
+<Title - 69> 7. Querying Unity Catalog tables from Databricks SQL
+<NarrativeText - 69> Azure Databricks provides a suite of production-ready tools that allow data
+<NarrativeText - 69> professionals to quickly develop and deploy extract, transform, and load (ETL) pipelines.
+<NarrativeText - 69> Unity Catalog allows data stewards to configure and secure storage credentials, external
+<NarrativeText - 69> locations, and database objects for users throughout an organization. Databricks SQL
+<NarrativeText - 69> allows analysts to run SQL queries against the same tables used in production ETL
+<NarrativeText - 69> workloads, allowing for real time business intelligence at scale.
+<Title - 69> Requirements
+<Title - 69> ７ Note
+<NarrativeText - 69> If you do not have cluster control privileges, you can still complete most of the
+<NarrativeText - 69> steps below as long as you have access to a cluster.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 70> If you only have access to the Databricks SQL workspace, see Set up your
+<NarrativeText - 70> workspace to use Databricks SQL.
+<NarrativeText - 70> Step 1: Create a cluster
+<NarrativeText - 70> To do exploratory data analysis and data engineering, create a cluster to provide the
+<NarrativeText - 70> compute resources needed to execute commands.
+<Title - 70> 1. Click
+<Title - 70> Compute in the sidebar.
+<NarrativeText - 70> 2. On the Compute page, click Create Cluster. This opens the New Cluster page.
+<NarrativeText - 70> 3. Specify a unique name for the cluster.
+<NarrativeText - 70> 4. Select the Single node radio button.
+<NarrativeText - 70> 5. Select Assigned from the Access mode dropdown.
+<NarrativeText - 70> 6. Make sure your email address is visible in the Single user access field.
+<NarrativeText - 70> 7. Select the desired Databricks runtime version, 11.1 or above to use Unity Catalog.
+<Title - 70> 8. Click Create Cluster.
+<NarrativeText - 70> To learn more about Databricks clusters, see Clusters.
+<Title - 70> Step 2: Create a Databricks notebook
+<NarrativeText - 70> To get started writing and executing interactive code on Azure Databricks, create a
+<Title - 70> notebook.
+<Title - 70> 1. Click
+<Title - 70> New in the sidebar, then click Notebook.
+<Title - 70> 2. On the Create Notebook page:
+<NarrativeText - 70> Specify a unique name for your notebook.
+<NarrativeText - 70> Make sure the default language is set to Python.
+<NarrativeText - 70> Select the cluster you created in step 1 from the Cluster dropdown.
+<Title - 70> Click Create.
+<NarrativeText - 70> A notebook opens with an empty cell at the top.
+<NarrativeText - 70> To learn more about creating and managing notebooks, see Manage notebooks.
+<NarrativeText - 70> Step 3: Write and read data from an external location managed by Unity Catalog
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 71> Databricks recommends using Auto Loader for incremental data ingestion. Auto Loader
+<NarrativeText - 71> automatically detects and processes new files as they arrive in cloud object storage.
+<NarrativeText - 71> You can use Unity Catalog to manage secure access to external locations. Users or
+<NarrativeText - 71> service principals with READ FILES permissions on an external location can use Auto
+<NarrativeText - 71> Loader to ingest data.
+<NarrativeText - 71> Normally, data will arrive in an external location due to writes from other systems. In this
+<NarrativeText - 71> demo, you can simulate data arrival by writing out JSON files to an external location.
+<NarrativeText - 71> Copy the code below into a notebook cell. Replace the string value for catalog with the
+<NarrativeText - 71> name of a catalog with CREATE CATALOG and USE CATALOG permissions. Replace the string
+<UncategorizedText - 71> value for external_location with the path for an external location with READ FILES ,
+<Title - 71> WRITE FILES , and CREATE EXTERNAL TABLE permissions.
+<NarrativeText - 71> External locations can be defined as an entire storage container, but often point to a
+<NarrativeText - 71> directory nested in a container.
+<NarrativeText - 71> The correct format for an external location path is
+<Title - 71> "abfss://container_name@storage_account.dfs.core.windows.net/path/to/external_loca
+<Title - 71> tion" .
+<Title - 71> Python
+<NarrativeText - 71> external_location = "<your-external-location>" catalog = "<your-catalog>"
+<NarrativeText - 71> dbutils.fs.put(f"{external_location}/filename.txt", "Hello world!", True) display(dbutils.fs.head(f"{external_location}/filename.txt")) dbutils.fs.rm(f"{external_location}/filename.txt")
+<Title - 71> display(spark.sql(f"SHOW SCHEMAS IN {catalog}"))
+<NarrativeText - 71> Executing this cell should print a line that 12 bytes were written, print the string “Hello
+<NarrativeText - 71> world!”, and display all the databases present in the catalog provided. If you are unable
+<NarrativeText - 71> to get this cell to run, confirm that you are in a Unity Catalog enabled workspace and
+<NarrativeText - 71> request proper permissions from your workspace administrator to complete this tutorial.
+<NarrativeText - 71> The Python code below uses your email address to create a unique database in the
+<NarrativeText - 71> catalog provided and a unique storage location in external location provided. Executing
+<NarrativeText - 71> this cell will remove all data associated with this tutorial, allowing you to execute this
+<NarrativeText - 71> example idempotently. A class is defined and instantiated that you will use to simulate
+<NarrativeText - 71> batches of data arriving from a conncted system to your source external location.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 72> Copy this code to a new cell in your notebook and execute it to configure your
+<Title - 72> environment.
+<Title - 72> ７ Note
+<NarrativeText - 72> The variables defined in this code should allow you to safely execute it without risk
+<NarrativeText - 72> of conflicting with existing workspace assets or other users. Restricted network or
+<NarrativeText - 72> storage permissions will raise errors when executing this code; contact your
+<NarrativeText - 72> workspace administrator to troubleshoot these restrictions.
+<Title - 72> Python
+<Title - 72> from pyspark.sql.functions import col
+<NarrativeText - 72> # Set parameters for isolation in workspace and reset demo username = spark.sql("SELECT regexp_replace(current_user(), '[^a-zA-Z0-9]', '_')").first()[0] database = f"{catalog}.e2e_lakehouse_{username}_db" source = f"{external_location}/e2e-lakehouse-source" table = f"{database}.target_table" checkpoint_path = f"{external_location}/_checkpoint/e2e-lakehouse-demo"
+<Title - 72> spark.sql(f"SET c.username='{username}'") spark.sql(f"SET c.database={database}") spark.sql(f"SET c.source='{source}'")
+<Title - 72> spark.sql("DROP DATABASE IF EXISTS ${c.database} CASCADE") spark.sql("CREATE DATABASE ${c.database}") spark.sql("USE ${c.database}")
+<Title - 72> # Clear out data from previous demo execution dbutils.fs.rm(source, True) dbutils.fs.rm(checkpoint_path, True)
+<NarrativeText - 72> # Define a class to load batches of data to source class LoadData:
+<NarrativeText - 72> def __init__(self, source): self.source = source
+<NarrativeText - 72> def get_date(self): try: df = spark.read.format("json").load(source) except: return "2016-01-01" batch_date = df.selectExpr("max(distinct(date(tpep_pickup_datetime))) + 1 day").first() [0] if batch_date.month == 3:
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 73> raise Exception("Source data exhausted") return batch_date
+<Title - 73> def get_batch(self, batch_date): return ( spark.table("samples.nyctaxi.trips") .filter(col("tpep_pickup_datetime").cast("date") == batch_date) )
+<NarrativeText - 73> def write_batch(self, batch): batch.write.format("json").mode("append").save(self.source)
+<Title - 73> def land_batch(self): batch_date = self.get_date() batch = self.get_batch(batch_date) self.write_batch(batch)
+<Title - 73> RawData = LoadData(source)
+<NarrativeText - 73> You can now land a batch of data by copy the following code into a cell and executing it.
+<NarrativeText - 73> You can manually execute this cell up to 60 times to trigger new data arrival.
+<Title - 73> Python
+<Title - 73> RawData.land_batch()
+<Title - 73> Step 4: Configure Auto Loader to ingest data to Unity Catalog
+<NarrativeText - 73> Databricks recommends storing data with Delta Lake. Delta Lake is an open source
+<NarrativeText - 73> storage layer that provides ACID transactions and enables the data lakehouse. Delta
+<NarrativeText - 73> Lake is the default format for tables created in Databricks.
+<NarrativeText - 73> To configure Auto Loader to ingest data to a Unity Catalog table, copy and paste the
+<NarrativeText - 73> following code into an empty cell in your notebook:
+<Title - 73> Python
+<Title - 73> # Import functions from pyspark.sql.functions import input_file_name, current_timestamp
+<NarrativeText - 73> # Configure Auto Loader to ingest JSON data to a Delta table (spark.readStream .format("cloudFiles") .option("cloudFiles.format", "json") .option("cloudFiles.schemaLocation", checkpoint_path) .load(file_path)
+<PageBreak - None> <PAGE BREAK>
+<Title - 74> .select("*", input_file_name().alias("source_file"), current_timestamp().alias("processing_time")) .writeStream .option("checkpointLocation", checkpoint_path) .trigger(availableNow=True) .option("mergeSchema", "true") .toTable(table))
+<Title - 74> To learn more about Auto Loader, see What is Auto Loader?.
+<UncategorizedText - 74> To learn more about Structured Streaming with Unity Catalog, see Using Unity Catalog
+<Title - 74> with Structured Streaming.
+<Title - 74> Step 5: Process and interact with data
+<NarrativeText - 74> Notebooks execute logic cell-by-cell. Use these steps to execute the logic in your cell:
+<NarrativeText - 74> 1. To run the cell you completed in the previous step, select the cell and press
+<UncategorizedText - 74> SHIFT+ENTER.
+<NarrativeText - 74> 2. To query the table you’ve just created, copy and paste the following code into an
+<NarrativeText - 74> empty cell, then press SHIFT+ENTER to run the cell.
+<Title - 74> Python
+<Title - 74> df = spark.read.table(table_name)
+<NarrativeText - 74> 3. To preview the data in your DataFrame, copy and paste the following code into an
+<NarrativeText - 74> empty cell, then press SHIFT+ENTER to run the cell.
+<Title - 74> Python
+<Title - 74> display(df)
+<NarrativeText - 74> To learn more about interactive options for visualizing data, see Visualizations in
+<Title - 74> Databricks notebooks.
+<Title - 74> Step 6: Schedule a job
+<NarrativeText - 74> You can run Databricks notebooks as production scripts by adding them as a task in a
+<NarrativeText - 74> Databricks job. In this step, you will create a new job that you can trigger manually.
+<NarrativeText - 74> To schedule your notebook as a task:
+<PageBreak - None> <PAGE BREAK>
+<Title - 75> 1. Click Schedule on the right side of the header bar.
+<Title - 75> 2. Enter a unique name for the Job name.
+<Title - 75> 3. Click Manual.
+<NarrativeText - 75> 4. In the Cluster drop-down, select the cluster you created in step 1.
+<Title - 75> 5. Click Create.
+<NarrativeText - 75> 6. In the window that appears, click Run now.
+<NarrativeText - 75> 7. To see the job run results, click the
+<Title - 75> icon next to the Last run timestamp.
+<NarrativeText - 75> For more information on jobs, see What is Azure Databricks Jobs?.
+<Title - 75> Step 7: Query table from Databricks SQL
+<UncategorizedText - 75> Anyone with the USE CATALOG permission on the current catalog, the USE SCHEMA
+<NarrativeText - 75> permission on the current schema, and SELECT permissions on the table can query the
+<Title - 75> contents of the table from their preferred Databricks API.
+<NarrativeText - 75> You can switch to the Databricks SQL UI using the persona switcher above the + in the
+<NarrativeText - 75> top left of the screen. Select SQL from the dropdown menu.
+<NarrativeText - 75> You need access to a running SQL warehouse to execute queries in Databricks SQL.
+<NarrativeText - 75> The table you created earlier in this tutorial has the name target_table . You can query it
+<NarrativeText - 75> using the catalog you provided in the first cell and the database with the patern
+<NarrativeText - 75> e2e_lakehouse_<your-username> . You can use the Data Explorer to find the data objects
+<NarrativeText - 75> you created.
+<Title - 75> Additional Integrations
+<Title - 75> Learn more about integrations and tools for data engineering with Azure Databricks:
+<NarrativeText - 75> Connect your favorite IDE
+<Title - 75> Use dbt with Databricks
+<Title - 75> Learn about the Databricks Command Line Interface (CLI)
+<Title - 75> Learn about the Databricks Terraform Provider
+<PageBreak - None> <PAGE BREAK>
+<Title - 76> Tutorial: Connect to Azure Data Lake Storage Gen2
+<UncategorizedText - 76> Article • 06/13/2023
+<NarrativeText - 76> This tutorial guides you through all the steps necessary to connect from Azure Databricks to Azure
+<NarrativeText - 76> Data Lake Storage Gen2 using OAuth 2.0 with an Azure service principal.
+<Title - 76> ７ Note
+<NarrativeText - 76> You can also connect to Azure Data Lake Storage Gen2 with Unity Catalog. To learn how to get
+<NarrativeText - 76> started with Unity Catalog, see Tutorial: Unity Catalog metastore admin tasks for Databricks
+<Title - 76> SQL
+<NarrativeText - 76> In this tutorial you learn how to:
+<Title - 76> 1. Create an Azure service principal.
+<NarrativeText - 76> 2. Create a client secret for your service principal.
+<Title - 76> 3. Grant the service principal access to Azure Storage.
+<Title - 76> 4. Add the client secret to Azure Key Vault.
+<Title - 76> 5. Create an Azure Key Vault-backed secret in your workspace
+<Title - 76> 6. Connect to Azure Storage using Python
+<Title - 76> Requirements
+<NarrativeText - 76> Complete these tasks before you begin this tutorial:
+<NarrativeText - 76> Create an Azure Databricks workspace. See Quickstart: Create an Azure Databricks workspace
+<NarrativeText - 76> Create an Azure Data Lake Storage Gen2 storage account. See Quickstart: Create an Azure
+<Title - 76> Data Lake Storage Gen2 storage account.
+<NarrativeText - 76> Create an Azure Key Vault. See Quickstart: Create an Azure Key Vault
+<Title - 76> Step 1: Create an Azure service principal
+<NarrativeText - 76> To use service principals to connect to Azure Data Lake Storage Gen2, an admin user must create a
+<NarrativeText - 76> new Azure Active Directory (Azure AD) application. If you already have an Azure AD service
+<NarrativeText - 76> principal available, skip ahead to Step 2: Create a client secret for your service principal.
+<NarrativeText - 76> To create an Azure AD service principal, follow these instructions:
+<Title - 76> 1. Sign in to the Azure portal
+<UncategorizedText - 76> .
+<Title - 76> ７ Note
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 77> The portal to use is different depending on whether your Azure AD application runs in
+<NarrativeText - 77> the Azure public cloud or in a national or sovereign cloud. For more information, see
+<Title - 77> National clouds.
+<NarrativeText - 77> 2. If you have access to multiple tenants, subscriptions, or directories, click the Directories +
+<NarrativeText - 77> subscriptions (directory with filter) icon in the top menu to switch to the directory in which
+<NarrativeText - 77> you want to provision the service principal.
+<Title - 77> 3. Search for and select Azure Active Directory.
+<Title - 77> 4. In Manage, click App registrations > New registration.
+<NarrativeText - 77> 5. For Name, enter a name for the application.
+<UncategorizedText - 77> 6. In the Supported account types section, select Accounts in this organizational directory
+<Title - 77> only (Single tenant).
+<Title - 77> 7. Click Register.
+<NarrativeText - 77> Step 2: Create a client secret for your service principal
+<Title - 77> 1. In Manage, click Certificates & secrets.
+<NarrativeText - 77> 2. On the Client secrets tab, click New client secret.
+<NarrativeText - 77> 3. In the Add a client secret pane, for Description, enter a description for the client secret.
+<NarrativeText - 77> 4. For Expires, select an expiry time period for the client secret, and then click Add.
+<NarrativeText - 77> 5. Copy and store the client secret’s Value in a secure place, as this client secret is the password
+<Title - 77> for your application.
+<NarrativeText - 77> 6. On the application page’s Overview page, in the Essentials section, copy the following values:
+<Title - 77> Application (client) ID
+<PageBreak - None> <PAGE BREAK>
+<Title - 78> Directory (tenant) ID
+<UncategorizedText - 78> Step 3: Grant the service principal access to Azure Data Lake Storage Gen2
+<NarrativeText - 78> You grant access to storage resources by assigning roles to your service principal. In this tutorial,
+<NarrativeText - 78> you assign the Storage Blob Data Contributor to the service principal on your Azure Data Lake
+<NarrativeText - 78> Storage Gen2 account. You may need to assign other roles depending on specific requirements.
+<NarrativeText - 78> 1. In the Azure portal, go to the Storage accounts service.
+<NarrativeText - 78> 2. Select an Azure storage account to use.
+<Title - 78> 3. Click Access Control (IAM).
+<UncategorizedText - 78> 4. Click + Add and select Add role assignment from the dropdown menu.
+<NarrativeText - 78> 5. Set the Select field to the Azure AD application name that you created in step 1 and set Role
+<Title - 78> to Storage Blob Data Contributor.
+<Title - 78> 6. Click Save.
+<Title - 78> Step 4: Add the client secret to Azure Key Vault
+<NarrativeText - 78> You can store the client secret from step 1 in Azure Key Vault.
+<NarrativeText - 78> 1. In the Azure portal, go to the Key vault service.
+<Title - 78> 2. Select an Azure Key Vault to use.
+<Title - 78> 3. On the Key Vault settings pages, select Secrets.
+<Title - 78> 4. Click on + Generate/Import.
+<Title - 78> 5. In Upload options, select Manual.
+<NarrativeText - 78> 6. For Name, enter a name for the secret. The secret name must be unique within a Key Vault.
+<NarrativeText - 78> 7. For Value, paste the Client Secret that you stored in Step 1.
+<Title - 78> 8. Click Create.
+<UncategorizedText - 78> Step 5: Create Azure Key Vault-backed secret scope in your Azure Databricks workspace
+<NarrativeText - 78> To reference the client secret stored in an Azure Key Vault, you can create a secret scope backed by
+<Title - 78> Azure Key Vault in Azure Databricks.
+<NarrativeText - 78> 1. Go to https://<databricks-instance>#secrets/createScope . This URL is case sensitive; scope
+<NarrativeText - 78> in createScope must be uppercase.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 79> 2. Enter the name of the secret scope. Secret scope names are case insensitive.
+<NarrativeText - 79> 3. Use the Manage Principal dropdown menu to specify whether All Users have MANAGE
+<NarrativeText - 79> permission for this secret scope or only the Creator of the secret scope (that is to say, you).
+<UncategorizedText - 79> 4. Enter the DNS Name (for example, https://databrickskv.vault.azure.net/ ) and Resource ID,
+<Title - 79> for example:
+<Title - 79> /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/databricks- rg/providers/Microsoft.KeyVault/vaults/databricksKV
+<NarrativeText - 79> These properties are available from the Properties tab of an Azure Key Vault in your Azure
+<Title - 79> portal.
+<PageBreak - None> <PAGE BREAK>
+<Title - 80> 5. Click the Create button.
+<Title - 80> Step 6: Connect to Azure Data Lake Storage Gen2 using python
+<NarrativeText - 80> You can now securely access data in the Azure storage account using OAuth 2.0 with your Azure
+<Title - 80> AD application service principal for authentication from an Azure Databricks notebook.
+<NarrativeText - 80> 1. Navigate to your Azure Databricks workspace and create a new python notebook.
+<NarrativeText - 80> 2. Run the following python code, with the replacements below, to connect to Azure Data Lake
+<Title - 80> Storage Gen2.
+<Title - 80> Python
+<Title - 80> service_credential = dbutils.secrets.get(scope="<scope>",key="<service- credential-key>")
+<UncategorizedText - 80> spark.conf.set("fs.azure.account.auth.type.<storage- account>.dfs.core.windows.net", "OAuth") spark.conf.set("fs.azure.account.oauth.provider.type.<storage- account>.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider") spark.conf.set("fs.azure.account.oauth2.client.id.<storage- account>.dfs.core.windows.net", "<application-id>") spark.conf.set("fs.azure.account.oauth2.client.secret.<storage- account>.dfs.core.windows.net", service_credential) spark.conf.set("fs.azure.account.oauth2.client.endpoint.<storage- account>.dfs.core.windows.net", "https://login.microsoftonline.com/<directory- id>/oauth2/token")
+<Title - 80> Replace
+<NarrativeText - 80> <scope> with the secret scope name from step 5.
+<NarrativeText - 80> <service-credential-key> with the name of the key containing the client secret.
+<PageBreak - None> <PAGE BREAK>
+<Title - 81> <storage-account> with the name of the Azure storage account.
+<Title - 81> <application-id> with the Application (client) ID for the Azure Active Directory
+<Title - 81> application.
+<Title - 81> <directory-id> with the Directory (tenant) ID for the Azure Active Directory
+<Title - 81> application.
+<NarrativeText - 81> You have now successfully connected your Azure Databricks workspace to your Azure Data
+<Title - 81> Lake Storage Gen2 account.
+<Title - 81> Grant your Azure Databricks workspace access to Azure Data Lake Storage Gen2
+<NarrativeText - 81> If you configure a firewall on Azure Data Lake Storage Gen2, you must configure network settings
+<NarrativeText - 81> to allow your Azure Databricks workspace to connect to Azure Data Lake Storage Gen2. First,
+<NarrativeText - 81> ensure that your Azure Databricks workspace is deployed in your own virtual network following
+<NarrativeText - 81> Deploy Azure Databricks in your Azure virtual network (VNet injection). You can then configure
+<NarrativeText - 81> either private endpoints or access from your virtual network to allow connections from your
+<Title - 81> subnets to your Azure Data Lake Storage Gen2 account.
+<NarrativeText - 81> Grant access using private endpoints
+<NarrativeText - 81> You can use private endpoints for your Azure Data Lake Storage Gen2 account to allow your Azure
+<NarrativeText - 81> Databricks workspace to securely access data over a private link.
+<NarrativeText - 81> To create a private endpoint by using the Azure Portal, see Tutorial: Connect to a storage account
+<NarrativeText - 81> using an Azure Private Endpoint. Ensure to create the private endpoint in the same virtual network
+<NarrativeText - 81> that your Azure Databricks workspace is deployed in.
+<Title - 81> Grant access from your virtual network
+<NarrativeText - 81> Virtual Network service endpoints allow you to secure your critical Azure service resources to only
+<NarrativeText - 81> your virtual networks. You can enable a service endpoint for Azure Storage within the VNet that
+<NarrativeText - 81> you used for your Azure Databricks workspace.
+<NarrativeText - 81> For more information, including Azure CLI and PowerShell instructions, see Grant access from a
+<Title - 81> virtual network.
+<UncategorizedText - 81> 1. Log in to the Azure Portal, as a user with the Storage Account Contributor role on your Azure
+<Title - 81> Data Lake Storage Gen2 account.
+<NarrativeText - 81> 2. Navigate to your Azure Storage account, and go to the Networking tab.
+<NarrativeText - 81> 3. Check that you’ve selected to allow access from Selected virtual networks and IP addresses.
+<NarrativeText - 81> 4. Under Virtual networks, select Add existing virtual network.
+<NarrativeText - 81> 5. In the side panel, under Subscription, select the subscription that your virtual network is in.
+<NarrativeText - 81> 6. Under Virtual networks, select the virtual network that your Azure Databricks workspace is
+<NarrativeText - 81> deployed in.
+<PageBreak - None> <PAGE BREAK>
+<Title - 82> 7. Under Subnets, pick Select all.
+<Title - 82> 8. Click Enable.
+<NarrativeText - 82> 9. Select Save to apply your changes.
+<Title - 82> Troubleshooting
+<NarrativeText - 82> Error: IllegalArgumentException: Secret does not exist with scope: KeyVaultScope and key
+<NarrativeText - 82> This error probably means:
+<NarrativeText - 82> The Databricks-backed scope that is referred in the code is not valid.
+<NarrativeText - 82> Review the name of your secret from step 4 in this article.
+<Title - 82> Error: com.databricks.common.client.DatabricksServiceHttpClientException: INVALID_STATE: Databricks could not access keyvault
+<NarrativeText - 82> This error probably means:
+<NarrativeText - 82> The Databricks-backed scope that is referred to in the code is not valid. or the secret stored
+<NarrativeText - 82> in the Key Vault has expired.
+<NarrativeText - 82> Review step 3 to ensure your Azure Key Vault secret is valid. Review the name of your secret from
+<Title - 82> step 4 in this article.
+<NarrativeText - 82> Error: ADAuthenticator$HttpException: HTTP Error 401: token failed for getting token from AzureAD response
+<NarrativeText - 82> This error probably means:
+<NarrativeText - 82> The service principal’s client secret key has expired.
+<NarrativeText - 82> Create a new client secret following step 2 in this article and update the secret in your Azure Key
+<Title - 82> Vault.
+<Title - 82> Resources
+<Title - 82> Access storage with Azure Active Directory
+<Title - 82> Connect to Azure Data Lake Storage Gen2 and Blob Storage
+<Title - 82> Create an Azure Key Vault-backed secret scope
+<Title - 82> Tutorial: Query data with notebooks
+<PageBreak - None> <PAGE BREAK>
+<Title - 83> Get free Databricks training
+<UncategorizedText - 83> Article • 04/06/2023
+<NarrativeText - 83> As a customer, you have access to all Databricks free customer training offerings. These
+<NarrativeText - 83> offerings include courses, recorded webinars, and quarterly product roadmap webinars.
+<NarrativeText - 83> You can access the material from your Databricks Academy account. Follow these steps
+<NarrativeText - 83> to get started:
+<Title - 83> 1. Go to Databricks Academy
+<NarrativeText - 83> and click the red Academy login button in the top
+<Title - 83> navigation.
+<NarrativeText - 83> If you’ve logged into Databricks Academy before, use your existing
+<Title - 83> credentials.
+<NarrativeText - 83> If you’ve never logged into Databricks Academy, a customer account has
+<NarrativeText - 83> been created for you, using your Azure Databricks username, usually your
+<NarrativeText - 83> work email address. You must reset your password. It may take up to 24
+<NarrativeText - 83> hours for the training pathway to appear in your account.
+<NarrativeText - 83> 2. After you log into your Databricks Academy account, click
+<Title - 83> in the top left
+<Title - 83> corner.
+<Title - 83> Click Course Catalog.
+<NarrativeText - 83> The catalogs available to you appear. Databricks Academy organizes
+<NarrativeText - 83> groupings of learning content into catalogs, which include courses and
+<NarrativeText - 83> learning paths.
+<NarrativeText - 83> If you’ve followed the steps above and do not see the pathways in your account, please
+<Title - 83> file a training support ticket
+<UncategorizedText - 83> .
+<NarrativeText - 83> The Azure Databricks documentation also provides many tutorials and quickstarts that
+<NarrativeText - 83> can help you get up to speed on the platform, both here in the Getting Started section
+<Title - 83> and in other sections:
+<Title - 83> Quickstart
+<Title - 83> Apache Spark
+<Title - 83> Load data into the Azure Databricks Lakehouse
+<Title - 83> Sample datasets
+<Title - 83> DataFrames
+<Title - 83> Delta Lake
+<Title - 83> Structured Streaming
+<Title - 83> Machine Learning
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 84> The Knowledge Base provides troubleshooting tips and answers to frequently asked
+<Title - 84> questions.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 85> Get started articles, tutorials, and best practices
+<UncategorizedText - 85> Article • 04/21/2023
+<NarrativeText - 85> Azure Databricks documentation includes many tutorials, Get started articles, and best
+<Title - 85> practices guides.
+<NarrativeText - 85> Get started articles vs. tutorials
+<NarrativeText - 85> Get started articles provide a shortcut to understanding Azure Databricks features or
+<NarrativeText - 85> typical tasks you can perform in Databricks. Most of our Get started articles are intended
+<NarrativeText - 85> for new users trying out Azure Databricks.
+<NarrativeText - 85> Tutorials are slightly more complex, prescriptive steps for typical workflows in Databricks
+<NarrativeText - 85> that you can use as examples for your projects.
+<Title - 85> Video tours
+<Title - 85> Video: Databricks Data Science and Engineering workspace
+<Title - 85> Video: Databricks SQL workspace
+<Title - 85> Video: Databricks Machine Learning workspace
+<Title - 85> Video: Notebook basics
+<Title - 85> Get started with Databricks Data Science & Engineering
+<NarrativeText - 85> Get started: Query data from a notebook
+<NarrativeText - 85> Get started: Build a basic ETL pipeline
+<NarrativeText - 85> Tutorial: Run an end-to-end lakehouse analytics pipeline
+<NarrativeText - 85> Tutorial: Build an end-to-end data pipeline
+<Title - 85> Get started with Databricks Machine Learning
+<Title - 85> Get started: Databricks Machine Learning in-product quickstart
+<Title - 85> 10-min tutorials: ML notebooks
+<NarrativeText - 85> Get started: MLflow quickstart notebooks
+<PageBreak - None> <PAGE BREAK>
+<Title - 86> Get started with Databricks SQL
+<Title - 86> Databricks SQL user quickstart: Import and explore sample dashboards
+<NarrativeText - 86> Databricks SQL user quickstart: Run and visualize a query
+<Title - 86> Best practices for Azure Databricks
+<NarrativeText - 86> The Azure Databricks documentation includes a number of best practices articles to help
+<NarrativeText - 86> you get the best performance at the lowest cost when using and administering Azure
+<Title - 86> Databricks.
+<Title - 86> Data science and engineering best practices
+<Title - 86> Delta Lake
+<NarrativeText - 86> Hyperparameter tuning with Hyperopt
+<Title - 86> Deep learning in Databricks
+<Title - 86> CI/CD
+<Title - 86> MLOps worflows
+<Title - 86> Best practices for Azure Databricks admins
+<Title - 86> Cluster configuration
+<Title - 86> Pools
+<Title - 86> Cluster policies
+<Title - 86> Data governance
+<Title - 86> GDPR and CCPA compliance using Delta Lake
+<PageBreak - None> <PAGE BREAK>
+<Title - 87> What is Azure Databricks?
+<UncategorizedText - 87> Article • 03/29/2023
+<NarrativeText - 87> Azure Databricks is a unified set of tools for building, deploying, sharing, and
+<NarrativeText - 87> maintaining enterprise-grade data solutions at scale. The Azure Databricks Lakehouse
+<NarrativeText - 87> Platform integrates with cloud storage and security in your cloud account, and manages
+<NarrativeText - 87> and deploys cloud infrastructure on your behalf.
+<NarrativeText - 87> What is Azure Databricks used for?
+<NarrativeText - 87> Our customers use Azure Databricks to process, store, clean, share, analyze, model, and
+<NarrativeText - 87> monetize their datasets with solutions from BI to machine learning. Use the Azure
+<NarrativeText - 87> Databricks platform to build and deploy data engineering workflows, machine learning
+<Title - 87> models, analytics dashboards, and more.
+<NarrativeText - 87> The Azure Databricks workspace provides a unified interface and tools for most data
+<NarrativeText - 87> tasks, including:
+<NarrativeText - 87> Data processing workflows scheduling and management
+<Title - 87> Working in SQL
+<NarrativeText - 87> Generating dashboards and visualizations
+<Title - 87> Data ingestion
+<NarrativeText - 87> Managing security, governance, and HA/DR
+<Title - 87> Data discovery, annotation, and exploration
+<Title - 87> Compute management
+<Title - 87> Machine learning (ML) modeling and tracking
+<NarrativeText - 87> ML model serving
+<Title - 87> Source control with Git
+<NarrativeText - 87> In addition to the workspace UI, you can interact with Azure Databricks
+<Title - 87> programmatically with the following tools:
+<Title - 87> REST API
+<Title - 87> CLI
+<Title - 87> Terraform
+<NarrativeText - 87> Managed integration with open source
+<NarrativeText - 87> Databricks has a strong commitment to the open source community. Databricks
+<NarrativeText - 87> manages updates of open source integrations in the Databricks Runtime releases. The
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 88> following technologies are open source projects founded by Databricks employees:
+<Title - 88> Delta Lake
+<Title - 88> Delta Sharing
+<Title - 88> MLflow
+<Title - 88> Apache Spark
+<Title - 88> and Structured Streaming
+<Title - 88> Redash
+<NarrativeText - 88> Azure Databricks maintains a number of proprietary tools that integrate and expand
+<NarrativeText - 88> these technologies to add optimized performance and ease of use, such as the
+<Title - 88> following:
+<Title - 88> Workflows
+<Title - 88> Unity Catalog
+<Title - 88> Delta Live Tables
+<Title - 88> Databricks SQL
+<Title - 88> Photon
+<Title - 88> How does Azure Databricks work with Azure?
+<NarrativeText - 88> The Azure Databricks platform architecture comprises two primary parts:
+<NarrativeText - 88> The infrastructure used by Azure Databricks to deploy, configure, and manage the
+<Title - 88> platform and services.
+<NarrativeText - 88> The customer-owned infrastructure managed in collaboration by Azure Databricks
+<Title - 88> and your company.
+<NarrativeText - 88> Unlike many enterprise data companies, Azure Databricks does not force you to migrate
+<NarrativeText - 88> your data into proprietary storage systems to use the platform. Instead, you configure
+<NarrativeText - 88> an Azure Databricks workspace by configuring secure integrations between the Azure
+<Title - 88> Databricks platform and your cloud account, and then Azure Databricks deploys
+<NarrativeText - 88> compute clusters using cloud resources in your account to process and store data in
+<NarrativeText - 88> object storage and other integrated services you control.
+<NarrativeText - 88> Unity Catalog further extends this relationship, allowing you to manage permissions for
+<NarrativeText - 88> accessing data using familiar SQL syntax from within Azure Databricks.
+<NarrativeText - 88> Azure Databricks workspaces meet the security and networking requirements of some of
+<Title - 88> the world’s largest and most security-minded companies
+<NarrativeText - 88> . Azure Databricks makes it
+<NarrativeText - 88> easy for new users to get started on the platform. It removes many of the burdens and
+<NarrativeText - 88> concerns of working with cloud infrastructure, without limiting the customizations and
+<NarrativeText - 88> control experienced data, operations, and security teams require.
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 89> What are common use cases for Azure Databricks?
+<NarrativeText - 89> Use cases on Azure Databricks are as varied as the data processed on the platform and
+<NarrativeText - 89> the many personas of employees that work with data as a core part of their job. The
+<NarrativeText - 89> following use cases highlight how users throughout your organization can leverage
+<NarrativeText - 89> Azure Databricks to accomplish tasks essential to processing, storing, and analyzing the
+<NarrativeText - 89> data that drives critical business functions and decisions.
+<Title - 89> Build an enterprise data lakehouse
+<NarrativeText - 89> The data lakehouse combines the strengths of enterprise data warehouses and data
+<NarrativeText - 89> lakes to accelerate, simplify, and unify enterprise data solutions. Data engineers, data
+<NarrativeText - 89> scientists, analysts, and production systems can all use the data lakehouse as their single
+<NarrativeText - 89> source of truth, allowing timely access to consistent data and reducing the complexities
+<NarrativeText - 89> of building, maintaining, and syncing many distributed data systems. See What is the
+<Title - 89> Databricks Lakehouse?.
+<Title - 89> ETL and data engineering
+<NarrativeText - 89> Whether you’re generating dashboards or powering artificial intelligence applications,
+<NarrativeText - 89> data engineering provides the backbone for data-centric companies by making sure
+<NarrativeText - 89> data is available, clean, and stored in data models that allow for efficient discovery and
+<NarrativeText - 89> use. Azure Databricks combines the power of Apache Spark with Delta Lake and custom
+<NarrativeText - 89> tools to provide an unrivaled ETL (extract, transform, load) experience. You can use SQL,
+<NarrativeText - 89> Python, and Scala to compose ETL logic and then orchestrate scheduled job deployment
+<Title - 89> with just a few clicks.
+<NarrativeText - 89> Delta Live Tables simplifies ETL even further by intelligently managing dependencies
+<NarrativeText - 89> between datasets and automatically deploying and scaling production infrastructure to
+<NarrativeText - 89> ensure timely and accurate delivery of data per your specifications.
+<NarrativeText - 89> Azure Databricks provides a number of custom tools for data ingestion, including Auto
+<NarrativeText - 89> Loader, an efficient and scalable tool for incrementally and idempotently loading data
+<Title - 89> from cloud object storage and data lakes into the data lakehouse.
+<Title - 89> Machine learning, AI, and data science
+<NarrativeText - 89> Azure Databricks machine learning expands the core functionality of the platform with a
+<NarrativeText - 89> suite of tools tailored to the needs of data scientists and ML engineers, including
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 90> MLflow and the Databricks Runtime for Machine Learning. See Introduction to
+<Title - 90> Databricks Machine Learning.
+<Title - 90> Data warehousing, analytics, and BI
+<NarrativeText - 90> Azure Databricks combines user-friendly UIs with cost-effective compute resources and
+<NarrativeText - 90> infinitely scalable, affordable storage to provide a powerful platform for running analytic
+<NarrativeText - 90> queries. Administrators configure scalable compute clusters as SQL warehouses,
+<NarrativeText - 90> allowing end users to execute queries without worrying about any of the complexities of
+<NarrativeText - 90> working in the cloud. SQL users can run queries against data in the lakehouse using the
+<NarrativeText - 90> SQL query editor or in notebooks. Notebooks support Python, R, and Scala in addition
+<NarrativeText - 90> to SQL, and allow users to embed the same visualizations available in dashboards
+<NarrativeText - 90> alongside links, images, and commentary written in markdown.
+<NarrativeText - 90> Data governance and secure data sharing
+<NarrativeText - 90> Unity Catalog provides a unified data governance model for the data lakehouse. Cloud
+<Title - 90> administrators configure and integrate coarse access control permissions for Unity
+<NarrativeText - 90> Catalog, and then Azure Databricks administrators can manage permissions for teams
+<NarrativeText - 90> and individuals. Privileges are managed with access control lists (ACLs) through either
+<NarrativeText - 90> user-friendly UIs or SQL syntax, making it easier for database administrators to secure
+<NarrativeText - 90> access to data without needing to scale on cloud-native identity access management
+<Title - 90> (IAM) and networking.
+<NarrativeText - 90> Unity Catalog makes running secure analytics in the cloud simple, and provides a
+<NarrativeText - 90> division of responsibility that helps limit the reskilling or upskilling necessary for both
+<NarrativeText - 90> administrators and end users of the platform. See What is Unity Catalog?.
+<NarrativeText - 90> The lakehouse makes data sharing within your organization as simple as granting query
+<NarrativeText - 90> access to a table or view. For sharing outside of your secure environment, Unity Catalog
+<Title - 90> features a managed version of Delta Sharing.
+<Title - 90> DevOps, CI/CD, and task orchestration
+<NarrativeText - 90> The development lifecycles for ETL pipelines, ML models, and analytics dashboards each
+<NarrativeText - 90> present their own unique challenges. Azure Databricks allows all of your users to
+<NarrativeText - 90> leverage a single data source, which reduces duplicate efforts and out-of-sync reporting.
+<NarrativeText - 90> By additionally providing a suite of common tools for versioning, automating,
+<NarrativeText - 90> scheduling, deploying code and production resources, you can simplify your overhead
+<NarrativeText - 90> for monitoring, orchestration, and operations. Workflows schedule Azure Databricks
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 91> notebooks, SQL queries, and other arbitrary code. Repos let you sync Azure Databricks
+<NarrativeText - 91> projects with a number of popular git providers. For a complete overview of tools, see
+<Title - 91> Developer tools and guidance.
+<NarrativeText - 91> Real-time and streaming analytics
+<Title - 91> Azure Databricks leverages Apache Spark Structured Streaming to work with streaming
+<NarrativeText - 91> data and incremental data changes. Structured Streaming integrates tightly with Delta
+<NarrativeText - 91> Lake, and these technologies provide the foundations for both Delta Live Tables and
+<Title - 91> Auto Loader. See Streaming on Azure Databricks.
+<PageBreak - None> <PAGE BREAK>
+<Title - 92> What is the Databricks Lakehouse?
+<UncategorizedText - 92> Article • 06/16/2023
+<NarrativeText - 92> The Databricks Lakehouse combines the ACID transactions and data governance of
+<NarrativeText - 92> enterprise data warehouses with the flexibility and cost-efficiency of data lakes to enable
+<Title - 92> business intelligence (BI) and machine learning (ML) on all data. The Databricks
+<NarrativeText - 92> Lakehouse keeps your data in your massively scalable cloud object storage in open
+<NarrativeText - 92> source data standards, allowing you to use your data however and wherever you want.
+<Title - 92> What are ACID guarantees on Azure Databricks?
+<NarrativeText - 92> What is the medallion lakehouse architecture?
+<NarrativeText - 92> What does it mean to build a single source of truth?
+<Title - 92> Data discovery and collaboration in the lakehouse
+<Title - 92> Data objects in the Databricks Lakehouse
+<Title - 92> Components of the Databricks Lakehouse
+<NarrativeText - 92> The primary components of the Databricks Lakehouse are:
+<Title - 92> Delta tables:
+<Title - 92> ACID transactions
+<NarrativeText - 92> Data versioning
+<Title - 92> ETL
+<Title - 92> Indexing
+<Title - 92> Unity Catalog:
+<Title - 92> Data governance
+<NarrativeText - 92> Data sharing
+<NarrativeText - 92> Data auditing
+<NarrativeText - 92> By storing data with Delta Lake, you enable downstream data scientists, analysts, and
+<NarrativeText - 92> machine learning engineers to leverage the same production data supporting your core
+<NarrativeText - 92> ETL workloads as soon as data is processed.
+<NarrativeText - 92> Unity Catalog ensures that you have complete control over who gains access to which
+<NarrativeText - 92> data and provides a centralized mechanism for managing all data governance and
+<NarrativeText - 92> access controls without needing to replicate your data.
+<Title - 92> Delta tables
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 93> Tables created on Azure Databricks use the Delta Lake protocol by default. When you
+<NarrativeText - 93> create a new Delta table:
+<NarrativeText - 93> Metadata used to reference the table is added to the metastore in the declared
+<Title - 93> schema or database.
+<NarrativeText - 93> Data and table metadata are saved to a directory in cloud object storage.
+<NarrativeText - 93> The metastore reference to a Delta table is technically optional; you can create Delta
+<NarrativeText - 93> tables by directly interacting with directory paths using Spark APIs. Some new features
+<NarrativeText - 93> that build upon Delta Lake will store additional metadata in the table directory, but all
+<NarrativeText - 93> Delta tables have:
+<NarrativeText - 93> A directory containing table data in the Parquet file format.
+<NarrativeText - 93> A sub-directory /_delta_log that contains metadata about table versions in JSON
+<Title - 93> and Parquet format.
+<Title - 93> Learn more about Data objects in the Databricks Lakehouse.
+<Title - 93> Unity Catalog
+<Title - 93> Unity Catalog unifies data governance and discovery on Azure Databricks. Available in
+<Title - 93> notebooks, jobs, Delta Live Tables, and Databricks SQL, Unity Catalog provides features
+<NarrativeText - 93> and UIs that enable workloads and users designed for both data lakes and data
+<Title - 93> warehouses.
+<NarrativeText - 93> Account-level management of the Unity Catalog metastore means databases, data
+<NarrativeText - 93> objects, and permissions can be shared across Azure Databricks workspaces.
+<NarrativeText - 93> You can leverage three tier namespacing ( <catalog>.<database>.<table> ) for
+<NarrativeText - 93> organizing and granting access to data.
+<NarrativeText - 93> External locations and storage credentials are also securable objects with similar
+<NarrativeText - 93> ACL setting to other data objects.
+<NarrativeText - 93> The Data Explorer provides a graphical user interface to explore databases and
+<Title - 93> manage permissions.
+<NarrativeText - 93> Data lakehouse vs. data warehouse vs. data lake
+<NarrativeText - 93> Data warehouses have powered business intelligence (BI) decisions for about 30 years,
+<NarrativeText - 93> having evolved as set of design guidelines for systems controlling the flow of data.
+<NarrativeText - 93> Enterprise data warehouses optimize queries for BI reports, but can take minutes or
+<NarrativeText - 93> even hours to generate results. Designed for data that is unlikely to change with high
+<PageBreak - None> <PAGE BREAK>
+<NarrativeText - 94> frequency, data warehouses seek to prevent conflicts between concurrently running
+<NarrativeText - 94> queries. Many data warehouses rely on proprietary formats, which often limit support
+<NarrativeText - 94> for machine learning. Data warehousing on Azure Databricks leverages the capabilities
+<NarrativeText - 94> of a Databricks Lakehouse and Databricks SQL. For more information, see What is data
+<NarrativeText - 94> warehousing on Azure Databricks?.
+<NarrativeText - 94> Powered by technological advances in data storage and driven by exponential increases
+<NarrativeText - 94> in the types and volume of data, data lakes have come into widespread use over the last
+<NarrativeText - 94> decade. Data lakes store and process data cheaply and efficiently. Data lakes are often
+<NarrativeText - 94> defined in opposition to data warehouses: A data warehouse delivers clean, structured
+<NarrativeText - 94> data for BI analytics, while a data lake permanently and cheaply stores data of any
+<NarrativeText - 94> nature in any format. Many organizations use data lakes for data science and machine
+<NarrativeText - 94> learning, but not for BI reporting due to its unvalidated nature.
+<NarrativeText - 94> The data lakehouse replaces the current dependency on data lakes and data warehouses
+<NarrativeText - 94> for modern data companies that desire:
+<NarrativeText - 94> Open, direct access to data stored in standard data formats.
+<NarrativeText - 94> Indexing protocols optimized for machine learning and data science.
+<NarrativeText - 94> Low query latency and high reliability for BI and advanced analytics.
+<NarrativeText - 94> By combining an optimized metadata layer with validated data stored in standard
+<NarrativeText - 94> formats in cloud object storage, the data lakehouse allows data scientists and ML
+<NarrativeText - 94> engineers to build models from the same data driving BI reports.
+<PageBreak - None> <PAGE BREAK>
+<Title - 95> What are ACID guarantees on Azure Databricks?
+<UncategorizedText - 95> Article • 06/01/2023
+<NarrativeText - 95> Azure Databricks uses Delta Lake by default for all reads and writes and builds upon the
+<NarrativeText - 95> ACID guarantees provided by the open source Delta Lake protocol
+<NarrativeText - 95> . ACID stands for
+<Title - 95> atomicity, consistency, isolation, and durability.
+<NarrativeText - 95> Atomicity means that all transactions either succeed or fail completely.
+<NarrativeText - 95> Consistency guarantees relate to how a given state of the data is observed by
+<Title - 95> simultaneous operations.
+<NarrativeText - 95> Isolation refers to how simultaneous operations potentially conflict with one
+<Title - 95> another.
+<NarrativeText - 95> Durability means that committed changes are permanent.
+<NarrativeText - 95> While many data processing and warehousing technologies describe having ACID
+<NarrativeText - 95> transactions, specific guarantees vary by system, and transactions on Azure Databricks
+<NarrativeText - 95> might differ from other systems you’ve worked with.
+<Title - 95> ７ Note
+<NarrativeText - 95> This page describes guarantees for tables backed by Delta Lake. Other data formats
+<NarrativeText - 95> and integrated systems might not provide transactional guarantees for reads and
+<Title - 95> writes.
+<NarrativeText - 95> All Azure Databricks writes to cloud object storage use transactional commits,
+<NarrativeText - 95> which create metadata files starting with _started_<id> and _committed_<id>
+<NarrativeText - 95> alongside data files. You do not need to interact with these files, as Azure

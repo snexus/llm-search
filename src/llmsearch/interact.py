@@ -27,7 +27,7 @@ def print_llm_response(output: OutputModel):
         cprint(source.chunk_link, "blue")
         cprint(source.metadata, "cyan")
         print("******************* BEING EXTRACT *****************")
-        print(f"{source.chunk_text[:200]}\n")
+        print(f"{source.chunk_text}\n")
     print("------------------------------------------")
 
 

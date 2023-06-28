@@ -1,5 +1,5 @@
 from llmsearch.config import SemanticSearchConfig, ObsidianAdvancedURI, AppendSuffix, OutputModel, SemanticSearchOutput
-
+import string
 
 def get_and_parse_response(prompt: str, chain, embed_retriever, config: SemanticSearchConfig) -> OutputModel:
     most_relevant_docs = []
@@ -46,6 +46,28 @@ def process_obsidian_uri(doc_name: str, adv_uri_config: ObsidianAdvancedURI, met
     return doc_name + append_str
 
 def process_append_suffix(doc_name, suffix: AppendSuffix, metadata: dict):
-    return doc_name + suffix.append_template.format(**metadata)
+    fmt=PartialFormatter(missing="")
+    return doc_name + fmt.format(suffix.append_template, **metadata)
     
     
+class PartialFormatter(string.Formatter):
+    def __init__(self, missing='~~', bad_fmt='!!'):
+        self.missing, self.bad_fmt=missing, bad_fmt
+
+    def get_field(self, field_name, args, kwargs):
+        # Handle a key not found
+        try:
+            val=super(PartialFormatter, self).get_field(field_name, args, kwargs)
+            # Python 3, 'super().get_field(field_name, args, kwargs)' works
+        except (KeyError, AttributeError):
+            val=None,field_name 
+        return val 
+
+    def format_field(self, value, spec):
+        # handle an invalid format
+        if value==None: return self.missing
+        try:
+            return super(PartialFormatter, self).format_field(value, spec)
+        except ValueError:
+            if self.bad_fmt is not None: return self.bad_fmt   
+            else: raise
