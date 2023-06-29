@@ -31,9 +31,11 @@ def print_llm_response(output: OutputModel):
     print("------------------------------------------")
 
 
-def qa_with_llm(llm, prompt: str, config: Config, chain_type="stuff", max_k=10):
+def qa_with_llm(llm, prompt: str, config: Config, chain_type="stuff", max_k=7):
     store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path))
-    embed_retriever = store.load_retriever(search_type=config.semantic_search.search_type, search_kwargs={"k": max_k})
+    embed_retriever = store.load_retriever(search_type=config.semantic_search.search_type,
+                                           search_kwargs={"k": max_k})
+    
     chain = load_qa_chain(llm=llm, chain_type=chain_type, prompt=prompt)
 
     while True:
