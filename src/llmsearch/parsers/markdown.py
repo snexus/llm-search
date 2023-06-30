@@ -318,7 +318,11 @@ def markdown_splitter(path: Union[str, Path], max_chunk_size: int) -> List[dict]
 
 
 def add_metadata_to_section(s, heading, path):
-    metadata = f"TOPIC: {heading}\nFILENAME: {Path(path).name}\n\n"
+    if heading:
+        topic = f"Related to: {heading}\n"
+    else:
+        topic = ""
+    metadata = f"Metadata:\n-----\n{topic}Filename: {Path(path).name}\n-----\n\n"
     return metadata+s
 
 def merge_sections(sections: List[MarkdownChunk], max_chunk_size: int) -> List[MarkdownChunk]:

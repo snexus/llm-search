@@ -47,13 +47,15 @@ class VectorStoreChroma:
                 shutil.rmtree(pf)
 
         # nodes = get_nodes_from_documents(document_paths=paths, chunk_parser=parser_func)
-        vectordb = Chroma.from_documents(all_docs, self._embeddings, persist_directory=self._persist_folder)
+        vectordb = Chroma.from_documents(all_docs, 
+                                         self._embeddings, persist_directory=self._persist_folder)
         logger.info("Persisting the database..")
         vectordb.persist()
-        vectordb = None
+#        vectordb = None
 
     def load_retriever(self, **kwargs):
-        vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
+        vectordb = Chroma(persist_directory=self._persist_folder, 
+                          embedding_function=self._embeddings)
         retriever = vectordb.as_retriever(**kwargs)
         vectordb = None
         return retriever

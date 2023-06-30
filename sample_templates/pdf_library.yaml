@@ -10,7 +10,7 @@ embeddings:
     - md
 
 semantic_search:
-  search_type: mmr # similarity
+  search_type: similarity # similarity # mmr
   replace_output_path:
     substring_search: "/storage"
     substring_replace: "file:///storage"
@@ -25,7 +25,7 @@ llm:
   type: openai
   params:
     prompt_template: |
-        Context information is provided below. Given the context information and not prior knowledge, provide detailed answer to the question.
+        Context information is provided below. Given only the context information and not prior knowledge, provide detailed answer to the question. 
 
         ### Context:
         ---------------------

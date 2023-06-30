@@ -9,7 +9,7 @@ embeddings:
     - pdf
 
 semantic_search:
-  search_type: mmr # similarity #
+  search_type: similarity # mmr # similarity #
   replace_output_path:
     substring_search: "/storage"
     substring_replace: "file:///storage"
