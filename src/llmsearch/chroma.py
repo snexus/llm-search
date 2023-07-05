@@ -9,6 +9,7 @@ from loguru import logger
 from llmsearch.nodes import get_documents_from_custom_splitter
 from llmsearch.parsers.markdown import markdown_splitter
 from llmsearch.parsers.generic import UnstructuredSplitter, UnstructuredSplitType
+from llmsearch.parsers.pdf import PDFSplitter
 
 
 class VectorStoreChroma:
@@ -20,7 +21,7 @@ class VectorStoreChroma:
         # InstructorEmbeddingFunction(model_name="hkunlp/instructor-large")
         # HuggingFaceEmbeddings(model_name=hf_embed_model_name)
         self._splitter_conf = {"md": markdown_splitter,
-                               'pdf': UnstructuredSplitter(document_type = UnstructuredSplitType.PDF).split_document,
+                               'pdf': PDFSplitter(chunk_overlap=200).split_document,# UnstructuredSplitter(document_type=UnstructuredSplitType.PDF).split_document, # PDFSplitter(chunk_overlap=200).split_document,
                                'html': UnstructuredSplitter(document_type = UnstructuredSplitType.HTML).split_document,
                                'epub': UnstructuredSplitter(document_type = UnstructuredSplitType.EPUB).split_document
                                }

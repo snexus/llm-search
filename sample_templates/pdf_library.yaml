@@ -6,8 +6,8 @@ embeddings:
   chunk_size: 1024
   scan_extensions: 
     # - epub
-    - pdf
     - md
+    - pdf
 
 semantic_search:
   search_type: similarity # similarity # mmr
