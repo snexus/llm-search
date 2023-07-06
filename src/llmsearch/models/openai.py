@@ -2,6 +2,7 @@ from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import OpenAIModelConfig
 from langchain.chat_models import ChatOpenAI
 
+
 class OpenAIModel(AbstractLLMModel):
     def __init__(self, config: OpenAIModelConfig) -> None:
         super().__init__(prompt_template=config.prompt_template)
@@ -10,5 +11,3 @@ class OpenAIModel(AbstractLLMModel):
     @property
     def model(self):
         return ChatOpenAI(**self.config.model_kwargs)
-
-

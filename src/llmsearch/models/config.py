@@ -27,7 +27,7 @@ class AutoGPTQModelConfig(BaseModel):
 
 
 class HuggingFaceModelConfig(BaseModel):
-    cache_folder: Optional[Union[Path, str]] = None # will be copied from 
+    cache_folder: Optional[Union[Path, str]] = None  # will be copied from
     tokenizer_name: Optional[str] = None
     model_name: str
     prompt_template: str

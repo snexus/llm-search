@@ -2,25 +2,20 @@ import enum
 from abc import ABC, abstractmethod
 from collections import namedtuple
 from pathlib import Path
-from typing import Any, List, Mapping, Optional, Union
+from typing import Optional, Union
 
 
 import torch
 import transformers
-from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
+from auto_gptq import AutoGPTQForCausalLM
 from dotenv import load_dotenv
 from langchain import LLMChain, PromptTemplate
 from langchain.chat_models import ChatOpenAI
-from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.llms import HuggingFacePipeline
-from langchain.llms.base import LLM
 from transformers import (
-    AutoModelForCausalLM,
     AutoTokenizer,
-    LlamaTokenizer,
     StoppingCriteria,
     StoppingCriteriaList,
-    TextGenerationPipeline,
     pipeline,
 )
 
@@ -72,22 +67,30 @@ def get_llm_model(
 
     elif model == ModelConfig.DOLLY3B:
         model_instance = LLMDatabricksDollyV2(
-            cache_folder=cache_folder_root, model_name="databricks/dolly-v2-3b", load_8bit=is_8bit
+            cache_folder=cache_folder_root,
+            model_name="databricks/dolly-v2-3b",
+            load_8bit=is_8bit,
         )
 
     elif model == ModelConfig.DOLLY7B:
         model_instance = LLMDatabricksDollyV2(
-            cache_folder=cache_folder_root, model_name="databricks/dolly-v2-7b", load_8bit=is_8bit
+            cache_folder=cache_folder_root,
+            model_name="databricks/dolly-v2-7b",
+            load_8bit=is_8bit,
         )
 
     elif model == ModelConfig.MPT7B:
         model_instance = LLMMosaicMPT(
-            cache_folder=cache_folder_root, model_name="mosaicml/mpt-7b-instruct", load_8bit=is_8bit
+            cache_folder=cache_folder_root,
+            model_name="mosaicml/mpt-7b-instruct",
+            load_8bit=is_8bit,
         )
 
     elif model == ModelConfig.FALCON7B:
         model_instance = LLMFalcon(
-            cache_folder=cache_folder_root, model_name="tiiuae/falcon-7b-instruct", load_8bit=is_8bit
+            cache_folder=cache_folder_root,
+            model_name="tiiuae/falcon-7b-instruct",
+            load_8bit=is_8bit,
         )
     elif model == ModelConfig.REDPAJAMAINCITE:
         model_instance = RedPajamaIncite(
@@ -112,7 +115,13 @@ def get_llm_model(
             model_name="WizardLM",
             model_path=model_path,
             prompt_template=LLAMA_TEMPLATE,
-            llama_kwargs=dict(n_ctx=1024, max_tokens=512, temperature=0.0, n_gpu_layers=25, n_batch=512),
+            llama_kwargs=dict(
+                n_ctx=1024,
+                max_tokens=512,
+                temperature=0.0,
+                n_gpu_layers=25,
+                n_batch=512,
+            ),
         )
     elif model == ModelConfig.NOUSHERMES:
         if model_path is None:
@@ -122,7 +131,13 @@ def get_llm_model(
             model_name="NousHermes",
             model_path=model_path,
             prompt_template=LLAMA_TEMPLATE,
-            llama_kwargs=dict(n_ctx=1024, max_tokens=512, temperature=0.0, n_gpu_layers=35, n_batch=512),
+            llama_kwargs=dict(
+                n_ctx=1024,
+                max_tokens=512,
+                temperature=0.0,
+                n_gpu_layers=35,
+                n_batch=512,
+            ),
         )
 
     else:
@@ -146,12 +161,14 @@ class AbstractLLMModel(ABC):
     @property
     @abstractmethod
     def model(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     @property
     def prompt(self) -> Optional[PromptTemplate]:
         if self.prompt_template:
-            return PromptTemplate(input_variables=["context", "question"], template=self.prompt_template)
+            return PromptTemplate(
+                input_variables=["context", "question"], template=self.prompt_template
+            )
         return None
 
 
@@ -169,7 +186,9 @@ class LLMOpenAI(AbstractLLMModel):
 
 
 class LLMDatabricksDollyV2(AbstractLLMModel):
-    def __init__(self, cache_folder, model_name="databricks/dolly-v2-3b", load_8bit=False) -> None:
+    def __init__(
+        self, cache_folder, model_name="databricks/dolly-v2-3b", load_8bit=False
+    ) -> None:
         super().__init__(
             cache_folder=cache_folder,
             model_name=model_name,
@@ -185,7 +204,10 @@ class LLMDatabricksDollyV2(AbstractLLMModel):
             trust_remote_code=True,
             device_map="auto",
             return_full_text=True,
-            model_kwargs={"cache_dir": self.cache_folder, "load_in_8bit": self.load_8bit},
+            model_kwargs={
+                "cache_dir": self.cache_folder,
+                "load_in_8bit": self.load_8bit,
+            },
         )
 
         hf_pipeline = HuggingFacePipeline(pipeline=generate_text)
@@ -193,7 +215,13 @@ class LLMDatabricksDollyV2(AbstractLLMModel):
 
 
 class LLMMosaicMPT(AbstractLLMModel):
-    def __init__(self, cache_folder, model_name="mosaicml/mpt-7b-instruct", load_8bit=False, device="auto") -> None:
+    def __init__(
+        self,
+        cache_folder,
+        model_name="mosaicml/mpt-7b-instruct",
+        load_8bit=False,
+        device="auto",
+    ) -> None:
         super().__init__(
             cache_folder=cache_folder,
             model_name=model_name,
@@ -207,11 +235,17 @@ class LLMMosaicMPT(AbstractLLMModel):
         # https://github.com/pinecone-io/examples/blob/master/generation/llm-field-guide/mpt-7b/mpt-7b-huggingface-langchain.ipynb
 
         if self.device == "auto":
-            device = f"cuda:{torch.cuda.current_device()}" if torch.cuda.is_available() else "cpu"
+            device = (
+                f"cuda:{torch.cuda.current_device()}"
+                if torch.cuda.is_available()
+                else "cpu"
+            )
         else:
             device = self.device
 
-        config = transformers.AutoConfig.from_pretrained(self.model_name, trust_remote_code=True)
+        config = transformers.AutoConfig.from_pretrained(
+            self.model_name, trust_remote_code=True
+        )
         config.attn_config["attn_impl"] = "triton"
         config.init_device = device
 
@@ -225,13 +259,17 @@ class LLMMosaicMPT(AbstractLLMModel):
             load_in_8bit=self.load_8bit,
         )
 
-        tokenizer = transformers.AutoTokenizer.from_pretrained("EleutherAI/gpt-neox-20b", device=device)
+        tokenizer = transformers.AutoTokenizer.from_pretrained(
+            "EleutherAI/gpt-neox-20b", device=device
+        )
 
         stop_token_ids = tokenizer.convert_tokens_to_ids(["<|endoftext|>"])
 
         # define custom stopping criteria object
         class StopOnTokens(StoppingCriteria):
-            def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
+            def __call__(
+                self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs
+            ) -> bool:
                 for stop_id in stop_token_ids:
                     if input_ids[0][-1] == stop_id:
                         return True
@@ -262,7 +300,13 @@ class LLMMosaicMPT(AbstractLLMModel):
 
 
 class LLMFalcon(AbstractLLMModel):
-    def __init__(self, cache_folder, model_name="tiiuae/falcon-7b-instruct", load_8bit=False, device="auto") -> None:
+    def __init__(
+        self,
+        cache_folder,
+        model_name="tiiuae/falcon-7b-instruct",
+        load_8bit=False,
+        device="auto",
+    ) -> None:
         super().__init__(
             cache_folder=cache_folder,
             model_name=model_name,
@@ -274,7 +318,11 @@ class LLMFalcon(AbstractLLMModel):
     @property
     def model(self):
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-        model_kwargs = {"temperature": 0.01, "cache_dir": self.cache_folder, "load_in_8bit": self.load_8bit}
+        model_kwargs = {
+            "temperature": 0.01,
+            "cache_dir": self.cache_folder,
+            "load_in_8bit": self.load_8bit,
+        }
 
         pipeline = transformers.pipeline(
             "text-generation",
@@ -318,11 +366,17 @@ class BlokeTulu(AbstractLLMModel):
     @property
     def model(self):
         if self.device == "auto":
-            device = f"cuda:{torch.cuda.current_device()}" if torch.cuda.is_available() else "cpu"
+            device = (
+                f"cuda:{torch.cuda.current_device()}"
+                if torch.cuda.is_available()
+                else "cpu"
+            )
         else:
             device = self.device
 
-        tokenizer = AutoTokenizer.from_pretrained(self.quantized_model_folder, use_fast=True, device=device)
+        tokenizer = AutoTokenizer.from_pretrained(
+            self.quantized_model_folder, use_fast=True, device=device
+        )
 
         model = AutoGPTQForCausalLM.from_quantized(
             self.quantized_model_folder,
@@ -350,7 +404,11 @@ class BlokeTulu(AbstractLLMModel):
 
 class RedPajamaIncite(AbstractLLMModel):
     def __init__(
-        self, cache_folder, model_name="togethercomputer/RedPajama-INCITE-7B-Instruct", load_8bit=False, device="auto"
+        self,
+        cache_folder,
+        model_name="togethercomputer/RedPajama-INCITE-7B-Instruct",
+        load_8bit=False,
+        device="auto",
     ) -> None:
         super().__init__(
             cache_folder=cache_folder,
@@ -398,7 +456,6 @@ class LlamaCPPModel(AbstractLLMModel):
         prompt_template: str,
         llama_kwargs: dict,
         load_8bit: Optional[bool] = False,
-
     ) -> None:
         super().__init__(model_name, cache_folder, prompt_template, load_8bit)
         self.model_path = model_path
@@ -408,6 +465,9 @@ class LlamaCPPModel(AbstractLLMModel):
     def model(self):
         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
         llm = LlamaCpp(
-            model_path=self.model_path, callback_manager=callback_manager, verbose=True, **self.llama_kwargs
+            model_path=self.model_path,
+            callback_manager=callback_manager,
+            verbose=True,
+            **self.llama_kwargs,
         )
         return llm

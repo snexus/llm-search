@@ -27,7 +27,7 @@ SPLIT_CANDIDATES_PREFRENCE = [
 
 
 BLOCK_SPLIT_CANDIDATES = [r"\n#\s+", r"\n##\s+", r"\n###\s+"]
-CODE_BLOCK_LEVEL = 10 # SHould be high enough to rank it above everything else
+CODE_BLOCK_LEVEL = 10  # SHould be high enough to rank it above everything else
 
 MarkdownChunk = namedtuple("MarkdownChunk", "string level")
 
@@ -61,7 +61,9 @@ class SplitCandidateInfo:
                 if seq == self.active_sequences[k]:
                     sequences_being_removed = self.active_sequences[k:]
                     self.active_sequences = self.active_sequences[:k]
-                    self.active_sequences_length -= sum(len(seq) for seq in sequences_being_removed)
+                    self.active_sequences_length -= sum(
+                        len(seq) for seq in sequences_being_removed
+                    )
                     return False
             self.active_sequences.append(seq)
             self.active_sequences_length += len(seq)
@@ -80,7 +82,9 @@ def phsyical_split(markdown: str, max_chunk_size: int) -> Generator[str, None, N
     """
 
     if max_chunk_size <= MAX_FORMATTING_SEQUENCE_LENGTH:
-        raise ValueError(f"max_chunk_size must be greater than {MAX_FORMATTING_SEQUENCE_LENGTH}")
+        raise ValueError(
+            f"max_chunk_size must be greater than {MAX_FORMATTING_SEQUENCE_LENGTH}"
+        )
 
     split_candidates = {
         SplitCandidates.SPACE: SplitCandidateInfo(),
@@ -96,7 +100,9 @@ def phsyical_split(markdown: str, max_chunk_size: int) -> Generator[str, None, N
             split_candidate = split_candidates[split_variant]
             if split_candidate.last_seen is None:
                 continue
-            chunk_end = split_candidate.last_seen + (1 if split_variant == SplitCandidates.LAST_CHAR else 0)
+            chunk_end = split_candidate.last_seen + (
+                1 if split_variant == SplitCandidates.LAST_CHAR else 0
+            )
             chunk = (
                 chunk_prefix
                 + markdown[chunk_start_from:chunk_end]
@@ -105,11 +111,18 @@ def phsyical_split(markdown: str, max_chunk_size: int) -> Generator[str, None, N
 
             next_chunk_prefix = "".join(split_candidate.active_sequences)
             next_chunk_char_count = len(next_chunk_prefix)
-            next_chunk_start_from = chunk_end + (0 if split_variant == SplitCandidates.LAST_CHAR else 1)
+            next_chunk_start_from = chunk_end + (
+                0 if split_variant == SplitCandidates.LAST_CHAR else 1
+            )
 
             split_candidates[SplitCandidates.NEWLINE] = SplitCandidateInfo()
             split_candidates[SplitCandidates.SPACE] = SplitCandidateInfo()
-            return chunk, next_chunk_start_from, next_chunk_char_count, next_chunk_prefix
+            return (
+                chunk,
+                next_chunk_start_from,
+                next_chunk_char_count,
+                next_chunk_prefix,
+            )
 
     i = 0
     while i < len(markdown):
@@ -117,12 +130,23 @@ def phsyical_split(markdown: str, max_chunk_size: int) -> Generator[str, None, N
             seq = markdown[i : i + j]
             if seq in ALL_SEQUENCES:
                 last_char_split_candidate_len = (
-                    chunk_char_count + split_candidates[SplitCandidates.LAST_CHAR].active_sequences_length + len(seq)
+                    chunk_char_count
+                    + split_candidates[
+                        SplitCandidates.LAST_CHAR
+                    ].active_sequences_length
+                    + len(seq)
                 )
                 if last_char_split_candidate_len >= max_chunk_size:
-                    next_chunk, chunk_start_from, chunk_char_count, chunk_prefix = split_chunk()
+                    (
+                        next_chunk,
+                        chunk_start_from,
+                        chunk_char_count,
+                        chunk_prefix,
+                    ) = split_chunk()
                     yield next_chunk
-                is_in_code_block = split_candidates[SplitCandidates.LAST_CHAR].process_sequence(seq, is_in_code_block)
+                is_in_code_block = split_candidates[
+                    SplitCandidates.LAST_CHAR
+                ].process_sequence(seq, is_in_code_block)
                 i += len(seq)
                 chunk_char_count += len(seq)
                 split_candidates[SplitCandidates.LAST_CHAR].last_seen = i - 1
@@ -134,12 +158,17 @@ def phsyical_split(markdown: str, max_chunk_size: int) -> Generator[str, None, N
         split_candidates[SplitCandidates.LAST_CHAR].last_seen = i
         chunk_char_count += 1
         if markdown[i] == "\n":
-            split_candidates[SplitCandidates.NEWLINE].copy_from(split_candidates[SplitCandidates.LAST_CHAR])
+            split_candidates[SplitCandidates.NEWLINE].copy_from(
+                split_candidates[SplitCandidates.LAST_CHAR]
+            )
         elif markdown[i] == " ":
-            split_candidates[SplitCandidates.SPACE].copy_from(split_candidates[SplitCandidates.LAST_CHAR])
+            split_candidates[SplitCandidates.SPACE].copy_from(
+                split_candidates[SplitCandidates.LAST_CHAR]
+            )
 
         last_char_split_candidate_len = (
-            chunk_char_count + split_candidates[SplitCandidates.LAST_CHAR].active_sequences_length
+            chunk_char_count
+            + split_candidates[SplitCandidates.LAST_CHAR].active_sequences_length
         )
         if last_char_split_candidate_len == max_chunk_size:
             next_chunk, chunk_start_from, chunk_char_count, chunk_prefix = split_chunk()
@@ -168,35 +197,41 @@ def get_logical_blocks_recursively(
 
     if split_candidate_index >= len(BLOCK_SPLIT_CANDIDATES):
         for chunk in phsyical_split(markdown, max_chunk_size):
-            all_sections.append(MarkdownChunk(string=chunk, level=split_candidate_index))
+            all_sections.append(
+                MarkdownChunk(string=chunk, level=split_candidate_index)
+            )
         return all_sections
     # else:
     #     split_candidate = BLOCK_SPLIT_CANDIDATES[split_candidate_index]
 
     chunks = []
     add_index = 0
-    for add_index, split_candidate in enumerate(BLOCK_SPLIT_CANDIDATES[split_candidate_index:]):
-      chunks = re.split(split_candidate, markdown)
-      if len(chunks) > 1:
-        break
-
+    for add_index, split_candidate in enumerate(
+        BLOCK_SPLIT_CANDIDATES[split_candidate_index:]
+    ):
+        chunks = re.split(split_candidate, markdown)
+        if len(chunks) > 1:
+            break
 
     for i, chunk in enumerate(chunks):
         level = split_candidate_index + add_index
-        
+
         # First chunk is left-over from a previous chunk
-        if i >0:
-            level+=1
-        
-        prefix = '\n\n'+'#'*level+' '
+        if i > 0:
+            level += 1
+
+        prefix = "\n\n" + "#" * level + " "
         if not chunk.strip():
-          continue
-      
+            continue
+
         if len(chunk) <= max_chunk_size:
-            all_sections.append(MarkdownChunk(string=prefix + chunk, level=level-1))
+            all_sections.append(MarkdownChunk(string=prefix + chunk, level=level - 1))
         else:
             get_logical_blocks_recursively(
-                chunk, max_chunk_size, all_sections, split_candidate_index=split_candidate_index + add_index + 1
+                chunk,
+                max_chunk_size,
+                all_sections,
+                split_candidate_index=split_candidate_index + add_index + 1,
             )
     return all_sections
 
@@ -208,7 +243,7 @@ def markdown_splitter(path: Union[str, Path], max_chunk_size: int) -> List[dict]
         markdown (str): markdown string
         max_chunk_size (int): Maximum chunk size
     """
-    
+
     try:
         with open(path, "r") as f:
             markdown = f.read()
@@ -216,8 +251,8 @@ def markdown_splitter(path: Union[str, Path], max_chunk_size: int) -> List[dict]
         return []
 
     if len(markdown) < max_chunk_size:
-        return [{'text': markdown, 'metadata': {'heading':''}}]
-    
+        return [{"text": markdown, "metadata": {"heading": ""}}]
+
     sections = [MarkdownChunk(string="", level=0)]
 
     # Split by code and non-code
@@ -225,8 +260,10 @@ def markdown_splitter(path: Union[str, Path], max_chunk_size: int) -> List[dict]
 
     for i, chunk in enumerate(chunks):
         if i % 2 == 0:  # Every even element (0 indexed) is a non-code
-            logical_blocks = get_logical_blocks_recursively(chunk, max_chunk_size=max_chunk_size, all_sections=[])
-            sections+= logical_blocks
+            logical_blocks = get_logical_blocks_recursively(
+                chunk, max_chunk_size=max_chunk_size, all_sections=[]
+            )
+            sections += logical_blocks
         else:  # Process the code section
             rows = chunk.split("\n")
             code = rows[1:]
@@ -235,74 +272,87 @@ def markdown_splitter(path: Union[str, Path], max_chunk_size: int) -> List[dict]
 
             # Provide a hint to LLM
             all_code_rows = (
-                [f"\nFollowing is a code section in {lang}, delimited by triple backticks:", f"```{lang}"] + code + ["```"]
+                [
+                    f"\nFollowing is a code section in {lang}, delimited by triple backticks:",
+                    f"```{lang}",
+                ]
+                + code
+                + ["```"]
             )
             all_code_str = "\n".join(all_code_rows)
 
             # Merge code to a previous logical block if there is enough space
             if len(sections[-1].string) + len(all_code_str) < max_chunk_size:
-                sections[-1] = MarkdownChunk(string = sections[-1].string + all_code_str, level = sections[-1].level)
-                #sections[-1].string+=all_code_str
+                sections[-1] = MarkdownChunk(
+                    string=sections[-1].string + all_code_str, level=sections[-1].level
+                )
+                # sections[-1].string+=all_code_str
 
             # If code block is larger than max size, physically split it
             elif len(all_code_str) >= max_chunk_size:
-                code_chunks = phsyical_split(all_code_str, max_chunk_size=max_chunk_size)
+                code_chunks = phsyical_split(
+                    all_code_str, max_chunk_size=max_chunk_size
+                )
                 for cchunk in code_chunks:
-                    
                     # Assign language header to the code chunk, if doesn't exist
                     if f"```{lang}" not in cchunk:
                         cchunk_rows = cchunk.split("```")
                         cchunk = f"```{lang}\n" + cchunk_rows[1] + "```"
-                
-                    sections.append(MarkdownChunk(string=cchunk, level=CODE_BLOCK_LEVEL))
+
+                    sections.append(
+                        MarkdownChunk(string=cchunk, level=CODE_BLOCK_LEVEL)
+                    )
 
             # Otherwise, add as a single chunk
             else:
-                sections.append(MarkdownChunk(string=all_code_str, level=CODE_BLOCK_LEVEL))
-    
-    
+                sections.append(
+                    MarkdownChunk(string=all_code_str, level=CODE_BLOCK_LEVEL)
+                )
+
     # if sections:
     #     sections = merge_sections(sections, max_chunk_size=max_chunk_size)
-    
+
     all_out = []
-    
-    current_heading = ''
-    
+
+    current_heading = ""
+
     for s in sections:
         stripped_string = s.string.strip()
         metadata = {}
         if len(stripped_string) > 0:
-            heading = ''
-            if stripped_string.startswith('#'): # heading detected
-                heading =  stripped_string.split('\n')[0].replace('#','').strip()
-                stripped_heading =  heading.replace('#','').replace(' ', '').strip()
+            heading = ""
+            if stripped_string.startswith("#"):  # heading detected
+                heading = stripped_string.split("\n")[0].replace("#", "").strip()
+                stripped_heading = heading.replace("#", "").replace(" ", "").strip()
                 if not stripped_heading:
-                    heading = ''
+                    heading = ""
                 if s.level == 0:
                     current_heading = heading
-                metadata['heading'] = urllib.parse.quote(heading) # isolate the heading
+                metadata["heading"] = urllib.parse.quote(heading)  # isolate the heading
             else:
-                metadata['heading']=''
+                metadata["heading"] = ""
 
-            final_section = add_metadata_to_section(stripped_string, heading = current_heading, path = path)
-            all_out.append({'text': final_section, 'metadata': metadata})
-       
+            final_section = add_metadata_to_section(
+                stripped_string, heading=current_heading, path=path
+            )
+            all_out.append({"text": final_section, "metadata": metadata})
+
     # all_out = [s.string.strip() for s in sections if s.string.strip()]
-    
+
     # current_section = sections[0].string
     # all_out = [current_section]
-    
-    # if len(sections) <2: 
+
+    # if len(sections) <2:
     #     return all_out
-    
+
     # prev_level = 0
-    
+
     # for s in sections[1:]:
-        
+
     #     # Skip empty sections
     #     if not s.string.replace('#','').strip():
     #         continue
-        
+
     #     if len(current_section + s.string) > max_chunk_size or s.level < prev_level:
     #         all_out.append(current_section)
     #         current_section = ''
@@ -310,10 +360,10 @@ def markdown_splitter(path: Union[str, Path], max_chunk_size: int) -> List[dict]
     #     else:
     #         current_section += s.string
     #         prev_level = s.level if s.level != CODE_BLOCK_LEVEL else prev_level
-            
+
     for s in all_out:
         logger.info(f"Chunk length: {len(s['text'])}")
-        #print(len(s))
+        # print(len(s))
     return all_out
 
 
@@ -323,29 +373,33 @@ def add_metadata_to_section(s, heading, path):
     else:
         topic = ""
     metadata = f"Metadata:\n-----\n{topic}Filename: {Path(path).name}\n-----\n\n"
-    return metadata+s
+    return metadata + s
 
-def merge_sections(sections: List[MarkdownChunk], max_chunk_size: int) -> List[MarkdownChunk]:
+
+def merge_sections(
+    sections: List[MarkdownChunk], max_chunk_size: int
+) -> List[MarkdownChunk]:
     """Merges sections together, up to a max chunk size"""
-    
+
     current_section = sections[0]
     all_out = []
-    
+
     prev_level = 0
     for s in sections[1:]:
-        if len(current_section.string + s.string) > max_chunk_size or s.level <= prev_level:
+        if (
+            len(current_section.string + s.string) > max_chunk_size
+            or s.level <= prev_level
+        ):
             all_out.append(current_section)
             current_section = s
             prev_level = 0
         else:
-            current_section = MarkdownChunk(string = current_section.string + s.string, level=current_section.level)
-            prev_level = s.level if s.level != CODE_BLOCK_LEVEL else prev_level            
-    
+            current_section = MarkdownChunk(
+                string=current_section.string + s.string, level=current_section.level
+            )
+            prev_level = s.level if s.level != CODE_BLOCK_LEVEL else prev_level
+
     return all_out
-
-
-                
-    
 
 
 if __name__ == "__main__":
@@ -360,8 +414,8 @@ if __name__ == "__main__":
 
     for chunk in chunks:
         print("\n\nSTART CHUNK ----------------")
-        print(chunk['text'])
+        print(chunk["text"])
         print("END CHUNK ----------------")
 
     for chunk in chunks:
-        print(len(chunk['text']))
+        print(len(chunk["text"]))

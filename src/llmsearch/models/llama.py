@@ -1,11 +1,10 @@
 from typing import Dict, Generator, Optional
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.llms import LlamaCpp
 
 from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import LlamaModelConfig
-from typing import Any, List, Mapping, Optional
+from typing import Any, List 
 
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
@@ -19,28 +18,26 @@ from loguru import logger
 
 #     @property
 #     def model(self):
-        
+
 #         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 #         llm = LlamaCpp(
-#             model_path=str(self.config.model_path), 
+#             model_path=str(self.config.model_path),
 #             callback_manager=callback_manager, verbose=True, **self.config.model_kwargs
 #         )
 #         return llm
-    
 
 
-# values["client"] = Llama(model_path, **model_params)    
+# values["client"] = Llama(model_path, **model_params)
+
 
 class CustomLlamaLangChainModel(LLM):
-
     @classmethod
     def from_parameters(cls, model_path, model_init_kwargs, model_kwargs, **kwargs):
-        cls.model = Llama(model_path = str(model_path), **model_init_kwargs)
+        cls.model = Llama(model_path=str(model_path), **model_init_kwargs)
         cls.model_kwargs = model_kwargs
         cls.model_path = model_path
         cls.streaming = True
         return cls(**kwargs)
-
 
     @property
     def _llm_type(self) -> str:
@@ -52,10 +49,9 @@ class CustomLlamaLangChainModel(LLM):
         stop: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
     ) -> str:
-        
         if stop is not None:
             raise ValueError("stop kwargs are not permitted.")
-        
+
         if self.streaming:
             # If streaming is enabled, we use the stream
             # method that yields as they are generated
@@ -65,16 +61,14 @@ class CustomLlamaLangChainModel(LLM):
                 combined_text_output += token["choices"][0]["text"]
             return combined_text_output
         else:
-
-            result = self.model(prompt = prompt, **self.model_kwargs)
+            result = self.model(prompt=prompt, **self.model_kwargs)
             return result["choices"][0]["text"]
-        
+
     @property
     def _identifying_params(self) -> Dict[str, Any]:
         """Get the identifying parameters."""
         return {**{"model_path": self.model_path}, **self.model_kwargs}
-    
-    
+
     def stream(
         self,
         prompt: str,
@@ -124,7 +118,7 @@ class CustomLlamaLangChainModel(LLM):
                 )
             yield chunk
 
-    
+
 class LlamaModel(AbstractLLMModel):
     def __init__(self, config: LlamaModelConfig):
         super().__init__(prompt_template=config.prompt_template)
@@ -136,16 +130,18 @@ class LlamaModel(AbstractLLMModel):
         if not self._model:
             logger.info("Loading model...")
             callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-            
+
             logger.info("Initializing LLAmaCPP model...")
             logger.info(self.config.model_init_params)
             model_path = self.config.model_path
             model_kwargs = self.config.model_kwargs
             model_init_kwargs = self.config.model_init_params
-        
-            self._model =  CustomLlamaLangChainModel.from_parameters(model_path=str(model_path), model_kwargs=model_kwargs, model_init_kwargs = model_init_kwargs, 
-                                     callback_manager=callback_manager, verbose=True)
+
+            self._model = CustomLlamaLangChainModel.from_parameters(
+                model_path=str(model_path),
+                model_kwargs=model_kwargs,
+                model_init_kwargs=model_init_kwargs,
+                callback_manager=callback_manager,
+                verbose=True,
+            )
         return self._model
-    
-
-
