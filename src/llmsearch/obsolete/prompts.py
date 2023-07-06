@@ -1,4 +1,4 @@
-DOLLY_PROMPT_TEMPLATE="""### Instruction:
+DOLLY_PROMPT_TEMPLATE = """### Instruction:
 Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
 
 ### Context: 
@@ -22,7 +22,7 @@ USER: {question}
 ASSISTANT:
 """
 
-LLAMA_TEMPLATE="""### Instruction:
+LLAMA_TEMPLATE = """### Instruction:
 Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
 
 ### Context: 
@@ -34,7 +34,7 @@ Use the following pieces of context to answer the question at the end. If answer
 ### Response:"""
 
 
-NOUS_HERMES_TEMPLATE="""### Instruction:
+NOUS_HERMES_TEMPLATE = """### Instruction:
 Use the context provided below to answer user request at the end, using only information in the context. If answer isn't in the context, say that you don't know, don't try to make up an answer.
 
 ### Context: 
@@ -67,7 +67,7 @@ TULU8_TEMPLATE = """### Human: Use information in the provided context to answer
 """
 
 
-REDPAJAMA_TEMPLATE="""Given the context and no prior information, answer the question.
+REDPAJAMA_TEMPLATE = """Given the context and no prior information, answer the question.
 
 # Context:
 ------------

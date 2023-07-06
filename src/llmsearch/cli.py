@@ -38,9 +38,9 @@ def generate_index(config_file: str):
     set_cache_folder(str(config.cache_folder))
     vs = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path))
     vs.create_index_from_folder(
-        folder_path=str(config.embeddings.doc_path), 
+        folder_path=str(config.embeddings.doc_path),
         chunk_size=config.embeddings.chunk_size,
-        extensions=config.embeddings.scan_extensions
+        extensions=config.embeddings.scan_extensions,
     )
 
 
@@ -49,7 +49,9 @@ def set_cache_folder(cache_folder_root: str):
     transformers_cache = os.path.join(cache_folder_root, "transformers")
     hf_home = os.path.join(cache_folder_root, "hf_home")
 
-    logger.info(f"Setting SENTENCE_TRANSFORMERS_HOME folder: {sentence_transformers_home}")
+    logger.info(
+        f"Setting SENTENCE_TRANSFORMERS_HOME folder: {sentence_transformers_home}"
+    )
     logger.info(f"Setting TRANSFORMERS_CACHE folder: {transformers_cache}")
     logger.info(f"Setting HF_HOME: {hf_home}")
     logger.info(f"Setting MODELS_CACHE_FOLDER: {cache_folder_root}")
@@ -72,9 +74,9 @@ def set_cache_folder(cache_folder_root: str):
 def launch_qa_with_llm(config_file: str):
     config = get_config(config_file)
     set_cache_folder(str(config.cache_folder))
-    
+
     llm = get_llm(config.llm.params)  # type: ignore
-    qa_with_llm(llm = llm.model, prompt=llm.prompt, config = config)
+    qa_with_llm(llm=llm.model, prompt=llm.prompt, config=config)
 
 
 index_group.add_command(generate_index)

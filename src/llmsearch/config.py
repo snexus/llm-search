@@ -7,9 +7,12 @@ from loguru import logger
 from pydantic import BaseModel, DirectoryPath, Extra, validator
 from pydantic.typing import Literal  # type: ignore
 
-from llmsearch.models.config import (AutoGPTQModelConfig,
-                                     HuggingFaceModelConfig, LlamaModelConfig,
-                                     OpenAIModelConfig)
+from llmsearch.models.config import (
+    AutoGPTQModelConfig,
+    HuggingFaceModelConfig,
+    LlamaModelConfig,
+    OpenAIModelConfig,
+)
 
 models_config = {
     "llamacpp": LlamaModelConfig,
@@ -35,16 +38,18 @@ class EmbeddingsConfig(BaseModel):
     class Config:
         extra = Extra.forbid
 
+
 class ObsidianAdvancedURI(BaseModel):
     append_heading_template: str
-    
+
+
 class AppendSuffix(BaseModel):
     append_template: str
+
 
 class ReplaceOutputPath(BaseModel):
     substring_search: str
     substring_replace: str
-
 
 
 class SemanticSearchConfig(BaseModel):
@@ -70,8 +75,12 @@ class LLMConfig(BaseModel):
             raise TypeError(f"Uknown model type {value}. Allowed types: ")
 
         config_type = models_config[type_]
-        logger.info(f"Loading model paramaters in configuration class {config_type.__name__}")
-        config = config_type(**value)  # An attempt to force conversion to the required model config
+        logger.info(
+            f"Loading model paramaters in configuration class {config_type.__name__}"
+        )
+        config = config_type(
+            **value
+        )  # An attempt to force conversion to the required model config
         return config
 
     class Config:
@@ -91,10 +100,10 @@ class SemanticSearchOutput(BaseModel):
     chunk_text: str
     metadata: dict
 
-class OutputModel(BaseModel):
+
+class ResponseModel(BaseModel):
     response: str
     semantic_search: List[SemanticSearchOutput] = []
-    
 
 
 def get_config(path: Union[str, Path]) -> Config:
