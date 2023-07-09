@@ -1,8 +1,6 @@
 
 # LLM Search
 
-**WORK IN PROGRESS...**
-
 The purpose of this package is to provide a convenient (and private) question answering system that allows interaction with local documents. It is designed to work seamlessly with custom Large Language Models (LLMs), both OpenAI or installed locally.
 
 ## Features
@@ -105,6 +103,7 @@ embeddings:
   chunk_size: 1024
   scan_extensions: 
     - md
+    - pdf
 
 semantic_search:
   search_type: similarity # mmr
@@ -173,7 +172,7 @@ To create embeddings from documents, follow these steps:
 1. Open the command line interface.
 2. Run the following command: `llmsearch index create -c config.yaml`
 
-Executing this command will scan a folder containing markdown files (`/storage/docs`) and generate an embeddings database in the `/storage/embeddings` directory. Additionally, a local cache folder (`/storage/cache`) will be utilized to store embedding models, LLM models, and tokenizers.
+Based on the example configuration above, executing this command will scan a folder containing markdown  and pdf files (`/storage/llm/docs`) and generate an embeddings database in the `/storage/llm/embeddings` directory. Additionally, a local cache folder (`/storage/llm/cache`) will be utilized to store embedding models, LLM models, and tokenizers.
 
 The default vector database is ChromaDB, and the embeddings are generated using the `instruct-xlarge` model, which is known for its high performance. You can find more information about this model at [https://huggingface.co/spaces/mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard).
 
@@ -184,12 +183,12 @@ To interact with the documents using one of the supported LLMs, follow these ste
 1. Open the command line interface.
 2. Run the following command: `llmsearch interact llm -c config.yaml`
 
-Based on the example configuration provided in the `.yaml` file, the following actions will take place:
+Based on the example configuration provided in the `.yaml` file above, the following actions will take place:
 
 - The system will load a quantized GGML model using the LlamaCpp framework. The model file is located at `/storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin`.
 - The model will be partially loaded into the GPU (30 layers) and partially into the CPU (remaining layers). The `n_gpu_layers` parameter can be adjusted according to the hardware limitations.
 - Additional LlamaCpp specific parameters specified in `model_kwargs` from the `llm->params` section will be passed to the model.
-- The system will query the embeddings database using the Maximal Marginal Relevance algorithm (`mmr` parameter in `semantic_search`). It will provide the most relevant context from different documents, up to a maximum context size of 2048 characters (`max_char_size` in `semantic_search`).
+- The system will query the embeddings database using the similarity search algorithm (`similarity` parameter in `semantic_search`). It will provide the most relevant context from different documents, up to a maximum context size of 2048 characters (`max_char_size` in `semantic_search`).
 - When displaying paths to relevant documents, the system will replace the part of the path `/storage/llm/docs/` with `obsidian://open?vault=knowledge-base&file=`. This replacement is based on the settings `substring_search` and `substring_replace` in `semantic_search->replace_output_path`.
 
 ## API
