@@ -24,9 +24,7 @@ class VectorStoreChroma:
         # HuggingFaceEmbeddings(model_name=hf_embed_model_name)
         self._splitter_conf = {
             "md": markdown_splitter,
-            "pdf": PDFSplitter(
-                chunk_overlap=200
-            ).split_document,  
+            "pdf": PDFSplitter(chunk_overlap=200).split_document,
             "html": UnstructuredSplitter(
                 document_type=UnstructuredSplitType.HTML
             ).split_document,

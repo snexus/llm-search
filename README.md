@@ -9,8 +9,9 @@ The purpose of this package is to provide a convenient (and private) question an
 
 * Supported formats
     * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. 
-    Currently, this feature is more advanced compared to Langchain's built-in parser.
-    * `.pdf`, `.html`, `.epub` - supported through `Unstructured` pre-processor - https://unstructured-io.github.io/unstructured/
+    Currently, this feature is more robust compared to Langchain's built-in parser.
+    * `.pdf`- MuPDF based parser
+    * `.html`, `.epub` - supported through `Unstructured` pre-processor - https://unstructured-io.github.io/unstructured/
 * Generates embeddings from a folder of documents and stores them in a vector database (ChromaDB).
 * Allows interaction with embedded documents using cutting-edge LLMs, supporting the following models and methods (including locally hosted):
     * OpenAI (ChatGPT 3.5/4)
@@ -45,9 +46,12 @@ python3 -m venv .venv
 # Activate new environment
 source .venv/bin/activate
 
-# Install the dependencies
-./install.sh
+# Set variables for llama-cpp to compile with CUDA.
+# Point to the location root of the install NVidia CUDA Toolkit (/usr/local/cuda on Ubuntu)
+source ./setvars.sh /usr/local/cuda
 
+# Install the package
+pip install .
 ```
 
 ## Docker based installation
@@ -72,7 +76,13 @@ docker build -t deepml:latest ./docker
 
 # Install the package in development mode with CUDA BLAS support for LlamaCpp
 cd /shared
-./install.sh
+
+# Set variables for llama-cpp to compile with CUDA.
+# Point to the location root of the install NVidia CUDA Toolkit (/usr/local/cuda on Ubuntu)
+source ./setvars.sh /usr/local/cuda
+
+# Install the package
+pip install .
 ```
 
 # Quickstart
@@ -161,8 +171,7 @@ llm:
 To create embeddings from documents, follow these steps:
 
 1. Open the command line interface.
-2. Navigate to the `src/llmsearch` directory.
-3. Run the following command: `python3 cli.py index create -c config.yaml`
+2. Run the following command: `llmsearch index create -c config.yaml`
 
 Executing this command will scan a folder containing markdown files (`/storage/docs`) and generate an embeddings database in the `/storage/embeddings` directory. Additionally, a local cache folder (`/storage/cache`) will be utilized to store embedding models, LLM models, and tokenizers.
 
@@ -173,8 +182,7 @@ The default vector database is ChromaDB, and the embeddings are generated using 
 To interact with the documents using one of the supported LLMs, follow these steps:
 
 1. Open the command line interface.
-2. Navigate to the `src/llmsearch` directory.
-3. Run the following command: `python3 cli.py interact llm -c config.yaml`
+2. Run the following command: `llmsearch interact llm -c config.yaml`
 
 Based on the example configuration provided in the `.yaml` file, the following actions will take place:
 
@@ -184,3 +192,10 @@ Based on the example configuration provided in the `.yaml` file, the following a
 - The system will query the embeddings database using the Maximal Marginal Relevance algorithm (`mmr` parameter in `semantic_search`). It will provide the most relevant context from different documents, up to a maximum context size of 2048 characters (`max_char_size` in `semantic_search`).
 - When displaying paths to relevant documents, the system will replace the part of the path `/storage/llm/docs/` with `obsidian://open?vault=knowledge-base&file=`. This replacement is based on the settings `substring_search` and `substring_replace` in `semantic_search->replace_output_path`.
 
+## API
+
+To launch an api, supply a path config file in the `FASTAPI_LLM_CONFIG` environment variable and launch `llmsearchapi` 
+
+```bash
+FASTAPI_LLM_CONFIG="./sample_templates/obsidian_conf.yaml" llmsearchapi
+```

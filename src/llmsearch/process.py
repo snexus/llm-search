@@ -70,7 +70,7 @@ def process_obsidian_uri(
 
     Args:
         doc_name (str): Document name (partially processed, potentially)
-        adv_uri_config (ObsidianAdvancedURI): contains the template to add, 
+        adv_uri_config (ObsidianAdvancedURI): contains the template to add,
                                               matches Obsidian's advanced URI plugin schem
         metadata (dict): Metadata associated with a document.
 

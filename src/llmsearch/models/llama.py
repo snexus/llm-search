@@ -4,7 +4,7 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import LlamaModelConfig
-from typing import Any, List 
+from typing import Any, List
 
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
