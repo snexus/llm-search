@@ -5,8 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "llmsearch"
 description = "LLM Powered Search Tool"
-
-dynamic = ["dependencies","version"]
+# version = "0.1.0"
+dynamic = ["dependencies", "version"]
 
 [project.optional-dependencies]
 dev = [
@@ -15,6 +15,9 @@ dev = [
     "pytest-cov",
     "ruff"
 ]
+
+[tool.setuptools_scm]
+write_to = "src/llmsearch/_version.py"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -27,3 +30,7 @@ dependencies = {file = ["requirements.txt"]}
 # Decrease the maximum line length to 79 characters.
 line-length = 119
 src = ["src"]
+
+[project.scripts]
+llmsearch = 'llmsearch.cli:main_cli'
+llmsearchapi = 'llmsearch.api:main'

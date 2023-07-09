@@ -8,7 +8,7 @@ from loguru import logger
 
 class PDFSplitter:
     def __init__(self, chunk_overlap: int = 200) -> None:
-        """Splits pdf documents 
+        """Splits pdf documents
 
         Args:
             chunk_overlap (int, optional): Overlap in characters. Defaults to 200.
