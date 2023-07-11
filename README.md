@@ -99,6 +99,9 @@ cache_folder: /storage/llm/cache
 
 embeddings:
   doc_path: /storage/llm/docs
+  exclude_paths:
+    - /storage/llm/docs/other_files
+    - /storage/llm/docs/excalidraw
   embeddings_path: /storage/llm/embeddings
   chunk_size: 1024
   scan_extensions: 
@@ -172,7 +175,7 @@ To create embeddings from documents, follow these steps:
 1. Open the command line interface.
 2. Run the following command: `llmsearch index create -c config.yaml`
 
-Based on the example configuration above, executing this command will scan a folder containing markdown  and pdf files (`/storage/llm/docs`) and generate an embeddings database in the `/storage/llm/embeddings` directory. Additionally, a local cache folder (`/storage/llm/cache`) will be utilized to store embedding models, LLM models, and tokenizers.
+Based on the example configuration above, executing this command will scan a folder containing markdown and pdf files (`/storage/llm/docs`) excluding the files in `/storage/llm/docs/other_files` and generate an embeddings database in the `/storage/llm/embeddings` directory. Additionally, a local cache folder (`/storage/llm/cache`) will be utilized to store embedding models, LLM models, and tokenizers.
 
 The default vector database is ChromaDB, and the embeddings are generated using the `instruct-xlarge` model, which is known for its high performance. You can find more information about this model at [https://huggingface.co/spaces/mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard).
 

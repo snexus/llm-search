@@ -33,10 +33,30 @@ class VectorStoreChroma:
             ).split_document,
         }
 
+    def is_exclusion(self, path: Path, exclusions: List[str]) -> bool:
+        """Checks if path has parent folders in list of exclusions
+
+        Args:
+            path (Path): _description_
+            exclusions (List[str]): List of exclusion folders
+
+        Returns:
+            bool: True if path is in list of exclusions
+        """
+
+        exclusion_paths = [Path(p) for p in exclusions]
+        for ex_path in exclusion_paths:
+            if ex_path in path.parents:
+                logger.info(f"Excluding path {path} from documents, as path parent path is excluded.")
+                return True
+        return False
+        
+        
     def create_index_from_folder(
         self,
         folder_path: str,
         chunk_size: int,
+        exclusion_paths: List[str],
         extensions: List[str],
         clear_persist_folder=True,
     ):
@@ -45,7 +65,9 @@ class VectorStoreChroma:
         all_docs = []
         for extension in extensions:
             logger.info(f"Scanning path for extension: {extension}")
-            paths = list(p.glob(f"**/*.{extension}*"))
+
+            # Create a list of document paths to process. Filter out paths in the exclusion list
+            paths = [p for p in list(p.glob(f"**/*.{extension}*")) if not self.is_exclusion(p, exclusion_paths)]
 
             splitter = self._splitter_conf[extension]
             docs = get_documents_from_custom_splitter(

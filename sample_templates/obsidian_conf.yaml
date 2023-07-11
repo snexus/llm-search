@@ -1,16 +1,23 @@
 cache_folder: /storage/llm/cache
 
 embeddings:
-  doc_path: /storage/llm/docs
+  doc_path: /home/snexus/projects/knowledge-base
+  exclude_paths:
+    - /home/snexus/projects/knowledge-base/daily_notes
+    - /home/snexus/projects/knowledge-base/templates
+    - /home/snexus/projects/knowledge-base/other_files
+    - /home/snexus/projects/knowledge-base/bookmarks
+    - /home/snexus/projects/knowledge-base/excalidraw
   embeddings_path: /storage/llm/embeddings
   scan_extensions: 
     - md
+    - pdf
 
 semantic_search:
   search_type: similarity # mmr
 
   replace_output_path:
-    substring_search: storage/llm/docs/
+    substring_search: /home/snexus/projects/knowledge-base
     substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
 
   append_suffix:

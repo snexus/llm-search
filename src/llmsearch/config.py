@@ -31,6 +31,7 @@ class DocumentExtension(str, Enum):
 
 class EmbeddingsConfig(BaseModel):
     doc_path: DirectoryPath
+    exclude_paths: List[DirectoryPath] = []
     embeddings_path: DirectoryPath
     scan_extensions: List[DocumentExtension]
     chunk_size: int = 1024
