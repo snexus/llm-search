@@ -4,7 +4,7 @@ from typing import List, Optional, Union
 
 import yaml
 from loguru import logger
-from pydantic import BaseModel, DirectoryPath, Extra, validator
+from pydantic import BaseModel, DirectoryPath, Extra, validator, Field
 from pydantic.typing import Literal  # type: ignore
 
 from llmsearch.models.config import (
@@ -31,7 +31,7 @@ class DocumentExtension(str, Enum):
 
 class EmbeddingsConfig(BaseModel):
     doc_path: DirectoryPath
-    exclude_paths: List[DirectoryPath] = []
+    exclude_paths: List[DirectoryPath] = Field(default_factory=list)
     embeddings_path: DirectoryPath
     scan_extensions: List[DocumentExtension]
     chunk_size: int = 1024
@@ -101,10 +101,9 @@ class SemanticSearchOutput(BaseModel):
     chunk_text: str
     metadata: dict
 
-
 class ResponseModel(BaseModel):
     response: str
-    semantic_search: List[SemanticSearchOutput] = []
+    semantic_search: List[SemanticSearchOutput] = Field(default_factory=list)
 
 
 def get_config(path: Union[str, Path]) -> Config:
