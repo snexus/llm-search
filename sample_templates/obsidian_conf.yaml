@@ -23,7 +23,7 @@ semantic_search:
   append_suffix:
     append_template: "&heading={heading}"
 
-  max_char_size: 4096
+  max_char_size: 2096
 
 
 llm:
@@ -42,7 +42,7 @@ llm:
       temperature: 0.0
       model_name: gpt-3.5-turbo-0613
 
-#
+
 # llm:
 #   type: llamacpp
 #   params:
@@ -61,13 +61,13 @@ llm:
 #     model_init_params:
 #       n_ctx: 1024
 #       n_batch: 512
-#       n_gpu_layers: 30
+#       n_gpu_layers: 15
 
 #     model_kwargs:
 #       max_tokens: 512
 #       top_p: 0.1
 #       top_k: 40
-#       temperature: 0.7
+#       temperature: 0.2
 #       # mirostat_mode: 1
 
 
