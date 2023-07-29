@@ -1,18 +1,15 @@
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import yaml
 from loguru import logger
-from pydantic import BaseModel, DirectoryPath, Extra, validator, Field
+from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
 from pydantic.typing import Literal  # type: ignore
 
-from llmsearch.models.config import (
-    AutoGPTQModelConfig,
-    HuggingFaceModelConfig,
-    LlamaModelConfig,
-    OpenAIModelConfig,
-)
+from llmsearch.models.config import (AutoGPTQModelConfig,
+                                     HuggingFaceModelConfig, LlamaModelConfig,
+                                     OpenAIModelConfig)
 
 models_config = {
     "llamacpp": LlamaModelConfig,
@@ -22,19 +19,38 @@ models_config = {
 }
 
 
+class Document(BaseModel):
+    """Interface for interacting with a document."""
+
+    page_content: str
+    metadata: dict = Field(default_factory=dict)
+    
+    
 class DocumentExtension(str, Enum):
     md = "md"
     pdf = "pdf"
     html = "html"
     epub = "epub"
+    
+class DocumentPathSettings(BaseModel):
+    doc_path: DirectoryPath
+    exclude_paths: List[DirectoryPath] = Field(default_factory=list)
+    scan_extensions: List[DocumentExtension]
+    additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
+    chunk_size: int = 1024
+
+    @validator("additional_parser_settings")
+    def validate_extension(cls, value):
+        for ext in value.keys(): 
+            if ext not in  DocumentExtension.__members__:
+                raise TypeError(f"Unknown document extension {value}. Supported: {DocumentExtension.__members__}")
+        return value
+
 
 
 class EmbeddingsConfig(BaseModel):
-    doc_path: DirectoryPath
-    exclude_paths: List[DirectoryPath] = Field(default_factory=list)
     embeddings_path: DirectoryPath
-    scan_extensions: List[DocumentExtension]
-    chunk_size: int = 1024
+    document_settings: List[DocumentPathSettings]
 
     class Config:
         extra = Extra.forbid

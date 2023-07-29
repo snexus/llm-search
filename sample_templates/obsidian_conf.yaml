@@ -1,17 +1,26 @@
 cache_folder: /storage/llm/cache
 
 embeddings:
-  doc_path: /home/snexus/projects/knowledge-base
-  exclude_paths:
-    - /home/snexus/projects/knowledge-base/daily_notes
-    - /home/snexus/projects/knowledge-base/templates
-    - /home/snexus/projects/knowledge-base/other_files
-    - /home/snexus/projects/knowledge-base/bookmarks
-    - /home/snexus/projects/knowledge-base/excalidraw
-  embeddings_path: /storage/llm/embeddings
-  scan_extensions: 
-    - md
-    - pdf
+  embeddings_path: /storage/llm/temp_embeddings
+  document_settings:
+  - doc_path: /storage/llm/docs #/home/snexus/projects/knowledge-base
+    exclude_paths:
+      - /home/snexus/projects/knowledge-base/daily_notes
+      - /home/snexus/projects/knowledge-base/templates
+      - /home/snexus/projects/knowledge-base/other_files
+      - /home/snexus/projects/knowledge-base/bookmarks
+      - /home/snexus/projects/knowledge-base/excalidraw
+    scan_extensions: 
+      - md
+      - pdf
+    additional_parser_settings:
+      md: 
+        skip_first: True
+        merge_sections: True
+        remove_images: True
+        find_metadata:
+          description: "description:"
+    chunk_size: 1024
 
 semantic_search:
   search_type: similarity # mmr
@@ -23,15 +32,15 @@ semantic_search:
   append_suffix:
     append_template: "&heading={heading}"
 
-  max_char_size: 2096
+  max_char_size: 4096
 
 
 llm:
   type: openai
   params:
     prompt_template: |
-        Context information is provided below. Given the context information and not prior knowledge, provide detailed answer to the question.
-
+      Contex information is provided below. Given only the context and not prior knowledge, provide detailed answer to the question and references to the provided context. If answer isn't in the context, say you don't know.
+        
         ### Context:
         ---------------------
         {context}
@@ -40,7 +49,7 @@ llm:
         ### Question: {question}
     model_kwargs:
       temperature: 0.0
-      model_name: gpt-3.5-turbo-0613
+      model_name: gpt-3.5-turbo
 
 
 # llm:
