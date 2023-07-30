@@ -25,7 +25,7 @@ class UnstructuredSplitter:
         self.supported_elements = (NarrativeText, Text, Title)
 
     def split_document(
-        self, document_path: Union[str, Path], max_size: int
+        self, document_path: Union[str, Path], max_size: int, **kwargs
     ) -> List[dict]:
         logger.info(f"Partitioning document: {document_path}")
 

@@ -16,7 +16,7 @@ class PDFSplitter:
         self.chunk_overlap = chunk_overlap
 
     def split_document(
-        self, document_path: Union[str, Path], max_size: int
+        self, document_path: Union[str, Path], max_size: int, **kwargs
     ) -> List[dict]:
         """Splits pdf documents into multiple chunks
 

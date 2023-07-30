@@ -71,7 +71,7 @@ class ReplaceOutputPath(BaseModel):
 
 class SemanticSearchConfig(BaseModel):
     search_type: Literal["mmr", "similarity"]
-    replace_output_path: ReplaceOutputPath
+    replace_output_path: List[ReplaceOutputPath] = Field(default_factory=list)
     obsidian_advanced_uri: Optional[ObsidianAdvancedURI] = None
     append_suffix: Optional[AppendSuffix] = None
     max_char_size: int = 2048

@@ -1,9 +1,9 @@
 cache_folder: /storage/llm/cache
 
 embeddings:
-  embeddings_path: /storage/llm/temp_embeddings
+  embeddings_path: /storage/llm/embeddings
   document_settings:
-  - doc_path: /storage/llm/docs #/home/snexus/projects/knowledge-base
+  - doc_path: /home/snexus/projects/knowledge-base
     exclude_paths:
       - /home/snexus/projects/knowledge-base/daily_notes
       - /home/snexus/projects/knowledge-base/templates
@@ -18,16 +18,16 @@ embeddings:
         skip_first: True
         merge_sections: True
         remove_images: True
-        find_metadata:
-          description: "description:"
+        # find_metadata:
+        #   description: "description:"
     chunk_size: 1024
 
 semantic_search:
   search_type: similarity # mmr
 
   replace_output_path:
-    substring_search: /home/snexus/projects/knowledge-base
-    substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
+    - substring_search: /home/snexus/projects/knowledge-base
+      substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
 
   append_suffix:
     append_template: "&heading={heading}"

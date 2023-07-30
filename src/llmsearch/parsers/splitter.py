@@ -29,15 +29,15 @@ class DocumentSplitter:
         all_docs = []
 
         for setting in self.document_path_settings:
-            p = Path(setting.doc_path)
-            exclusion_paths = setting.exclude_paths
+            docs_path = Path(setting.doc_path)
+            exclusion_paths = [str(e) for e in setting.exclude_paths]
             chunk_size = setting.chunk_size
 
             for extension in setting.scan_extensions:
                 logger.info(f"Scanning path for extension: {extension}")
 
                 # Create a list of document paths to process. Filter out paths in the exclusion list
-                paths = [p for p in list(p.glob(f"**/*.{extension}*")) if not self.is_exclusion(p, exclusion_paths)]
+                paths = [p for p in list(docs_path.glob(f"**/*.{extension}")) if not self.is_exclusion(p, exclusion_paths)]
 
                 splitter = self._splitter_conf[extension]
 
@@ -66,6 +66,8 @@ class DocumentSplitter:
         for ex_path in exclusion_paths:
             if ex_path in path.parents:
                 logger.info(f"Excluding path {path} from documents, as path parent path is excluded.")
+                return True
+        return False
 
     def _get_documents_from_custom_splitter(
         self, document_paths: List[Path], splitter_func, max_size, **additional_kwargs

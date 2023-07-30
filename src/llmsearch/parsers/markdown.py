@@ -310,7 +310,7 @@ def markdown_splitter(path: Union[str, Path], max_chunk_size: int, **additional_
                     MarkdownChunk(string=all_code_str, level=CODE_BLOCK_LEVEL)
                 )
 
-    all_out = postprocess_sections(sections, max_chunk_size, additional_splitter_settings, additional_metadata)
+    all_out = postprocess_sections(sections, max_chunk_size, additional_splitter_settings, additional_metadata, path)
 
     logger.info(f"Got {len(all_out)} text chunks:")
     for s in all_out:
@@ -357,7 +357,7 @@ def preprocess_markdown(markdown: str, additional_settings: dict) -> Tuple[str, 
     return markdown, additional_metadata
 
 
-def postprocess_sections(sections: List[MarkdownChunk], max_chunk_size: int,  additional_settings: dict, additional_metadata: dict) -> List[dict]:
+def postprocess_sections(sections: List[MarkdownChunk], max_chunk_size: int,  additional_settings: dict, additional_metadata: dict, path: Union[str, Path]) -> List[dict]:
     all_out = []
 
     skip_first = additional_settings.get("skip_first", False)
@@ -423,9 +423,9 @@ def add_section_metadata(s, section_metadata: dict):
     for k, v in section_metadata.items():
         if v:
             metadata_s+=f"{k}: {v}\n"
-    metadata = f"Metadata:\n=======\n{metadata_s}=======\n\n"
+    metadata = f"Metadata applicable to the next chunk of text delimited by five stars:\n>> METADATA START\n{metadata_s}>> METADATA END\n\n"
 
-    return metadata + s
+    return metadata + "*****\n" + s + "\n*****"
 
 
 def find_metadata(page_md: str, search_string: str) -> str:
