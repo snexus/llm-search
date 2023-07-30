@@ -39,10 +39,12 @@ def get_and_parse_response(
     out = ResponseModel(response=res["output_text"])
     for doc in res["input_documents"]:
         doc_name = doc.metadata["source"]
-        doc_name = doc_name.replace(
-            config.replace_output_path.substring_search,
-            config.replace_output_path.substring_replace,
-        )
+        
+        for replace_setting in config.replace_output_path:
+            doc_name = doc_name.replace(
+                replace_setting.substring_search,
+                replace_setting.substring_replace,
+            )
 
         if config.obsidian_advanced_uri is not None:
             doc_name = process_obsidian_uri(

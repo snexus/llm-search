@@ -98,7 +98,7 @@ if config_file is not None:
 
     st.sidebar.write(f"**Model type:** {config.llm.type}")
     
-    st.sidebar.write(f"**Docuemnt path**: {config.embeddings.doc_path}")
+    st.sidebar.write(f"**Docuemnt path**: {config.embeddings.document_settings[0].doc_path}")
     st.sidebar.write(f"**Embedding path:** {config.embeddings.embeddings_path}")
     st.sidebar.write(f"**Max char size (semantic search):** {config.semantic_search.max_char_size}")
 

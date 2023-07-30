@@ -1,18 +1,19 @@
 cache_folder: /storage/llm/cache
 
 embeddings:
-  doc_path: /storage/llm/microsoft-docs
   embeddings_path: /storage/llm/embeddings_databricks
-  chunk_size: 1024
-  scan_extensions: 
-    - md
-    - pdf
+  document_settings:
+  - doc_path: /storage/llm/microsoft-docs
+    chunk_size: 1024
+    scan_extensions: 
+      - md
+      - pdf
 
 semantic_search:
   search_type: similarity # mmr # similarity #
   replace_output_path:
-    substring_search: "/storage"
-    substring_replace: "file:///storage"
+    - substring_search: "/storage"
+      substring_replace: "file:///storage"
 
   append_suffix:
     append_template: "#page={page}"

@@ -1,18 +1,24 @@
 cache_folder: ## specify a cache folder for embeddings models, huggingface and sentence transformers
 
 embeddings:
-  doc_path: ## specify the docs folder
   embeddings_path: ## specify a folder where embeddings will be saves
-  chunk_size: ## specifies chunk sizes to split the documents
-  scan_extensions: # specifies files extensions to scan recursively in `doc_path`. Currently supproted - pdf, md, html, epub
-    - pdf
-    - md
+  document_settings:
+  - doc_path: ## specify the docs folder
+    chunk_size: ## specifies chunk sizes to split the documents
+    scan_extensions: # specifies files extensions to scan recursively in `doc_path`. Currently supproted - pdf, md, html, epub
+      - pdf
+      - md
+    additional_parser_settings: # Optional section, don't have to include
+      md: 
+        skip_first: True  # Skip first section which often contains metadata
+        merge_sections: True # Merge # headings if possible
+        remove_images: True # Remove image links
 
 semantic_search:
-  search_type: mmr # mmr or similarity
-  replace_output_path:
-    substring_search: ## Specifies substring to replace  in the output path of the document
-    substring_replace: ## Replaces with this string
+  search_type: similarity # mmr or similarity
+  replace_output_path: # Can specify list of search/replace settings
+    - substring_search: ## Specifies substring to replace  in the output path of the document
+      substring_replace: ## Replaces with this string
 
   append_suffix: # Specifies additional template to append to an output path, useful for deep linking
     append_template: "#page={page}" # For example will append a page from metadata of the document parser

@@ -98,22 +98,28 @@ As an alternative uncomment the llm section for OpenAI model.
 cache_folder: /storage/llm/cache
 
 embeddings:
-  doc_path: /storage/llm/docs
-  exclude_paths:
-    - /storage/llm/docs/other_files
-    - /storage/llm/docs/excalidraw
   embeddings_path: /storage/llm/embeddings
-  chunk_size: 1024
-  scan_extensions: 
-    - md
-    - pdf
+  document_settings:
+  - doc_path: /storage/llm/docs
+    exclude_paths:
+      - /storage/llm/docs/other_files
+      - /storage/llm/docs/excalidraw
+    chunk_size: 1024
+    scan_extensions: 
+      - md
+      - pdf
+    additional_parser_settings: # Optional section
+      md: 
+        skip_first: True  # Skip first section which often contains metadata
+        merge_sections: True # Merge # headings if possible
+        remove_images: True # Remove image links
 
 semantic_search:
   search_type: similarity # mmr
 
   replace_output_path:
-    substring_search: storage/llm/docs/
-    substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
+    - substring_search: storage/llm/docs/
+      substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
 
   append_suffix:
     append_template: "&heading={heading}"
@@ -179,12 +185,17 @@ Based on the example configuration above, executing this command will scan a fol
 
 The default vector database is ChromaDB, and the embeddings are generated using the `instruct-xlarge` model, which is known for its high performance. You can find more information about this model at [https://huggingface.co/spaces/mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard).
 
+
+
 ## Interact with the documents using supported LLMs
 
 To interact with the documents using one of the supported LLMs, follow these steps:
 
 1. Open the command line interface.
-2. Run the following command: `llmsearch interact llm -c config.yaml`
+2. Run one of the following commands: 
+
+* Experimental web interface - `streamlit run ./src/llmsearch/webapp.py -- --config_path config.yaml`
+* CLI interface - `llmsearch interact llm -c config.yaml`
 
 Based on the example configuration provided in the `.yaml` file above, the following actions will take place:
 
