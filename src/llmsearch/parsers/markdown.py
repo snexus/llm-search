@@ -467,8 +467,8 @@ def merge_sections(
 if __name__ == "__main__":
     from pathlib import Path
 
-    # path = Path("/storage/gdp-platform-docs/docs/platform/how-to/onboard/get-onboard-data-platform.md")
-    path = Path("/storage/gdp-platform-docs/docs/platform/how-to/release/synapse_cicd_release.md")
+    path = Path("/storage/gdp-platform-docs/docs/platform/how-to/onboard/get-onboard-data-platform.md")
+    # path = Path("/storage/gdp-platform-docs/docs/platform/how-to/release/synapse_cicd_release.md")
     # path = Path("/storage/gdp-platform-docs/docs/platform/how-to/connect/get-started-azure-data-studio.md")
 
 

@@ -83,6 +83,10 @@ source ./setvars.sh /usr/local/cuda
 pip install .
 ```
 
+## Google Colab Demo
+
+* Refer to `notebook/llmsearch_google_colab_demo.ipynb` for a working demo notebook tested on Google Colab free tier.
+
 # Quickstart
 
 ## Create a configuration file
