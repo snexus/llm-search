@@ -69,7 +69,8 @@ def llmsearch(question: str):
         embed_retriever=llm_params.embed_retriever,
         config=llm_params.config.semantic_search,
     )
-    return output.json()
+    
+    return output.json(indent=2)
 
 @app.get("/semantic")
 def semanticsearch(question: str):
