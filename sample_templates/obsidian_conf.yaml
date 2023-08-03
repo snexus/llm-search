@@ -2,6 +2,11 @@ cache_folder: /storage/llm/cache
 
 embeddings:
   embeddings_path: /storage/llm/embeddings
+  embedding_model:
+    type: sentence_transformer
+    model_name: "intfloat/multilingual-e5-large"
+
+
   document_settings:
   - doc_path: /home/snexus/projects/knowledge-base
     exclude_paths:
@@ -16,7 +21,7 @@ embeddings:
     additional_parser_settings:
       md: 
         skip_first: True
-        merge_sections: True
+        merge_sections: False
         remove_images: True
         # find_metadata:
         #   description: "description:"

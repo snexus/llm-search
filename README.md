@@ -6,11 +6,14 @@ The purpose of this package is to provide a convenient (and private) question an
 ## Features
 
 * Supported formats
-    * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. 
-    Currently, this feature is more robust compared to Langchain's built-in parser.
-    * `.pdf`- MuPDF based parser
+    * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features such cleaning image links, adding custom metadata and more.
+    * `.pdf`- MuPDF based parser.
     * `.html`, `.epub` - supported through `Unstructured` pre-processor - https://unstructured-io.github.io/unstructured/
 * Generates embeddings from a folder of documents and stores them in a vector database (ChromaDB).
+  * The following embedding models are supported:
+    * Huggingface embeddings
+    * Sentence transformers based - e.g. `multilingual-e5-base`
+    * Instructor - e.g. `instructor-large`
 * Allows interaction with embedded documents using cutting-edge LLMs, supporting the following models and methods (including locally hosted):
     * OpenAI (ChatGPT 3.5/4)
     * HuggingFace models
@@ -102,6 +105,10 @@ As an alternative uncomment the llm section for OpenAI model.
 cache_folder: /storage/llm/cache
 
 embeddings:
+  embedding_model: # Optional embedding model specification, default is instructor-large
+    type: sentence_transformer # other supported types - "huggingface" and "instruct"
+    model_name: "intfloat/multilingual-e5-large"
+
   embeddings_path: /storage/llm/embeddings
   document_settings:
   - doc_path: /storage/llm/docs
@@ -187,7 +194,7 @@ To create embeddings from documents, follow these steps:
 
 Based on the example configuration above, executing this command will scan a folder containing markdown and pdf files (`/storage/llm/docs`) excluding the files in `/storage/llm/docs/other_files` and generate an embeddings database in the `/storage/llm/embeddings` directory. Additionally, a local cache folder (`/storage/llm/cache`) will be utilized to store embedding models, LLM models, and tokenizers.
 
-The default vector database is ChromaDB, and the embeddings are generated using the `instruct-xlarge` model, which is known for its high performance. You can find more information about this model at [https://huggingface.co/spaces/mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard).
+The default vector database is ChromaDB, and default embedding model is `instruct-large` (unless specified otherwise using `embedding_model` section such as above), which is known for its high performance. You can find more information about this model at [https://huggingface.co/spaces/mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard).
 
 
 

@@ -2,19 +2,20 @@ import shutil
 from pathlib import Path
 from typing import List
 
-from langchain.embeddings import HuggingFaceInstructEmbeddings
 from langchain.vectorstores import Chroma
+from llmsearch.config import EmbeddingModel
 from loguru import logger
 
 from llmsearch.parsers.splitter import Document
-
+from llmsearch.embeddings import get_embedding_model
 
 class VectorStoreChroma:
-    def __init__(self, persist_folder: str):
+    def __init__(self, persist_folder: str, embeddings_model_config: EmbeddingModel):
         self._persist_folder = persist_folder
 
         # Embeddings model is hard-coded for now
-        self._embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-large")
+        # self._embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-large")
+        self._embeddings =  get_embedding_model(embeddings_model_config)
         # InstructorEmbeddingFunction(model_name="hkunlp/instructor-large")
         # HuggingFaceEmbeddings(model_name=hf_embed_model_name)
 

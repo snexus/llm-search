@@ -60,7 +60,7 @@ def get_chain(config: Config):
 
 @st.cache_resource(hash_funcs={Config:hash_func})
 def get_retriever(config):
-    store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path))
+    store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path), embeddings_model_config=config.embeddings.embedding_model)
     embed_retriever = store.load_retriever(
         search_type=config.semantic_search.search_type, search_kwargs={"k": MAX_K}
     )

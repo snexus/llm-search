@@ -37,13 +37,15 @@ def main_cli():
 def generate_index(config_file: str):
     config = get_config(config_file)
     set_cache_folder(str(config.cache_folder))
-    
+
     splitter = DocumentSplitter(config.embeddings.document_settings)
     all_docs = splitter.split()
-    
-    vs = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path))
+
+    vs = VectorStoreChroma(
+        persist_folder=str(config.embeddings.embeddings_path),
+        embeddings_model_config=config.embeddings.embedding_model,
+    )
     vs.create_index_from_documents(all_docs=all_docs)
-    
 
 
 def set_cache_folder(cache_folder_root: str):
@@ -51,9 +53,7 @@ def set_cache_folder(cache_folder_root: str):
     transformers_cache = os.path.join(cache_folder_root, "transformers")
     hf_home = os.path.join(cache_folder_root, "hf_home")
 
-    logger.info(
-        f"Setting SENTENCE_TRANSFORMERS_HOME folder: {sentence_transformers_home}"
-    )
+    logger.info(f"Setting SENTENCE_TRANSFORMERS_HOME folder: {sentence_transformers_home}")
     logger.info(f"Setting TRANSFORMERS_CACHE folder: {transformers_cache}")
     logger.info(f"Setting HF_HOME: {hf_home}")
     logger.info(f"Setting MODELS_CACHE_FOLDER: {cache_folder_root}")
