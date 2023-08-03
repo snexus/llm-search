@@ -2,6 +2,11 @@ cache_folder: ## specify a cache folder for embeddings models, huggingface and s
 
 embeddings:
   embeddings_path: ## specify a folder where embeddings will be saves
+  
+  embedding_model: # Optional embedding model specification, default is instructor-large
+    type: sentence_transformer # other supported types - "huggingface" and "instruct"
+    model_name: "intfloat/multilingual-e5-large"
+
   document_settings:
   - doc_path: ## specify the docs folder
     chunk_size: ## specifies chunk sizes to split the documents
@@ -11,7 +16,7 @@ embeddings:
     additional_parser_settings: # Optional section, don't have to include
       md: 
         skip_first: True  # Skip first section which often contains metadata
-        merge_sections: True # Merge # headings if possible
+        merge_sections: False # Merge # headings if possible, can be turned on and off depending on document stucture
         remove_images: True # Remove image links
 
 semantic_search:

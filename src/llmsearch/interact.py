@@ -12,8 +12,6 @@ langchain.debug = True
 
 
 def print_llm_response(output: ResponseModel):
-    print("\n============= RESPONSE =================")
-    cprint(output.response, "red")
     print("\n============= SOURCES ==================")
     for source in output.semantic_search:
         source.metadata.pop("source")
@@ -21,11 +19,13 @@ def print_llm_response(output: ResponseModel):
         cprint(source.metadata, "cyan")
         print("******************* BEING EXTRACT *****************")
         print(f"{source.chunk_text}\n")
+    print("\n============= RESPONSE =================")
+    cprint(output.response, "red")
     print("------------------------------------------")
 
 
 def qa_with_llm(llm, prompt: str, config: Config, chain_type="stuff", max_k=7):
-    store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path))
+    store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path), embeddings_model_config=config.embeddings.embedding_model)
     embed_retriever = store.load_retriever(
         search_type=config.semantic_search.search_type, search_kwargs={"k": max_k}
     )

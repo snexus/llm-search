@@ -7,9 +7,7 @@ from loguru import logger
 from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
 from pydantic.typing import Literal  # type: ignore
 
-from llmsearch.models.config import (AutoGPTQModelConfig,
-                                     HuggingFaceModelConfig, LlamaModelConfig,
-                                     OpenAIModelConfig)
+from llmsearch.models.config import AutoGPTQModelConfig, HuggingFaceModelConfig, LlamaModelConfig, OpenAIModelConfig
 
 models_config = {
     "llamacpp": LlamaModelConfig,
@@ -24,14 +22,27 @@ class Document(BaseModel):
 
     page_content: str
     metadata: dict = Field(default_factory=dict)
-    
-    
+
+
 class DocumentExtension(str, Enum):
     md = "md"
     pdf = "pdf"
     html = "html"
     epub = "epub"
-    
+
+
+class EmbeddingModelType(str, Enum):
+    huggingface = "huggingface"
+    instruct = "instruct"
+    sentence_transformer = "sentence_transformer"
+
+
+class EmbeddingModel(BaseModel):
+    type: EmbeddingModelType
+    model_name: str
+    additional_kwargs: dict = Field(default_factory=dict)
+
+
 class DocumentPathSettings(BaseModel):
     doc_path: DirectoryPath
     exclude_paths: List[DirectoryPath] = Field(default_factory=list)
@@ -41,14 +52,16 @@ class DocumentPathSettings(BaseModel):
 
     @validator("additional_parser_settings")
     def validate_extension(cls, value):
-        for ext in value.keys(): 
-            if ext not in  DocumentExtension.__members__:
+        for ext in value.keys():
+            if ext not in DocumentExtension.__members__:
                 raise TypeError(f"Unknown document extension {value}. Supported: {DocumentExtension.__members__}")
         return value
 
 
-
 class EmbeddingsConfig(BaseModel):
+    embedding_model: EmbeddingModel = EmbeddingModel(
+        type=EmbeddingModelType.instruct, model_name="hkunlp/instructor-large"
+    )
     embeddings_path: DirectoryPath
     document_settings: List[DocumentPathSettings]
 
@@ -92,12 +105,8 @@ class LLMConfig(BaseModel):
             raise TypeError(f"Uknown model type {value}. Allowed types: ")
 
         config_type = models_config[type_]
-        logger.info(
-            f"Loading model paramaters in configuration class {config_type.__name__}"
-        )
-        config = config_type(
-            **value
-        )  # An attempt to force conversion to the required model config
+        logger.info(f"Loading model paramaters in configuration class {config_type.__name__}")
+        config = config_type(**value)  # An attempt to force conversion to the required model config
         return config
 
     class Config:
@@ -116,6 +125,7 @@ class SemanticSearchOutput(BaseModel):
     chunk_link: str
     chunk_text: str
     metadata: dict
+
 
 class ResponseModel(BaseModel):
     response: str
