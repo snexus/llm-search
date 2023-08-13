@@ -87,6 +87,8 @@ class SemanticSearchConfig(BaseModel):
     replace_output_path: List[ReplaceOutputPath] = Field(default_factory=list)
     obsidian_advanced_uri: Optional[ObsidianAdvancedURI] = None
     append_suffix: Optional[AppendSuffix] = None
+    reranker: bool = True
+    max_k: int = 25
     max_char_size: int = 2048
 
     class Config:

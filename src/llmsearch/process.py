@@ -1,15 +1,16 @@
-from llmsearch.config import (
-    SemanticSearchConfig,
-    ObsidianAdvancedURI,
-    AppendSuffix,
-    ResponseModel,
-    SemanticSearchOutput,
-)
 import string
+from typing import List, Optional
+
+from langchain.vectorstores.base import VectorStoreRetriever
+from loguru import logger
+
+from llmsearch.config import (AppendSuffix, ObsidianAdvancedURI, ResponseModel,
+                              SemanticSearchConfig, SemanticSearchOutput)
+from llmsearch.rerank import Reranker
 
 
 def get_and_parse_response(
-    query: str, chain, embed_retriever, config: SemanticSearchConfig
+    query: str, chain, retrievers: List[VectorStoreRetriever], config: SemanticSearchConfig, reranker: Optional[Reranker] = None
 ) -> ResponseModel:
     """Performs retieval augmented search
 
@@ -22,8 +23,18 @@ def get_and_parse_response(
     Returns:
         OutputModel: _description_
     """
+    
     most_relevant_docs = []
-    docs = embed_retriever.get_relevant_documents(query=query)
+    docs = []
+    for retriever in retrievers:
+        docs.extend(retriever.get_relevant_documents(query = query))
+    
+    # Rerank if reranker is vailable
+    if reranker is not None:
+
+        logger.info("Reranking documents...")
+        docs = reranker.rerank(query, docs)
+    
     len_ = 0
 
     for doc in docs:

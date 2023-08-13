@@ -1,6 +1,10 @@
 cache_folder: /storage/llm/cache
 
 embeddings:
+  embedding_model:
+    type: sentence_transformer
+    model_name: "intfloat/multilingual-e5-large"
+
   embeddings_path: /storage/llm/embeddings_library
   document_settings:
   - doc_path: /storage/llm/pdf_docs
@@ -18,6 +22,9 @@ semantic_search:
 
   append_suffix:
     append_template: "#page={page}"
+
+  max_k: 40
+  reranker: True
 
   max_char_size: 4096
 

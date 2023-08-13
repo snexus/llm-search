@@ -1,7 +1,7 @@
 
 # LLM Search
 
-The purpose of this package is to provide a convenient (and private) question answering system that allows interaction with local documents. It is designed to work seamlessly with custom Large Language Models (LLMs), both OpenAI or installed locally.
+The purpose of this package is to offer a convenient question-answering system with a simple YAML-based configuration that enables interaction with local documents. Special attention is given to improvements in various components of the system **in addition to** the LLM, including better document parsing, the ability to customize embeddings, advanced strategies for semantic search, and more. The package is designed to seamlessly collaborate with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
 
 ## Features
 
@@ -14,15 +14,14 @@ The purpose of this package is to provide a convenient (and private) question an
     * Huggingface embeddings
     * Sentence transformers based - e.g. `multilingual-e5-base`
     * Instructor - e.g. `instructor-large`
-* Allows interaction with embedded documents using cutting-edge LLMs, supporting the following models and methods (including locally hosted):
+* Supports "Retrieve and Re-rank" strategy for semantic search, see - https://www.sbert.net/examples/applications/retrieve_rerank/README.html
+* Allows interaction with embedded documents supporting the following models and methods (including locally hosted):
     * OpenAI (ChatGPT 3.5/4)
     * HuggingFace models
     * GGML models through LlamaCpp (not for commercial use due to licensing restrictions of the base Llama model).
     * AutoGPTQ Models
 * Other features
-    * CLI (Command Line Interface)
-    * Supports quantized models through AutoGPTQ/GGML or 8-bit quantization via bitsandbytes (https://github.com/TimDettmers/bitsandbytes) to reduce memory usage on older hardware. Quantization methods have been tested, and comfortable loading of 13B models on Nvidia RTX 3060 with 10GB VRAM has been achieved.
-    * Ability to limit the context window to accommodate different requirements of LLM models.
+    * Simple CLI and web interfaces
 
 
 ## Prerequisites
