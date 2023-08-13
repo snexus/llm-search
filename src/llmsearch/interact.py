@@ -1,11 +1,10 @@
 import langchain
 from dotenv import load_dotenv
-from langchain.chains.question_answering import load_qa_chain
 from termcolor import cprint
 
-from llmsearch.chroma import VectorStoreChroma
 from llmsearch.config import Config, ResponseModel
 from llmsearch.process import get_and_parse_response
+from llmsearch.utils import LLMBundle
 
 load_dotenv()
 langchain.debug = True
@@ -24,20 +23,14 @@ def print_llm_response(output: ResponseModel):
     print("------------------------------------------")
 
 
-def qa_with_llm(llm, prompt: str, config: Config, chain_type="stuff", max_k=7):
-    store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path), embeddings_model_config=config.embeddings.embedding_model)
-    embed_retriever = store.load_retriever(
-        search_type=config.semantic_search.search_type, search_kwargs={"k": max_k}
-    )
-
-    chain = load_qa_chain(llm=llm, chain_type=chain_type, prompt=prompt)
-
+def qa_with_llm(llm_bundle: LLMBundle, config: Config):
     while True:
         question = input("\nENTER QUESTION >> ")
         output = get_and_parse_response(
             query=question,
-            chain=chain,
-            embed_retriever=embed_retriever,
+            chain=llm_bundle.chain,
+            retrievers=llm_bundle.retrievers,
             config=config.semantic_search,
+            reranker=llm_bundle.reranker,
         )
         print_llm_response(output)

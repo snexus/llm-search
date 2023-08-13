@@ -66,7 +66,7 @@ def llmsearch(question: str):
     output = get_and_parse_response(
         query=question,
         chain=llm_params.chain,
-        embed_retriever=llm_params.embed_retriever,
+        retrievers=llm_params.embed_retriever,
         config=llm_params.config.semantic_search,
     )
     

@@ -1,6 +1,13 @@
-## 30-07-2023
+## 2023-08-11
 
-### Changelog:
+* Added an ability to re-rank documents after retrieving from vector database, using cross-encoder - models - see https://www.sbert.net/examples/applications/retrieve_rerank/README.html
+    * This behaviour is controlled be `reranker: True` parameter in semantic_search section of configuration
+* Added an ability to specify maximum number of retrieved documents using `k_max` paramters in semantic_search section
+* Refactoring and cleaning up the code.
+
+
+
+## 2023-07-30
 
 * Code cleaning and refactoring
 

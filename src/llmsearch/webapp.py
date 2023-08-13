@@ -1,29 +1,22 @@
-from io import StringIO
-from loguru import logger
-import os
 import argparse
-from streamlit import chat_message, chat_input
-from llmsearch.cli import set_cache_folder
-from llmsearch.config import get_config
-from llmsearch.interact import qa_with_llm
-from llmsearch.models.utils import get_llm
+import os
+from io import StringIO
 
-import langchain
 import streamlit as st
 import yaml
 from dotenv import load_dotenv
-from langchain.chains.question_answering import load_qa_chain
-from termcolor import cprint
+from loguru import logger
+from streamlit import chat_input, chat_message
+import langchain
 
-from llmsearch.chroma import VectorStoreChroma
-from llmsearch.config import Config, ResponseModel 
+from llmsearch.config import Config
 from llmsearch.process import get_and_parse_response
+from llmsearch.utils import get_llm_bundle
 
 st.set_page_config(page_title="LLMSearch", page_icon=":robot:", layout="wide")
 load_dotenv()
 
-MAX_K = 7
-CHAIN_TYPE="stuff"
+langchain.debug = True
 
 @st.cache_data
 def parse_cli_arguments():
@@ -35,8 +28,10 @@ def parse_cli_arguments():
         os._exit(e.code)
     return args
 
+
 def hash_func(obj: Config) -> str:
     return str(obj.embeddings.embeddings_path)
+
 
 @st.cache_data
 def load_config(config_file):
@@ -51,32 +46,19 @@ def load_config(config_file):
     config_dict = yaml.safe_load(string_data)
     return Config(**config_dict)
 
-@st.cache_resource(hash_funcs={Config:hash_func})
-def get_chain(config: Config):
-    set_cache_folder(str(config.cache_folder))
-    llm = get_llm(config.llm.params)
-    chain  = load_qa_chain(llm = llm.model, chain_type=CHAIN_TYPE, prompt = llm.prompt)
-    return chain
 
-@st.cache_resource(hash_funcs={Config:hash_func})
-def get_retriever(config):
-    store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path), embeddings_model_config=config.embeddings.embedding_model)
-    embed_retriever = store.load_retriever(
-        search_type=config.semantic_search.search_type, search_kwargs={"k": MAX_K}
-    )
-    return embed_retriever
-    
+@st.cache_resource(hash_funcs={Config: hash_func})
+def get_bundle(config):
+    return get_llm_bundle(config)
+
 
 @st.cache_data
-def generate_response(question: str, _config, _chain, _retriever):
+def generate_response(question: str, _config, _chain, _retriever, _reranker=None):
     output = get_and_parse_response(
-        query=question,
-        chain=_chain,
-        embed_retriever=_retriever,
-        config=_config.semantic_search,
+        query=question, chain=_chain, retrievers=_retriever, config=_config.semantic_search, reranker=_reranker
     )
     return output
-    
+
 
 st.title(":sparkles: LLMSearch")
 args = parse_cli_arguments()
@@ -85,44 +67,45 @@ st.sidebar.subheader(":hammer_and_wrench: Configuration")
 if args.cli_config_path:
     config_file = args.cli_config_path
 else:
-    config_file = st.sidebar.file_uploader("Select tempate to load", type=['yml','yaml'])
+    config_file = st.sidebar.file_uploader("Select tempate to load", type=["yml", "yaml"])
 
 
 if config_file is not None:
-    config = load_config(config_file) 
-    
+    config = load_config(config_file)
 
     config_file_name = config_file if isinstance(config_file, str) else config_file.name
     with st.sidebar.expander(config_file_name):
         st.json(config.json())
 
     st.sidebar.write(f"**Model type:** {config.llm.type}")
-    
+
     st.sidebar.write(f"**Docuemnt path**: {config.embeddings.document_settings[0].doc_path}")
     st.sidebar.write(f"**Embedding path:** {config.embeddings.embeddings_path}")
     st.sidebar.write(f"**Max char size (semantic search):** {config.semantic_search.max_char_size}")
 
+    llm_bundle = get_bundle(config)
 
-    chain = get_chain(config)
-    retriever = get_retriever(config)
+    chain = llm_bundle.chain
+    retriever = llm_bundle.retrievers
+    reranker = llm_bundle.reranker
 
-    text = st.chat_input('Enter text')
-    # with st.form("my_form"):
-        # submitted = st.form_submit_button("Get answer")
+    text = st.chat_input("Enter text")
 
     if text:
-        output = generate_response(text, config, chain, retriever)
-        
-        
-        
+        output = generate_response(text, config, chain, retriever, reranker)
+
         for source in output.semantic_search[::-1]:
             source_path = source.metadata.pop("source")
+            score = source.metadata.get("score", None)
             with st.expander(label=f":file_folder: {source_path}", expanded=True):
                 st.write(f'<a href="{source.chunk_link}">{source.chunk_link}</a>', unsafe_allow_html=True)
+                if score is not None:
+                    st.write(f"\nScore: {score}")
+
                 st.text(f"\n\n{source.chunk_text}")
 
         with chat_message("assistant"):
             st.write(output.response)
-                    
+
 else:
     st.info("Choose a configuration template to start...")
