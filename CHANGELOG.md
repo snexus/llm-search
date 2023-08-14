@@ -1,3 +1,8 @@
+## 2023-08-12
+
+* Abiility to add prefixes for embedded documents the query. Prefixes are often required for the embedding models for asymmetric queries (when short query is being matched to a long text paragraph) - see for example https://huggingface.co/intfloat/e5-large-v2#faq
+
+
 ## 2023-08-11
 
 * Added an ability to re-rank documents after retrieving from vector database, using cross-encoder - models - see https://www.sbert.net/examples/applications/retrieve_rerank/README.html

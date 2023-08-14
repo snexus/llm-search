@@ -26,6 +26,12 @@ def get_and_parse_response(
     
     most_relevant_docs = []
     docs = []
+    
+    if config.query_prefix:
+        logger.info(f"Adding query prefix for retrieval: {config.query_prefix}")
+        query = config.query_prefix + query
+        
+        
     for retriever in retrievers:
         docs.extend(retriever.get_relevant_documents(query = query))
     

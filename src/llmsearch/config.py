@@ -49,6 +49,7 @@ class DocumentPathSettings(BaseModel):
     scan_extensions: List[DocumentExtension]
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
     chunk_size: int = 1024
+    passage_prefix: str = ""
 
     @validator("additional_parser_settings")
     def validate_extension(cls, value):
@@ -90,6 +91,7 @@ class SemanticSearchConfig(BaseModel):
     reranker: bool = True
     max_k: int = 25
     max_char_size: int = 2048
+    query_prefix: str = ""
 
     class Config:
         arbitrary_types_allowed = True

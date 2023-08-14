@@ -1,21 +1,22 @@
 import os
+import asyncio
+from typing import Tuple
+from dotenv import load_dotenv
+
 import uvicorn
-from collections import namedtuple
-
 from fastapi import FastAPI
-from langchain.chains.question_answering import load_qa_chain
+from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
+import langchain
 
-from llmsearch.chroma import VectorStoreChroma
-from llmsearch.cli import set_cache_folder
-from llmsearch.config import get_config
-from llmsearch.models.utils import get_llm
+from llmsearch.config import Config, get_config
 from llmsearch.process import get_and_parse_response
+from llmsearch.utils import LLMBundle, get_llm_bundle
 
-LLMParams = namedtuple("LLMParams", "chain embed_retriever config")
+load_dotenv()
+langchain.debug = True
 
-
-def load_llm(k : int = 7) -> LLMParams:
+def load_llm() -> Tuple[LLMBundle, Config]:
     """Loads a chain to use with the api
 
     Args:
@@ -23,37 +24,32 @@ def load_llm(k : int = 7) -> LLMParams:
 
     Raises:
         SystemError: If `FASTAPI_LLM_CONFIG` is not set
-
-    Returns:
-        LLMParams: An instance of LLMParams Langchain's chain, embedding retriever and an instance of configuration
     """
 
     config_file = os.environ["FASTAPI_LLM_CONFIG"]
 
     if not config_file:
-        raise SystemError(
-            "Set 'FASTAPI_LLM_CONFG' environment variable to point to a model config file."
-        )
+        raise SystemError("Set 'FASTAPI_LLM_CONFG' environment variable to point to a model config file.")
     logger.info("Loading LLM...")
+
     config = get_config(config_file)
-    set_cache_folder(str(config.cache_folder))
+    bundle = get_llm_bundle(config)
 
-    llm = get_llm(config.llm.params)  # type: ignore
-    print(llm)
-    store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path), embeddings_model_config=config.embeddings.embedding_model)
-    embed_retriever = store.load_retriever(
-        search_type=config.semantic_search.search_type, search_kwargs={"k": k}
-    )
-
-    chain = load_qa_chain(llm=llm.model, chain_type="stuff", prompt=llm.prompt)
-    llm_params = LLMParams(chain=chain, embed_retriever=embed_retriever, config=config)
-
-    return llm_params
+    return bundle, config
 
 
-llm_params = load_llm()
+llm_bundle, config = load_llm()
 
 app = FastAPI()
+
+# Enable CORS
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/test")
@@ -62,21 +58,26 @@ def test():
 
 
 @app.get("/llm")
-def llmsearch(question: str):
+async def llmsearch(question: str): # switch to async to block execution
     output = get_and_parse_response(
         query=question,
-        chain=llm_params.chain,
-        retrievers=llm_params.embed_retriever,
-        config=llm_params.config.semantic_search,
+        chain=llm_bundle.chain,
+        retrievers=llm_bundle.retrievers,
+        config=config.semantic_search,
+        reranker=llm_bundle.reranker,
     )
-    
     return output.json(indent=2)
 
+
 @app.get("/semantic")
-def semanticsearch(question: str):
-    docs = llm_params.embed_retriever.get_relevant_documents(query=question)
+async def semanticsearch(question: str):
+    docs = llm_bundle.retrievers[0].get_relevant_documents(query=question)
     return {"sources": docs}
 
-    
+
 def main():
-    uvicorn.run(app)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

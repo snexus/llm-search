@@ -2,12 +2,18 @@ cache_folder: /storage/llm/cache
 
 embeddings:
   embeddings_path: /storage/llm/embeddings_databricks
+  
+  embedding_model:
+    type: sentence_transformer
+    model_name: "intfloat/e5-large-v2"
+
   document_settings:
   - doc_path: /storage/llm/microsoft-docs
     chunk_size: 1024
     scan_extensions: 
       - md
       - pdf
+    passage_prefix: "passage: "
 
 semantic_search:
   search_type: similarity # mmr # similarity #
@@ -19,6 +25,7 @@ semantic_search:
     append_template: "#page={page}"
 
   max_char_size: 4096
+  query_prefix: "query: "
 
 
 llm:

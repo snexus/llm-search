@@ -3,21 +3,18 @@ from pathlib import Path
 from typing import List
 
 from langchain.vectorstores import Chroma
-from llmsearch.config import EmbeddingModel
 from loguru import logger
 
-from llmsearch.parsers.splitter import Document
+from llmsearch.config import EmbeddingModel
 from llmsearch.embeddings import get_embedding_model
+from llmsearch.parsers.splitter import Document
+
 
 class VectorStoreChroma:
     def __init__(self, persist_folder: str, embeddings_model_config: EmbeddingModel):
         self._persist_folder = persist_folder
-
-        # Embeddings model is hard-coded for now
-        # self._embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-large")
-        self._embeddings =  get_embedding_model(embeddings_model_config)
-        # InstructorEmbeddingFunction(model_name="hkunlp/instructor-large")
-        # HuggingFaceEmbeddings(model_name=hf_embed_model_name)
+        self._embeddings = get_embedding_model(embeddings_model_config)
+        self.embeddings_model_config = embeddings_model_config
 
     def create_index_from_documents(
         self,
@@ -30,8 +27,8 @@ class VectorStoreChroma:
                 logger.warning(f"Deleting the content of: {pf}")
                 shutil.rmtree(pf)
 
+        logger.info("Generating and persisting the embeddings..")
         vectordb = Chroma.from_documents(all_docs, self._embeddings, persist_directory=self._persist_folder)
-        logger.info("Persisting the database..")
         vectordb.persist()
 
     def load_retriever(self, **kwargs):

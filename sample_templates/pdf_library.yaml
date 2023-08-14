@@ -3,7 +3,7 @@ cache_folder: /storage/llm/cache
 embeddings:
   embedding_model:
     type: sentence_transformer
-    model_name: "intfloat/multilingual-e5-large"
+    model_name: "intfloat/e5-large-v2"
 
   embeddings_path: /storage/llm/embeddings_library
   document_settings:
@@ -13,6 +13,7 @@ embeddings:
       # - epub
       - md
       - pdf
+    passage_prefix: "passage: "
 
 semantic_search:
   search_type: similarity #mmr #similarity # mmr
@@ -27,6 +28,7 @@ semantic_search:
   reranker: True
 
   max_char_size: 4096
+  query_prefix: "query: "
 
 
 llm:

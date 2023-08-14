@@ -4,7 +4,7 @@ embeddings:
   embeddings_path: /storage/llm/embeddings
   embedding_model:
     type: sentence_transformer
-    model_name: "intfloat/multilingual-e5-large"
+    model_name: "intfloat/e5-large-v2"
 
 
   document_settings:
@@ -26,6 +26,7 @@ embeddings:
         # find_metadata:
         #   description: "description:"
     chunk_size: 1024
+    passage_prefix: "passage: "
 
 semantic_search:
   search_type: similarity # mmr
@@ -38,6 +39,7 @@ semantic_search:
     append_template: "&heading={heading}"
 
   max_char_size: 4096
+  query_prefix: "query: "
 
 
 llm:
