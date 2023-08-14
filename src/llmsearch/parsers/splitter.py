@@ -29,6 +29,7 @@ class DocumentSplitter:
         all_docs = []
 
         for setting in self.document_path_settings:
+            passage_prefix = setting.passage_prefix
             docs_path = Path(setting.doc_path)
             exclusion_paths = [str(e) for e in setting.exclude_paths]
             chunk_size = setting.chunk_size
@@ -45,7 +46,7 @@ class DocumentSplitter:
                 additional_parser_settings = setting.additional_parser_settings.get(extension, dict())
 
                 docs = self._get_documents_from_custom_splitter(
-                    document_paths=paths, splitter_func=splitter, max_size=chunk_size, **additional_parser_settings
+                    document_paths=paths, splitter_func=splitter, max_size=chunk_size, passage_prefix=passage_prefix, **additional_parser_settings
                 )
                 logger.info(f"Got {len(docs)} chunks for type: {extension}")
                 all_docs.extend(docs)
@@ -70,7 +71,7 @@ class DocumentSplitter:
         return False
 
     def _get_documents_from_custom_splitter(
-        self, document_paths: List[Path], splitter_func, max_size, **additional_kwargs
+        self, document_paths: List[Path], splitter_func, max_size, passage_prefix: str, **additional_kwargs
     ) -> List[Document]:
         """Gets list of nodes from a collection of documents
 
@@ -78,6 +79,8 @@ class DocumentSplitter:
         """
 
         all_docs = []
+        if passage_prefix:
+            logger.info(f"Will add the following passage prefix: {passage_prefix}")
 
         for path in document_paths:
             logger.info(f"Processing path using custom splitter: {path}")
@@ -87,9 +90,10 @@ class DocumentSplitter:
             docs_data = splitter_func(path, max_size, **additional_kwargs)
             path = urllib.parse.quote(str(path))
             logger.info(path)
+            
             docs = [
                 Document(
-                    page_content=d["text"],
+                    page_content=passage_prefix + d["text"],
                     metadata={**d["metadata"], **{"source": str(path)}},
                 )
                 for d in docs_data
