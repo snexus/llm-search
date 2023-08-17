@@ -1,7 +1,8 @@
 import json
 import re
 from dataclasses import dataclass, field
-from typing import Any, Callable, Iterable, List, Optional
+from pathlib import Path
+from typing import Any, Callable, Iterable, List, Optional, Union
 
 import docx
 from docx.document import Document as doctwo
@@ -16,11 +17,12 @@ from loguru import logger
 class Heading:
     level: int
     text: str
-    
+
+
 @dataclass
 class HeadingSequence:
     headings: List[Heading] = field(default_factory=list)
-    
+
     def add(self, text: str, level: int):
         """Adds new headings to the heading sequence
 
@@ -28,20 +30,21 @@ class HeadingSequence:
             text (str): text of the heading
             level (int): level of the heading (0 - most significant, e.g. title)
         """
-        
+
         current_heading = Heading(level, text.strip())
-        
+
         while self.headings and self.headings[-1].level >= current_heading.level:
             self.headings.pop()
         self.headings.append(current_heading)
-    
+
     @property
     def path(self) -> str:
         s = [t.text for t in self.headings]
         return "/".join(s)
-        
+
 
 ## Based on langchain's splitter
+
 
 class RecursiveCharacterTextSplitter:
     """Splitting text by recursively look at characters.
@@ -52,7 +55,7 @@ class RecursiveCharacterTextSplitter:
 
     def __init__(
         self,
-        chunk_size: int, 
+        chunk_size: int,
         length_function: Callable[[str], int] = len,
         chunk_overlap: int = 200,
         separators: Optional[List[str]] = None,
@@ -61,7 +64,7 @@ class RecursiveCharacterTextSplitter:
         **kwargs: Any,
     ) -> None:
         """Create a new TextSplitter."""
-#        super().__init__(keep_separator=keep_separator, **kwargs)
+        #        super().__init__(keep_separator=keep_separator, **kwargs)
         self._keep_separator = keep_separator
         self._separators = separators or ["\n\n", "\n", " ", ""]
         self._is_separator_regex = is_separator_regex
@@ -111,7 +114,7 @@ class RecursiveCharacterTextSplitter:
 
     def split_text(self, text: str) -> List[str]:
         return self._split_text(text, self._separators)
-    
+
     def _join_docs(self, docs: List[str], separator: str) -> Optional[str]:
         text = separator.join(docs)
         text = text.strip()
@@ -119,10 +122,10 @@ class RecursiveCharacterTextSplitter:
             return None
         else:
             return text
-        
+
     def _merge_splits(self, splits: Iterable[str], separator: str) -> List[str]:
-    # We now want to combine these smaller pieces into medium size
-    # chunks to send to the LLM.
+        # We now want to combine these smaller pieces into medium size
+        # chunks to send to the LLM.
         separator_len = self._length_function(separator)
 
         docs = []
@@ -130,14 +133,10 @@ class RecursiveCharacterTextSplitter:
         total = 0
         for d in splits:
             _len = self._length_function(d)
-            if (
-                total + _len + (separator_len if len(current_doc) > 0 else 0)
-                > self._chunk_size
-            ):
+            if total + _len + (separator_len if len(current_doc) > 0 else 0) > self._chunk_size:
                 if total > self._chunk_size:
                     logger.warning(
-                        f"Created a chunk of size {total}, "
-                        f"which is longer than the specified {self._chunk_size}"
+                        f"Created a chunk of size {total}, " f"which is longer than the specified {self._chunk_size}"
                     )
                 if len(current_doc) > 0:
                     doc = self._join_docs(current_doc, separator)
@@ -147,13 +146,9 @@ class RecursiveCharacterTextSplitter:
                     # - we have a larger chunk than in the chunk overlap
                     # - or if we still have any chunks and the length is long
                     while total > self._chunk_overlap or (
-                        total + _len + (separator_len if len(current_doc) > 0 else 0)
-                        > self._chunk_size
-                        and total > 0
+                        total + _len + (separator_len if len(current_doc) > 0 else 0) > self._chunk_size and total > 0
                     ):
-                        total -= self._length_function(current_doc[0]) + (
-                            separator_len if len(current_doc) > 1 else 0
-                        )
+                        total -= self._length_function(current_doc[0]) + (separator_len if len(current_doc) > 1 else 0)
                         current_doc = current_doc[1:]
             current_doc.append(d)
             total += _len + (separator_len if len(current_doc) > 1 else 0)
@@ -161,10 +156,9 @@ class RecursiveCharacterTextSplitter:
         if doc is not None:
             docs.append(doc)
         return docs
-    
-def _split_text_with_regex(
-    text: str, separator: str, keep_separator: bool
-) -> List[str]:
+
+
+def _split_text_with_regex(text: str, separator: str, keep_separator: bool) -> List[str]:
     # Now that we have the separator, split the text
     if separator:
         if keep_separator:
@@ -180,6 +174,7 @@ def _split_text_with_regex(
         splits = list(text)
     return [s for s in splits if s != ""]
 
+
 ##This function extracts the tables and paragraphs from the document object
 def iter_block_items(parent):
     """
@@ -188,7 +183,7 @@ def iter_block_items(parent):
     would most commonly be a reference to a main Document object, but
     also works for a _Cell object, which itself can contain paragraphs and tables.
     """
-    
+
     if isinstance(parent, doctwo):
         parent_elm = parent.element.body
     elif isinstance(parent, _Cell):
@@ -212,149 +207,120 @@ def parse_table(table: Table) -> List[dict]:
     Returns:
         list: List of dictionaries containing rows of the tables
     """
-    
+
     headers = get_table_header(table)
-    
+
     out_list = list()
     current_dict = dict()
 
     for row in table.rows[1:]:
         for header, cell in zip(headers, row.cells):
-            if cell.tables: 
+            if cell.tables:
                 current_dict[header] = []
                 current_dict[header].append(cell.text)
             else:
                 current_dict[header] = cell.text
-            
+
             for i, nested_table in enumerate(cell.tables):
                 r = parse_table(nested_table)
                 if r:
                     current_dict[header].append(r)
-                
+
         out_list.append(current_dict)
-        current_dict = dict() 
-    
+        current_dict = dict()
+
     return out_list
+
 
 def get_table_header(table: Table):
     header = tuple([cell.text for cell in table.rows[0].cells])
     return header
 
 
-def docx_splitter(fn: str, chunk_size: int):
-    
-    doc = docx.Document(fn)
+def docx_splitter(path: Union[str, Path], max_chunk_size: int, **additional_splitter_setting):
+    doc = docx.Document(path)
 
     hs = HeadingSequence()
-    
+
     out_chunks = []
     current_chunk = ""
-    
-    paragraph_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, separators = ["\n\n","\n",". ", " "])
-    json_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, separators=[r'\{.*?\}',
-                                                                   r'".*?"\s*:\s*".*?"',
-                                                                   r"\n\n",
-                                                                   r"\n", 
-                                                                   r"\. "],
-                                            is_separator_regex=True, chunk_overlap=0)
-     
-    
+
+    # Splitter for text paragraphs
+    paragraph_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=max_chunk_size, separators=["\n\n", "\n", ". ", " "]
+    )
+
+    # Splitter for json
+    json_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=max_chunk_size,
+        separators=[r"\{.*?\}", r'".*?"\s*:\s*".*?"', r"\n\n", r"\n", r"\. ", r"\."],
+        is_separator_regex=True,
+        chunk_overlap=0,
+    )
+
+    # Iterate over all elements in the document
+
     for el in iter_block_items(doc):
         if isinstance(el, Paragraph):
             p_text = el.text
-            
+
             # If text of the paragraph is empty, continue
             if not p_text.strip():
                 continue
-            
+
             # Store headings for metadata
             if "title" in el.style.name.lower():
                 hs.add(p_text, level=0)
             elif "heading" in el.style.name.lower():
                 heading_level = int(el.style.name.lower().split(" ")[-1])
                 hs.add(p_text, heading_level)
-            
-            current_chunk = add_or_split(p_text, paragraph_splitter, current_chunk, chunk_size, out_chunks, hs)
-            
+
+            current_chunk = add_or_split(p_text, paragraph_splitter, current_chunk, max_chunk_size, out_chunks, hs)
+
         elif isinstance(el, Table):
             t_json = json.dumps(parse_table(el))
-            current_chunk = add_or_split(t_json, json_splitter, current_chunk, chunk_size, out_chunks, hs)
-            
-    
+            current_chunk = add_or_split(t_json, json_splitter, current_chunk, max_chunk_size, out_chunks, hs)
+
     return out_chunks
-            
-            
 
 
-def add_or_split(text, splitter, current_chunk: str, chunk_size: int, out_chunks: List[str], hs: HeadingSequence) -> str:
-    
+def add_or_split(
+    text, splitter, current_chunk: str, chunk_size: int, out_chunks: List[str], hs: HeadingSequence
+) -> str:
+    """Adds or splits text to out chunks, together with additional metadata
+
+    Args:
+        text (str): Text candidate to add
+        splitter (Instance of the splitter): Instance of the splitter
+        current_chunk (str): Current buffer (not flushed yet)
+        chunk_size (int): Target chunk size
+        out_chunks (List[str]): List of all historical chunks
+        hs (HeadingSequence): Holding the metadata for the text
+
+    Returns:
+        str: current chunk (not flushed)
+    """
+
     # Case 1- length of the next paragraph > chunk_size, flulsh the current and split the next
     if len(text) >= chunk_size:
         out_chunks.append(add_metadata(hs, current_chunk))
         current_chunk = ""
-        
+
         for ch in splitter.split_text(text):
             out_chunks.append(add_metadata(hs, ch))
-            
+
     # Case 2 - next paragraph is smaller than chunk size, but can't be added to the current chunk
     elif len(current_chunk) + len(text) >= chunk_size:
         out_chunks.append(add_metadata(hs, current_chunk))
-        
-        current_chunk = text 
-    
-    # Case 3 - current chunk is small enough 
+
+        current_chunk = text
+
+    # Case 3 - current chunk is small enough
     else:
-        current_chunk+=text
-    
+        current_chunk += text
+
     return current_chunk
+
 
 def add_metadata(hs: HeadingSequence, text: str) -> str:
     return f"""METADATA:\nTopic: "{hs.path}"\n\n{text}"""
-                
-                
-if __name__ == "__main__":
-    
-    
-    
-    # hs = HeadingSequence()
-    # hs.add("title", level=0)
-    # hs.add("subheader 1", level=1)
-    # hs.add("subheader 2", level=2)
-    # #hs.add("subheader 11", level = 1)
-    # print(hs.path)
-    
-    
-    # paragraphs = []
-    # for el in iter_block_items(doc):
-    #     if isinstance(el, Paragraph) and el.text:
-    #         paragraphs.append(el)
-    #     print(el, type(el), el.style.name)
-    
-    # t = parse_table(doc.tables[6])
-    # s = json.dumps(t)
-    
-    
-    # chunk_size = 1024
-    # t1 = paragraphs[2].text
-    # r_text = RecursiveCharacterTextSplitter(chunk_size=chunk_size, separators = ["\n\n","\n",". ", " "])
-    # print(t1) 
-    # r1= r_text.split_text(t1)
-    # print(r1)
-    
-    
-    
-    # r_json = RecursiveCharacterTextSplitter(chunk_size=chunk_size, separators=[r'\{.*?\}',
-    #                                                                r'".*?"\s*:\s*".*?"',
-    #                                                                r"\n\n",
-    #                                                                r"\n", 
-    #                                                                r"\. "], 
-    #                                    is_separator_regex=True, chunk_overlap=0)
-    # splitted = r_json.split_text(s)
-    
-    # print(s)
-    
-    # print(splitted)
-    # for s in splitted:
-    #     print("=============")
-    #     print(len(s))
-    #     print(s)

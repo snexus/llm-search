@@ -7,6 +7,7 @@ from loguru import logger
 from llmsearch.config import Document, DocumentPathSettings
 from llmsearch.parsers.markdown import markdown_splitter
 from llmsearch.parsers.pdf import PDFSplitter
+from llmsearch.parsers.doc import docx_splitter
 from llmsearch.parsers.unstructured import UnstructuredSplitter, UnstructuredSplitType
 
 
@@ -14,6 +15,8 @@ class DocumentSplitter:
     def __init__(self, document_path_settings: List[DocumentPathSettings]) -> None:
         self._splitter_conf = {
             "md": markdown_splitter,
+            "docx": docx_splitter,
+            "doc": docx_splitter,
             "pdf": PDFSplitter(chunk_overlap=200).split_document,
             "html": UnstructuredSplitter(document_type=UnstructuredSplitType.HTML).split_document,
             "epub": UnstructuredSplitter(document_type=UnstructuredSplitType.EPUB).split_document,
