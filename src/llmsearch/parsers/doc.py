@@ -325,7 +325,7 @@ def add_or_split(
 def add_metadata(hs: HeadingSequence, text: str) -> Dict[str, str]
     
     text = f"""METADATA:\nTopic: "{hs.path}"\n\n{text}"""
-    chunk = {"text": text, "metadata": {'heading': hs.path}})
+    chunk = {"text": text, "metadata": {'heading': hs.path}}
     return chunk
 
     
