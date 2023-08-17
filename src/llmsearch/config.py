@@ -29,6 +29,8 @@ class DocumentExtension(str, Enum):
     pdf = "pdf"
     html = "html"
     epub = "epub"
+    docx = "docx"
+    doc = "doc"
 
 
 class EmbeddingModelType(str, Enum):
