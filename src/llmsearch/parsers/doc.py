@@ -2,7 +2,7 @@ import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Iterable, List, Optional, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Union
 
 import docx
 from docx.document import Document as doctwo
@@ -285,7 +285,7 @@ def docx_splitter(path: Union[str, Path], max_chunk_size: int, **additional_spli
 
 
 def add_or_split(
-    text, splitter, current_chunk: str, chunk_size: int, out_chunks: List[str], hs: HeadingSequence
+    text, splitter, current_chunk: str, chunk_size: int, out_chunks: List[Dict[str, str]], hs: HeadingSequence
 ) -> str:
     """Adds or splits text to out chunks, together with additional metadata
 
@@ -322,5 +322,10 @@ def add_or_split(
     return current_chunk
 
 
-def add_metadata(hs: HeadingSequence, text: str) -> str:
-    return f"""METADATA:\nTopic: "{hs.path}"\n\n{text}"""
+def add_metadata(hs: HeadingSequence, text: str) -> Dict[str, str]
+    
+    text = f"""METADATA:\nTopic: "{hs.path}"\n\n{text}"""
+    chunk = {"text": text, "metadata": {'heading': hs.path}})
+    return chunk
+
+    
