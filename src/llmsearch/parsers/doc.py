@@ -269,24 +269,23 @@ def docx_splitter(path: Union[str, Path], max_chunk_size: int, **additional_spli
                 continue
 
             # Store headings for metadata
-            if "title" in el.style.name.lower():
-                hs.add(p_text, level=0)
+            #if "title" in el.style.name.lower():
+            #    hs.add(p_text, level=0)
             elif "heading" in el.style.name.lower():
                 heading_level = int(el.style.name.lower().split(" ")[-1])
                 hs.add(p_text, heading_level)
 
-            current_chunk = add_or_split(p_text, paragraph_splitter, current_chunk, max_chunk_size, out_chunks, hs)
+            current_chunk = add_or_split(p_text, paragraph_splitter, current_chunk, max_chunk_size, out_chunks, hs, type="paragraph")
 
         elif isinstance(el, Table):
             t_json = json.dumps(parse_table(el))
-            current_chunk = add_or_split(t_json, json_splitter, current_chunk, max_chunk_size, out_chunks, hs)
+            current_chunk = add_or_split(t_json, json_splitter, current_chunk, max_chunk_size, out_chunks, hs, type="tabular data in json format.")
 
     return out_chunks
 
 
 def add_or_split(
-    text, splitter, current_chunk: str, chunk_size: int, out_chunks: List[Dict[str, str]], hs: HeadingSequence
-) -> str:
+    text, splitter, current_chunk: str, chunk_size: int, out_chunks: List[Dict[str, str]], hs: HeadingSequence, type: str) -> str:
     """Adds or splits text to out chunks, together with additional metadata
 
     Args:
@@ -300,18 +299,19 @@ def add_or_split(
     Returns:
         str: current chunk (not flushed)
     """
-
+    additional_metadata = {'type':type}
+    
     # Case 1- length of the next paragraph > chunk_size, flulsh the current and split the next
     if len(text) >= chunk_size:
-        out_chunks.append(add_metadata(hs, current_chunk))
+        out_chunks.append(add_metadata(hs, current_chunk,additional_metadata))
         current_chunk = ""
 
         for ch in splitter.split_text(text):
-            out_chunks.append(add_metadata(hs, ch))
+            out_chunks.append(add_metadata(hs, ch, additional_metadata))
 
     # Case 2 - next paragraph is smaller than chunk size, but can't be added to the current chunk
     elif len(current_chunk) + len(text) >= chunk_size:
-        out_chunks.append(add_metadata(hs, current_chunk))
+        out_chunks.append(add_metadata(hs, current_chunk, additional_metadata))
 
         current_chunk = text
 
@@ -322,10 +322,29 @@ def add_or_split(
     return current_chunk
 
 
-def add_metadata(hs: HeadingSequence, text: str) -> Dict[str, str]:
+def add_metadata(hs: HeadingSequence, text: str, additional_metadata: Optional[dict] = None) -> Dict[str, str]:
+    metadata_s = ""
+
+    additional_metadata = {} if additional_metadata is None else additional_metadata
+    additional_metadata.update({"topic":f"{hs.path}"})
+
+    for k, v in additional_metadata.items():
+        if v:
+            metadata_s+=f"{k}: {v}\n"
     
-    text = f"""METADATA:\nTopic: "{hs.path}"\n\n{text}"""
-    chunk = {"text": text, "metadata": {'heading': hs.path}}
+    metadata = f"Metadata applicable to the next chunk of text delimited by five stars:\n<< METADATA\n{metadata_s}METADATA\n\n"
+    t = metadata + "*****\n" + text + "\n*****"
+    chunk = {"text": t, "metadata": {'heading': hs.path}}
     return chunk
 
+    
+if __name__ == "__main__":
+    fn = "/home/lacpd1/projects/doc-parsing/doc1.docx"
+    parsed = docx_splitter(fn, max_chunk_size=1024)
+    
+    for p in parsed:
+        print('-------------')
+        print(len(p['text']))
+        print(p['text'])
+    
     
