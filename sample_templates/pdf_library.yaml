@@ -5,10 +5,12 @@ embeddings:
     type: sentence_transformer
     model_name: "intfloat/e5-large-v2"
 
+  chunk_sizes:
+    - 1024
+
   embeddings_path: /storage/llm/embeddings_library
   document_settings:
   - doc_path: /storage/llm/pdf_docs
-    chunk_size: 1024
     scan_extensions: 
       # - epub
       - md

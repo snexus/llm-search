@@ -6,6 +6,9 @@ embeddings:
     type: sentence_transformer
     model_name: "intfloat/e5-large-v2"
 
+ # Support for multi-chunking
+  chunk_sizes:
+    - 1024
 
   document_settings:
   - doc_path: /home/snexus/projects/knowledge-base
@@ -25,8 +28,8 @@ embeddings:
         remove_images: True
         # find_metadata:
         #   description: "description:"
-    chunk_size: 1024
     passage_prefix: "passage: "
+
 
 semantic_search:
   search_type: similarity # mmr

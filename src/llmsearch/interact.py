@@ -12,7 +12,7 @@ langchain.debug = True
 
 def print_llm_response(output: ResponseModel):
     print("\n============= SOURCES ==================")
-    for source in output.semantic_search:
+    for source in output.semantic_search[::-1]:
         source.metadata.pop("source")
         cprint(source.chunk_link, "blue")
         cprint(source.metadata, "cyan")
@@ -28,9 +28,7 @@ def qa_with_llm(llm_bundle: LLMBundle, config: Config):
         question = input("\nENTER QUESTION >> ")
         output = get_and_parse_response(
             query=question,
-            chain=llm_bundle.chain,
-            retrievers=llm_bundle.retrievers,
+            llm_bundle = llm_bundle,
             config=config.semantic_search,
-            reranker=llm_bundle.reranker,
         )
         print_llm_response(output)

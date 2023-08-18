@@ -20,11 +20,12 @@ class LLMBundle:
     chain: Chain
     retrievers: List[VectorStoreRetriever]
     reranker: Optional[Reranker]
-    
+    chunk_sizes: List[int]
+
 
 def set_cache_folder(cache_folder_root: str):
     """Set temporary cache folder for HF models and transformers"""
-    
+
     sentence_transformers_home = cache_folder_root
     transformers_cache = os.path.join(cache_folder_root, "transformers")
     hf_home = os.path.join(cache_folder_root, "hf_home")
@@ -49,7 +50,7 @@ def get_llm_bundle(config: Config) -> LLMBundle:
     Returns:
         LLMBundle:
     """
-    
+
     set_cache_folder(str(config.cache_folder))
     llm = get_llm(config.llm.params)
     chain = load_qa_chain(llm=llm.model, chain_type=CHAIN_TYPE, prompt=llm.prompt)
@@ -62,5 +63,6 @@ def get_llm_bundle(config: Config) -> LLMBundle:
         search_type=config.semantic_search.search_type, search_kwargs={"k": config.semantic_search.max_k}
     )
     reranker = Reranker() if config.semantic_search.reranker else None
+    chunk_sizes = config.embeddings.chunk_sizes
 
-    return LLMBundle(chain = chain, retrievers = [embed_retriever], reranker = reranker)
+    return LLMBundle(chain=chain, retrievers=[embed_retriever], reranker=reranker, chunk_sizes=chunk_sizes)

@@ -1,4 +1,5 @@
 import string
+import statistics
 from typing import List, Optional
 
 from langchain.vectorstores.base import VectorStoreRetriever
@@ -6,11 +7,12 @@ from loguru import logger
 
 from llmsearch.config import (AppendSuffix, ObsidianAdvancedURI, ResponseModel,
                               SemanticSearchConfig, SemanticSearchOutput)
-from llmsearch.rerank import Reranker
+from llmsearch.utils import LLMBundle
 
 
-def get_and_parse_response(
-    query: str, chain, retrievers: List[VectorStoreRetriever], config: SemanticSearchConfig, reranker: Optional[Reranker] = None
+def get_and_parse_response(llm_bundle: LLMBundle,
+    query: str, 
+    config: SemanticSearchConfig,
 ) -> ResponseModel:
     """Performs retieval augmented search
 
@@ -32,14 +34,37 @@ def get_and_parse_response(
         query = config.query_prefix + query
         
         
-    for retriever in retrievers:
-        docs.extend(retriever.get_relevant_documents(query = query))
-    
-    # Rerank if reranker is vailable
-    if reranker is not None:
+    current_reranker_score, reranker_score = -1e5, -1e5
+    for retriever in llm_bundle.retrievers:
+        
+        # Iterate over all available chunk sizes
+        for chunk_size in llm_bundle.chunk_sizes:
 
-        logger.info("Reranking documents...")
-        docs = reranker.rerank(query, docs)
+            # Set a filter for current chunk size
+            filter = {"chunk_size": chunk_size}
+            logger.info(f"Filter: {filter}")
+
+            res = retriever.vectorstore.similarity_search_with_relevance_scores(query, k = config.max_k, filter = filter)
+            # Retrieve scores and relevant docs
+            scores = [r[1] for r in res]
+            relevant_docs = [r[0] for r in res]
+
+            # Choose chunk size that is best suitable to answer the questoin
+            if llm_bundle.reranker is not None:
+                reranker_score, relevant_docs = llm_bundle.reranker.rerank(query, relevant_docs)
+                if reranker_score > current_reranker_score:
+                    docs = relevant_docs
+            
+            logger.info(f"Reranker median score for chunk size {chunk_size}: {reranker_score}")
+            logger.info(f"Scores for chunk {chunk_size}: {scores}")
+            logger.info(f"Mean score: {statistics.mean(scores)}")
+            # docs.extend(relevant_docs)
+    
+    # # Rerank if reranker is vailable
+    # if llm_bundle.reranker is not None:
+
+    #     logger.info("Reranking documents...")
+    #     docs = llm_bundle.reranker.rerank(query, docs)
     
     len_ = 0
 
@@ -48,7 +73,7 @@ def get_and_parse_response(
         if len_ + doc_length < config.max_char_size:
             most_relevant_docs.append(doc)
             len_ += doc_length
-    res = chain(
+    res = llm_bundle.chain(
         {"input_documents": most_relevant_docs, "question": query},
         return_only_outputs=False,
     )

@@ -53,9 +53,11 @@ def get_bundle(config):
 
 
 @st.cache_data
-def generate_response(question: str, _config, _chain, _retriever, _reranker=None):
+def generate_response(question: str, _config: Config, _bundle):
+    # _config and _bundle are under scored so paratemeters aren't hashed
+    
     output = get_and_parse_response(
-        query=question, chain=_chain, retrievers=_retriever, config=_config.semantic_search, reranker=_reranker
+        query=question, config=_config.semantic_search, llm_bundle=_bundle
     )
     return output
 
@@ -85,14 +87,12 @@ if config_file is not None:
 
     llm_bundle = get_bundle(config)
 
-    chain = llm_bundle.chain
-    retriever = llm_bundle.retrievers
-    reranker = llm_bundle.reranker
-
     text = st.chat_input("Enter text")
 
     if text:
-        output = generate_response(text, config, chain, retriever, reranker)
+        print(text)
+        print(llm_bundle)
+        output = generate_response(question = text, _bundle = llm_bundle, _config = config)
 
         for source in output.semantic_search[::-1]:
             source_path = source.metadata.pop("source")

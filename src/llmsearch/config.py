@@ -50,7 +50,6 @@ class DocumentPathSettings(BaseModel):
     exclude_paths: List[DirectoryPath] = Field(default_factory=list)
     scan_extensions: List[DocumentExtension]
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
-    chunk_size: int = 1024
     passage_prefix: str = ""
 
     @validator("additional_parser_settings")
@@ -59,6 +58,7 @@ class DocumentPathSettings(BaseModel):
             if ext not in DocumentExtension.__members__:
                 raise TypeError(f"Unknown document extension {value}. Supported: {DocumentExtension.__members__}")
         return value
+    
 
 
 class EmbeddingsConfig(BaseModel):
@@ -67,7 +67,8 @@ class EmbeddingsConfig(BaseModel):
     )
     embeddings_path: DirectoryPath
     document_settings: List[DocumentPathSettings]
-
+    chunk_sizes: List[int] = [1024]
+    
     class Config:
         extra = Extra.forbid
 

@@ -36,7 +36,7 @@ def generate_index(config_file: str):
     config = get_config(config_file)
     set_cache_folder(str(config.cache_folder))
 
-    splitter = DocumentSplitter(config.embeddings.document_settings)
+    splitter = DocumentSplitter(config)
     all_docs = splitter.split()
 
     vs = VectorStoreChroma(

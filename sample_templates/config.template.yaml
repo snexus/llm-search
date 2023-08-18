@@ -5,11 +5,13 @@ embeddings:
   
   embedding_model: # Optional embedding model specification, default is instructor-large
     type: sentence_transformer # other supported types - "huggingface" and "instruct"
-    model_name: "intfloat/multilingual-e5-large"
+    model_name: "iintfloat/e5-large-v2"
+  
+  chunk_sizes: # Specify one more chunk size to split (multiple can be slow)
+    - 1024
 
   document_settings:
   - doc_path: ## specify the docs folder
-    chunk_size: ## specifies chunk sizes to split the documents
     scan_extensions: # specifies files extensions to scan recursively in `doc_path`. Currently supproted - pdf, md, html, epub
       - pdf
       - md
@@ -44,8 +46,8 @@ llm:
 
         ### Question: {question}
     model_kwargs:
-      temperature: 0.7
-      model_name: gpt-3.5-turbo-0613
+      temperature: 0.2
+      model_name: gpt-3.5-turbo
 
 ############ An example how to specify a local model, supported types - llamacpp, huggingface, auto-gptq
 # llm:
