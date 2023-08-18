@@ -1,3 +1,8 @@
+## 2023-08-18
+
+* Ability to split documents by multiple chunk sizes at once (supported by chunk_size parameter in config.yaml). The change is a breaking change for the configuration, check the updated templates. During run time, best chunk size is selected based on aggregated score from re-ranker.
+
+
 ## 2023-08-12
 
 * Abiility to add prefixes for embedded documents the query. Prefixes are often required for the embedding models for asymmetric queries (when short query is being matched to a long text paragraph) - see for example https://huggingface.co/intfloat/e5-large-v2#faq

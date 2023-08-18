@@ -9,6 +9,7 @@ The purpose of this package is to offer a convenient question-answering system w
     * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features such cleaning image links, adding custom metadata and more.
     * `.pdf`- MuPDF based parser.
     * `.html`, `.epub` - supported through `Unstructured` pre-processor - https://unstructured-io.github.io/unstructured/
+    * `docx` - custom parser, supports tables.
 * Generates embeddings from a folder of documents and stores them in a vector database (ChromaDB).
   * The following embedding models are supported:
     * Huggingface embeddings
@@ -18,7 +19,7 @@ The purpose of this package is to offer a convenient question-answering system w
 * Allows interaction with embedded documents supporting the following models and methods (including locally hosted):
     * OpenAI (ChatGPT 3.5/4)
     * HuggingFace models
-    * GGML models through LlamaCpp (not for commercial use due to licensing restrictions of the base Llama model).
+    * GGML models through LlamaCpp
     * AutoGPTQ Models
 * Other features
     * Simple CLI and web interfaces
@@ -108,13 +109,15 @@ embeddings:
     type: sentence_transformer # other supported types - "huggingface" and "instruct"
     model_name: "intfloat/multilingual-e5-large"
 
+  chunk_sizes: # Chunk split sizes, supports multi-chunking.
+    - 1024
+
   embeddings_path: /storage/llm/embeddings
   document_settings:
   - doc_path: /storage/llm/docs
     exclude_paths:
       - /storage/llm/docs/other_files
       - /storage/llm/docs/excalidraw
-    chunk_size: 1024
     scan_extensions: 
       - md
       - pdf
