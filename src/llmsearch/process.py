@@ -1,8 +1,7 @@
-import string
 import statistics
+import string
 from typing import List, Optional
 
-from langchain.vectorstores.base import VectorStoreRetriever
 from loguru import logger
 
 from llmsearch.config import (AppendSuffix, ObsidianAdvancedURI, ResponseModel,
@@ -14,16 +13,14 @@ def get_and_parse_response(llm_bundle: LLMBundle,
     query: str, 
     config: SemanticSearchConfig,
 ) -> ResponseModel:
-    """Performs retieval augmented search
+    """Performs retieval augmented search (RAG).
 
     Args:
-        query (str): Question query
-        chain (_type_): Initialized Langchain based chain
-        embed_retriever (_type_): Retriever object from the embedding database
+        llm_bundle (LLMBundle): Runtime parameters for LLM and retrievers
         config (SemanticSearchConfig): Configuration
 
     Returns:
-        OutputModel: _description_
+        OutputModel 
     """
     
     most_relevant_docs = []
@@ -40,8 +37,8 @@ def get_and_parse_response(llm_bundle: LLMBundle,
         # Iterate over all available chunk sizes
         for chunk_size in llm_bundle.chunk_sizes:
 
-            # Set a filter for current chunk size
-            filter = {"chunk_size": chunk_size}
+            # Set a filter for current chunk size or skip filter if only one chunk size is present (considerably faster)
+            filter = {"chunk_size": chunk_size} if len(llm_bundle.chunk_sizes) > 1 else None
             logger.info(f"Filter: {filter}")
 
             res = retriever.vectorstore.similarity_search_with_relevance_scores(query, k = config.max_k, filter = filter)
@@ -58,13 +55,6 @@ def get_and_parse_response(llm_bundle: LLMBundle,
             logger.info(f"Reranker median score for chunk size {chunk_size}: {reranker_score}")
             logger.info(f"Scores for chunk {chunk_size}: {scores}")
             logger.info(f"Mean score: {statistics.mean(scores)}")
-            # docs.extend(relevant_docs)
-    
-    # # Rerank if reranker is vailable
-    # if llm_bundle.reranker is not None:
-
-    #     logger.info("Reranking documents...")
-    #     docs = llm_bundle.reranker.rerank(query, docs)
     
     len_ = 0
 
