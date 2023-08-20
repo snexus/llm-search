@@ -9,6 +9,7 @@ __pycache__/
 sample_data/cache
 sample_data/md_index2/
 temp_data/
+*.npz
 
 # Distribution / packaging
 .Python

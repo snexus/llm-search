@@ -28,7 +28,8 @@ class VectorStoreChroma:
                 shutil.rmtree(pf)
 
         logger.info("Generating and persisting the embeddings..")
-        vectordb = Chroma.from_documents(all_docs, self._embeddings, persist_directory=self._persist_folder)
+        ids = [d.metadata['document_id'] for d in all_docs]
+        vectordb = Chroma.from_documents(documents=all_docs, embedding=self._embeddings, ids = ids, persist_directory=self._persist_folder)
         vectordb.persist()
 
     def load_retriever(self, **kwargs):

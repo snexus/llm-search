@@ -1,0 +1,56 @@
+cache_folder: /storage/llm/cache
+
+embeddings:
+  embeddings_path: /storage/llm/temp_embeddings
+  embedding_model:
+    type: sentence_transformer
+    model_name: "intfloat/e5-large-v2"
+
+ # Support for multi-chunking
+  chunk_sizes:
+    - 1024
+
+  document_settings:
+  - doc_path: /home/snexus/projects/knowledge-base
+  # - doc_path: /storage/llm/docs
+    scan_extensions: 
+      - md
+    additional_parser_settings:
+      md: 
+        skip_first: True
+        merge_sections: False
+        remove_images: True
+    passage_prefix: "passage: "
+
+
+semantic_search:
+  search_type: similarity # mmr
+
+  replace_output_path:
+    - substring_search: /home/snexus/projects/knowledge-base
+      substring_replace: obsidian://advanced-uri?vault=knowledge-base&filepath=
+
+  append_suffix:
+    append_template: "&heading={heading}"
+
+  max_char_size: 4096
+  query_prefix: "query: "
+
+
+llm:
+   type: openai
+   params:
+     prompt_template: |
+       Contex information is provided below. Given only the context and not prior knowledge, provide detailed answer to the question and references to the provided context. If answer isn't in the context, say you don't know.
+        
+         ### Context:
+         ---------------------
+         {context}
+         ---------------------
+
+         ### Question: {question}
+     model_kwargs:
+       temperature: 0.0
+       model_name: gpt-3.5-turbo
+
+
