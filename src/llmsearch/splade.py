@@ -6,7 +6,7 @@ import tqdm
 import numpy as np
 import scipy
 from typing import List, Tuple
-from llmsearch.utils import set_cache_folder
+# from llmsearch.utils import set_cache_folder
 from llmsearch.config import Document, Config
 from loguru import logger
 
@@ -23,7 +23,7 @@ class SparseEmbeddingsSplade:
         self._device = f"cuda:{torch.cuda.current_device()}" if torch.cuda.is_available() else "cpu"
         logger.info(f"Setting device to {self._device}")
         
-        set_cache_folder(str(config.cache_folder))
+ #        set_cache_folder(str(config.cache_folder))
         self.tokenizer = AutoTokenizer.from_pretrained(splade_model_id, device = self._device, use_fast = True)
         self.model = AutoModelForMaskedLM.from_pretrained(splade_model_id)
         self.model.to(self._device)
@@ -71,7 +71,7 @@ class SparseEmbeddingsSplade:
             self._l2_norm_matrix = scipy.sparse.linalg.norm(self._embeddings, axis=1)
         except FileNotFoundError:
             raise FileNotFoundError("Embeddings don't exist, run generate_embeddings_from_docs(..) first.")
-        logger.info(f"Loaded embeddings from {fn_embeddings}")
+        logger.info(f"Loaded sparse (SPLADE) embeddings from {fn_embeddings}")
         
     
     def generate_embeddings_from_docs(self, docs: List[Document], chunk_size: int = 5, persist: bool = True):

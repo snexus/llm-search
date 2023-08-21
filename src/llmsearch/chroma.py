@@ -6,11 +6,11 @@ from langchain.vectorstores import Chroma
 from loguru import logger
 
 from llmsearch.config import EmbeddingModel
-from llmsearch.embeddings import get_embedding_model
+from llmsearch.embeddings import get_embedding_model, VectorStore
 from llmsearch.parsers.splitter import Document
 
 
-class VectorStoreChroma:
+class VectorStoreChroma(VectorStore):
     def __init__(self, persist_folder: str, embeddings_model_config: EmbeddingModel):
         self._persist_folder = persist_folder
         self._embeddings = get_embedding_model(embeddings_model_config)
@@ -36,3 +36,19 @@ class VectorStoreChroma:
         vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
         retriever = vectordb.as_retriever(**kwargs)
         return retriever
+
+    def get_documents_by_id(self, document_ids: List[str], retriever) -> List[Document]:
+        """Retrieves documents by ids
+
+        Args:
+            document_ids (List[str]): list of document ids
+            retriever (_type_): _description_
+
+        Returns:
+            List[Document]: _description_
+        """
+        
+        results = retriever.vectorstore.get(ids = document_ids, include = ['metadatas', 'documents'])
+        docs = [Document(page_content=d, metadata=m) for d,m in zip(results['documents'], results['metadatas'])]
+        return docs
+        

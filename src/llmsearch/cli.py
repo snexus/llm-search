@@ -2,6 +2,7 @@ import click
 from loguru import logger
 
 from llmsearch.chroma import VectorStoreChroma
+from llmsearch.splade import SparseEmbeddingsSplade
 from llmsearch.config import get_config
 from llmsearch.interact import qa_with_llm
 from llmsearch.parsers.splitter import DocumentSplitter
@@ -44,6 +45,9 @@ def generate_index(config_file: str):
         embeddings_model_config=config.embeddings.embedding_model,
     )
     vs.create_index_from_documents(all_docs=all_docs)
+    
+    splade = SparseEmbeddingsSplade(config)
+    splade.generate_embeddings_from_docs(docs=all_docs)
 
 
 @click.command("llm")

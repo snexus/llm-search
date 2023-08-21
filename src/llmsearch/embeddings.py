@@ -1,8 +1,11 @@
-from llmsearch.config import EmbeddingModel, EmbeddingModelType
+from abc import ABC, abstractmethod
+
+from langchain.embeddings import (HuggingFaceEmbeddings,
+                                  HuggingFaceInstructEmbeddings,
+                                  SentenceTransformerEmbeddings)
 from loguru import logger
 
-from langchain.embeddings import HuggingFaceInstructEmbeddings, SentenceTransformerEmbeddings, HuggingFaceEmbeddings
-
+from llmsearch.config import EmbeddingModel, EmbeddingModelType
 
 MODELS = {
     EmbeddingModelType.instruct: HuggingFaceInstructEmbeddings,
@@ -28,3 +31,20 @@ def get_embedding_model(config: EmbeddingModel):
         raise TypeError(f"Unknown model type. Got {config.type}")
 
     return model_type(model_name=config.model_name, **config.additional_kwargs)
+
+
+ 
+class VectorStore(ABC):
+    
+    @abstractmethod
+    def create_index_from_documents(self, **kwargs):
+        pass
+    
+
+    @abstractmethod
+    def load_retriever(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def get_documents_by_id(self, **kwargs):
+        pass

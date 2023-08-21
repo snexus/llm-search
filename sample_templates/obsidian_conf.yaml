@@ -33,6 +33,7 @@ embeddings:
 
 semantic_search:
   search_type: similarity # mmr
+  max_k: 15
 
   replace_output_path:
     - substring_search: /home/snexus/projects/knowledge-base

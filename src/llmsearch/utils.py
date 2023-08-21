@@ -7,10 +7,12 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.vectorstores.base import VectorStoreRetriever
 from loguru import logger
 
-from llmsearch.chroma import VectorStoreChroma
+from llmsearch.chroma import VectorStoreChroma 
+from llmsearch.splade import SparseEmbeddingsSplade 
 from llmsearch.config import Config
 from llmsearch.models.utils import get_llm
-from llmsearch.rerank import Reranker
+from llmsearch.ranking import Reranker
+from llmsearch.embeddings import VectorStore
 
 CHAIN_TYPE = "stuff"
 
@@ -18,8 +20,10 @@ CHAIN_TYPE = "stuff"
 @dataclass
 class LLMBundle:
     chain: Chain
+    store: VectorStore
     retrievers: List[VectorStoreRetriever]
     reranker: Optional[Reranker]
+    sparse_search: SparseEmbeddingsSplade
     chunk_sizes: List[int]
 
 
@@ -64,5 +68,9 @@ def get_llm_bundle(config: Config) -> LLMBundle:
     )
     reranker = Reranker() if config.semantic_search.reranker else None
     chunk_sizes = config.embeddings.chunk_sizes
+    
+    splade = SparseEmbeddingsSplade(config = config)
+    splade.load()
+                                    
 
-    return LLMBundle(chain=chain, retrievers=[embed_retriever], reranker=reranker, chunk_sizes=chunk_sizes)
+    return LLMBundle(chain=chain, retrievers=[embed_retriever], reranker=reranker, chunk_sizes=chunk_sizes, sparse_search=splade, store = store)
