@@ -21,7 +21,6 @@ CHAIN_TYPE = "stuff"
 class LLMBundle:
     chain: Chain
     store: VectorStore
-    retrievers: List[VectorStoreRetriever]
     reranker: Optional[Reranker]
     sparse_search: SparseEmbeddingsSplade
     chunk_sizes: List[int]
@@ -61,11 +60,10 @@ def get_llm_bundle(config: Config) -> LLMBundle:
 
     store = VectorStoreChroma(
         persist_folder=str(config.embeddings.embeddings_path),
-        embeddings_model_config=config.embeddings.embedding_model,
+        config=config
     )
-    embed_retriever = store.load_retriever(
-        search_type=config.semantic_search.search_type, search_kwargs={"k": config.semantic_search.max_k}
-    )
+    store._load_retriever()
+
     reranker = Reranker() if config.semantic_search.reranker else None
     chunk_sizes = config.embeddings.chunk_sizes
     
@@ -73,4 +71,4 @@ def get_llm_bundle(config: Config) -> LLMBundle:
     splade.load()
                                     
 
-    return LLMBundle(chain=chain, retrievers=[embed_retriever], reranker=reranker, chunk_sizes=chunk_sizes, sparse_search=splade, store = store)
+    return LLMBundle(chain=chain, reranker=reranker, chunk_sizes=chunk_sizes, sparse_search=splade, store = store)

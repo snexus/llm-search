@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import List
 
-from langchain.embeddings import (HuggingFaceEmbeddings,
-                                  HuggingFaceInstructEmbeddings,
-                                  SentenceTransformerEmbeddings)
+from langchain.embeddings import HuggingFaceEmbeddings, HuggingFaceInstructEmbeddings, SentenceTransformerEmbeddings
 from loguru import logger
 
-from llmsearch.config import EmbeddingModel, EmbeddingModelType
+from llmsearch.config import Document, EmbeddingModel, EmbeddingModelType
 
 MODELS = {
     EmbeddingModelType.instruct: HuggingFaceInstructEmbeddings,
@@ -15,7 +14,7 @@ MODELS = {
 
 
 def get_embedding_model(config: EmbeddingModel):
-    """Support for additional embedding models.
+    """Loads an embedidng model
 
     Args:
         config (EmbeddingModel): Configuration for the embedding model
@@ -33,18 +32,15 @@ def get_embedding_model(config: EmbeddingModel):
     return model_type(model_name=config.model_name, **config.additional_kwargs)
 
 
- 
 class VectorStore(ABC):
-    
     @abstractmethod
-    def create_index_from_documents(self, **kwargs):
-        pass
-    
-
-    @abstractmethod
-    def load_retriever(self, **kwargs):
+    def create_index_from_documents(self, all_docs: List[Document], clear_persist_folder: bool = True):
         pass
 
     @abstractmethod
-    def get_documents_by_id(self, **kwargs):
+    def get_documents_by_id(self, docuemt_ids: List[str]):
+        pass
+
+    @abstractmethod
+    def similarity_search_with_relevance_scores(self, query: str, k: int, filter: dict):
         pass

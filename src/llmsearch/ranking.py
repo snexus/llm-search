@@ -47,34 +47,33 @@ def get_relevant_documents(query: str, llm_bundle, config: SemanticSearchConfig)
     logger.info(f"Stage 1: Got {len(sparse_search_docs_ids)} documents.")
         
     current_reranker_score, reranker_score = -1e5, -1e5
-    for retriever in llm_bundle.retrievers:
         
-        # Iterate over all available chunk sizes
-        for chunk_size in llm_bundle.chunk_sizes:
-            
-            # Set a filter for current chunk size or skip filter if only one chunk size is present (considerably faster)
-            filter = {"chunk_size": chunk_size} if len(llm_bundle.chunk_sizes) > 1 else None
-            logger.info(f"Filter: {filter}")
-            
+    # Iterate over all available chunk sizes
+    for chunk_size in llm_bundle.chunk_sizes:
+        
+        # Set a filter for current chunk size or skip filter if only one chunk size is present (considerably faster)
+        filter = {"chunk_size": chunk_size} if len(llm_bundle.chunk_sizes) > 1 else None
+        logger.info(f"Filter: {filter}")
+        
 
-            res = retriever.vectorstore.similarity_search_with_relevance_scores(query, k = config.max_k, filter = filter)
-            dense_search_doc_ids = [r[0].metadata['document_id'] for r in res] 
-            
-            # Create union of documents fetched using sprase and dense embeddings
-            all_doc_ids = set(sparse_search_docs_ids).union(set(dense_search_doc_ids))
-            relevant_docs = llm_bundle.store.get_documents_by_id(retriever = retriever, document_ids = list(all_doc_ids))
-            
-            
-            # Choose chunk size that is best suitable to answer the questoin
-            # Re-rank embeddings
-            if llm_bundle.reranker is not None:
-                reranker_score, relevant_docs = llm_bundle.reranker.rerank(query, relevant_docs)
-                if reranker_score > current_reranker_score:
-                    docs = relevant_docs
-            
-            logger.info(f"Number of documents after stage 1 (sparse): {len(sparse_search_docs_ids)}")
-            logger.info(f"Number of documents after stage 2 (dense + sparse): {len(relevant_docs)}")
-            logger.info(f"Re-ranker avg. scores for top 5 resuls, chunk size {chunk_size}: {reranker_score:.2f}")
+        res = llm_bundle.store.similarity_search_with_relevance_scores(query, k = config.max_k, filter = filter)
+        dense_search_doc_ids = [r[0].metadata['document_id'] for r in res] 
+        
+        # Create union of documents fetched using sprase and dense embeddings
+        all_doc_ids = set(sparse_search_docs_ids).union(set(dense_search_doc_ids))
+        relevant_docs = llm_bundle.store.get_documents_by_id(document_ids = list(all_doc_ids))
+        
+        
+        # Choose chunk size that is best suitable to answer the questoin
+        # Re-rank embeddings
+        if llm_bundle.reranker is not None:
+            reranker_score, relevant_docs = llm_bundle.reranker.rerank(query, relevant_docs)
+            if reranker_score > current_reranker_score:
+                docs = relevant_docs
+        
+        logger.info(f"Number of documents after stage 1 (sparse): {len(sparse_search_docs_ids)}")
+        logger.info(f"Number of documents after stage 2 (dense + sparse): {len(relevant_docs)}")
+        logger.info(f"Re-ranker avg. scores for top 5 resuls, chunk size {chunk_size}: {reranker_score:.2f}")
     
     len_ = 0
 
