@@ -42,7 +42,7 @@ def generate_index(config_file: str):
 
     vs = VectorStoreChroma(
         persist_folder=str(config.embeddings.embeddings_path),
-        embeddings_model_config=config.embeddings.embedding_model,
+        config=config,
     )
     vs.create_index_from_documents(all_docs=all_docs)
     
