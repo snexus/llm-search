@@ -7,12 +7,12 @@ from loguru import logger
 from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
 from pydantic.typing import Literal  # type: ignore
 
-from llmsearch.models.config import AutoGPTQModelConfig, HuggingFaceModelConfig, LlamaModelConfig, OpenAIModelConfig
+from llmsearch.models.config import HuggingFaceModelConfig, LlamaModelConfig, OpenAIModelConfig
 
 models_config = {
     "llamacpp": LlamaModelConfig,
     "openai": OpenAIModelConfig,
-    "auto-gptq": AutoGPTQModelConfig,
+    # "auto-gptq": AutoGPTQModelConfig,
     "huggingface": HuggingFaceModelConfig,
 }
 
