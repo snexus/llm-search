@@ -1,3 +1,7 @@
+## 2023-08-22
+
+* Implement hybrid search (sparse + dense embeddings). Sparse embeddings are implemented using SPLADE. Hybrid search is enabled by default.
+
 ## 2023-08-18
 
 * Ability to split documents by multiple chunk sizes at once (supported by chunk_size parameter in config.yaml). The change is a breaking change for the configuration, check the updated templates. During run time, best chunk size is selected based on aggregated score from re-ranker.

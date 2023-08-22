@@ -1,5 +1,4 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://githubtocolab.com/snexus/llm-search/blob/main/notebooks/llmsearch_google_colab_demo.ipynb)
-```
 
 # LLM Search
 
@@ -11,8 +10,9 @@ The purpose of this package is to offer a convenient question-answering system w
     * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features such cleaning image links, adding custom metadata and more.
     * `.pdf`- MuPDF based parser.
     * `.html`, `.epub` - supported through `Unstructured` pre-processor - https://unstructured-io.github.io/unstructured/
-    * `docx` - custom parser, supports tables.
-* Generates embeddings from a folder of documents and stores them in a vector database (ChromaDB).
+    * `docx` - custom parser, supports nested tables.
+* Generates dense embeddings from a folder of documents and stores them in a vector database (ChromaDB).
+* Generates sparse embeddings using SPLADE, to allow a hybrid search (sparse + dense).
   * The following embedding models are supported:
     * Huggingface embeddings
     * Sentence transformers based - e.g. `multilingual-e5-base`
@@ -29,10 +29,10 @@ The purpose of this package is to offer a convenient question-answering system w
 
 ## Prerequisites
 
-* Tested on Ubuntu 22.04. Potentially will work with WSL.
+* Tested on Ubuntu 22.04.
 * Nvidia GPU is required for embeddings generation and usage of locally hosted models.
-* Python 3.8+, including dev packages (`python3-dev` on Ubuntu)
-* Nvidia CUDA Toolkit (v11.7 as a minimum) - https://developer.nvidia.com/cuda-toolkit
+* Python 3.10, including dev packages (`python3-dev` on Ubuntu)
+* Nvidia CUDA Toolkit (tested with v11.7) - https://developer.nvidia.com/cuda-toolkit
 * To interact with OpenAI models, create `.env` in the root directory of the repository, containing OpenAI API key. A template for the `.env` file is provided in `.env_template`
 * For parsing `.epub` documents, Pandoc is required - https://pandoc.org/installing.html
 
@@ -55,7 +55,6 @@ source ./setvars.sh /usr/local/cuda
 
 # Install the package
 pip install .
-```
 
 ## Docker based installation
 
@@ -88,9 +87,6 @@ source ./setvars.sh /usr/local/cuda
 pip install .
 ```
 
-## Google Colab Demo
-
-* Refer to `notebook/llmsearch_google_colab_demo.ipynb` for a working demo notebook tested on Google Colab free tier.
 
 # Quickstart
 
