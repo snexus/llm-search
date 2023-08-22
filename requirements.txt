@@ -18,7 +18,7 @@ termcolor
 einops # required for Mosaic models
 click 
 bitsandbytes
-auto-gptq==0.2.1
+# auto-gptq==0.2.0
 InstructorEmbedding==1.0.1
 unstructured==0.7.8
 pymupdf==1.22.5

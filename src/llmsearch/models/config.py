@@ -15,15 +15,15 @@ class OpenAIModelConfig(BaseModel):
     model_kwargs: dict = {}
 
 
-class AutoGPTQModelConfig(BaseModel):
-    model_folder: Union[str, Path]
-    prompt_template: str
-    device: str = "auto"
-    tokenzier_kwargs: dict = {}
-    trust_remote_code: bool = False
-    use_safetensors: bool = True
-    model_kwargs: dict = {}
-    pipeline_kwargs: dict = {}
+# class AutoGPTQModelConfig(BaseModel):
+#     model_folder: Union[str, Path]
+#     prompt_template: str
+#     device: str = "auto"
+#     tokenzier_kwargs: dict = {}
+#     trust_remote_code: bool = False
+#     use_safetensors: bool = True
+#     model_kwargs: dict = {}
+#     pipeline_kwargs: dict = {}
 
 
 class HuggingFaceModelConfig(BaseModel):
