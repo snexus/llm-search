@@ -1,14 +1,16 @@
 import urllib
+import uuid
 from pathlib import Path
 from typing import List
 
 from loguru import logger
 
-from llmsearch.config import Document, DocumentPathSettings, Config
+from llmsearch.config import Config, Document, DocumentPathSettings
+from llmsearch.parsers.doc import docx_splitter
 from llmsearch.parsers.markdown import markdown_splitter
 from llmsearch.parsers.pdf import PDFSplitter
-from llmsearch.parsers.doc import docx_splitter
-from llmsearch.parsers.unstructured import UnstructuredSplitter, UnstructuredSplitType
+from llmsearch.parsers.unstructured import (UnstructuredSplitter,
+                                            UnstructuredSplitType)
 
 
 class DocumentSplitter:
@@ -98,7 +100,7 @@ class DocumentSplitter:
             docs = [
                 Document(
                     page_content=passage_prefix + d["text"],
-                    metadata={**d["metadata"], **{"source": str(path), "chunk_size": max_size}},
+                    metadata={**d["metadata"], **{"source": str(path), "chunk_size": max_size, "document_id":str(uuid.uuid1())}},
                 )
                 for d in docs_data
             ]

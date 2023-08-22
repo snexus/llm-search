@@ -92,7 +92,7 @@ class SemanticSearchConfig(BaseModel):
     obsidian_advanced_uri: Optional[ObsidianAdvancedURI] = None
     append_suffix: Optional[AppendSuffix] = None
     reranker: bool = True
-    max_k: int = 25
+    max_k: int = 15
     max_char_size: int = 2048
     query_prefix: str = ""
 

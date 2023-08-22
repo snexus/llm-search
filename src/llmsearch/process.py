@@ -6,6 +6,7 @@ from loguru import logger
 
 from llmsearch.config import (AppendSuffix, ObsidianAdvancedURI, ResponseModel,
                               SemanticSearchConfig, SemanticSearchOutput)
+from llmsearch.ranking import get_relevant_documents
 from llmsearch.utils import LLMBundle
 
 
@@ -23,46 +24,9 @@ def get_and_parse_response(llm_bundle: LLMBundle,
         OutputModel 
     """
     
-    most_relevant_docs = []
-    docs = []
     
-    if config.query_prefix:
-        logger.info(f"Adding query prefix for retrieval: {config.query_prefix}")
-        query = config.query_prefix + query
-        
-        
-    current_reranker_score, reranker_score = -1e5, -1e5
-    for retriever in llm_bundle.retrievers:
-        
-        # Iterate over all available chunk sizes
-        for chunk_size in llm_bundle.chunk_sizes:
-
-            # Set a filter for current chunk size or skip filter if only one chunk size is present (considerably faster)
-            filter = {"chunk_size": chunk_size} if len(llm_bundle.chunk_sizes) > 1 else None
-            logger.info(f"Filter: {filter}")
-
-            res = retriever.vectorstore.similarity_search_with_relevance_scores(query, k = config.max_k, filter = filter)
-            # Retrieve scores and relevant docs
-            scores = [r[1] for r in res]
-            relevant_docs = [r[0] for r in res]
-
-            # Choose chunk size that is best suitable to answer the questoin
-            if llm_bundle.reranker is not None:
-                reranker_score, relevant_docs = llm_bundle.reranker.rerank(query, relevant_docs)
-                if reranker_score > current_reranker_score:
-                    docs = relevant_docs
-            
-            logger.info(f"Reranker median score for chunk size {chunk_size}: {reranker_score}")
-            logger.info(f"Scores for chunk {chunk_size}: {scores}")
-            logger.info(f"Mean score: {statistics.mean(scores)}")
+    most_relevant_docs = get_relevant_documents(query, llm_bundle, config)
     
-    len_ = 0
-
-    for doc in docs:
-        doc_length = len(doc.page_content)
-        if len_ + doc_length < config.max_char_size:
-            most_relevant_docs.append(doc)
-            len_ += doc_length
     res = llm_bundle.chain(
         {"input_documents": most_relevant_docs, "question": query},
         return_only_outputs=False,
