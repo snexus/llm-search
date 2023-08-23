@@ -90,11 +90,12 @@ class SparseEmbeddingsSplade:
 
         vecs = []
         for chunk in tqdm.tqdm(split(docs, chunk_size=chunk_size)):
-            texts = [d.page_content for d in chunk]
-            vecs.append(self._get_batch_embeddings(texts))
+            texts = [d.page_content for d in chunk if d.page_content]
+            if texts:
+                vecs.append(self._get_batch_embeddings(texts))
 
-        vecs_flat = [item for row in vecs for item in row]
-        embeddings = np.stack(vecs_flat)
+        embeddings = np.vstack(vecs)
+        logger.info(f"Shape of the embeddings matrix: {embeddings.shape}")
 
         csr_embeddings = scipy.sparse.csr_matrix(embeddings)
 
@@ -106,7 +107,7 @@ class SparseEmbeddingsSplade:
 
             scipy.sparse.save_npz(fn_embeddings, csr_embeddings)
             self.save_list(ids, fn_ids)
-            logger.info(f"Saved embeddings to {fn_embeddings}")
+            logger.info(f"Saved SPLADE embeddings to {fn_embeddings}")
         return csr_embeddings, ids
 
     def query(self, search: str, n: int = 50) -> Tuple[List[str], np.array]:
