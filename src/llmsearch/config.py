@@ -135,6 +135,7 @@ class SemanticSearchOutput(BaseModel):
 
 
 class ResponseModel(BaseModel):
+    question: str
     response: str
     semantic_search: List[SemanticSearchOutput] = Field(default_factory=list)
 
