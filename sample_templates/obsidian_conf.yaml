@@ -46,6 +46,8 @@ semantic_search:
   max_char_size: 4096
   query_prefix: "query: "
 
+persist_response_db_path: responses_test.db
+
 
 llm:
    type: openai

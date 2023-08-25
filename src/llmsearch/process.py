@@ -5,14 +5,16 @@ from typing import List, Optional
 from loguru import logger
 
 from llmsearch.config import (AppendSuffix, ObsidianAdvancedURI, ResponseModel,
-                              SemanticSearchConfig, SemanticSearchOutput)
+                              SemanticSearchConfig, SemanticSearchOutput, Config)
 from llmsearch.ranking import get_relevant_documents
 from llmsearch.utils import LLMBundle
+from llmsearch.database.crud import create_response
 
 
 def get_and_parse_response(llm_bundle: LLMBundle,
     query: str, 
-    config: SemanticSearchConfig,
+    config: Config,
+    persist_db_session = None
 ) -> ResponseModel:
     """Performs retieval augmented search (RAG).
 
@@ -24,32 +26,32 @@ def get_and_parse_response(llm_bundle: LLMBundle,
         OutputModel 
     """
     
-    
-    most_relevant_docs = get_relevant_documents(query, llm_bundle, config)
+    semantic_search_config = config.semantic_search
+    most_relevant_docs, score = get_relevant_documents(query, llm_bundle, semantic_search_config)
     
     res = llm_bundle.chain(
         {"input_documents": most_relevant_docs, "question": query},
         return_only_outputs=False,
     )
 
-    out = ResponseModel(response=res["output_text"])
+    out = ResponseModel(response=res["output_text"], question=query, average_score= score)
     for doc in res["input_documents"]:
         doc_name = doc.metadata["source"]
         
-        for replace_setting in config.replace_output_path:
+        for replace_setting in semantic_search_config.replace_output_path:
             doc_name = doc_name.replace(
                 replace_setting.substring_search,
                 replace_setting.substring_replace,
             )
 
-        if config.obsidian_advanced_uri is not None:
+        if semantic_search_config.obsidian_advanced_uri is not None:
             doc_name = process_obsidian_uri(
-                doc_name, config.obsidian_advanced_uri, doc.metadata
+                doc_name, semantic_search_config.obsidian_advanced_uri, doc.metadata
             )
 
-        if config.append_suffix is not None:
+        if semantic_search_config.append_suffix is not None:
             doc_name = process_append_suffix(
-                doc_name, config.append_suffix, doc.metadata
+                doc_name, semantic_search_config.append_suffix, doc.metadata
             )
 
         text = doc.page_content
@@ -58,6 +60,17 @@ def get_and_parse_response(llm_bundle: LLMBundle,
                 chunk_link=doc_name, metadata=doc.metadata, chunk_text=text
             )
         )
+        
+    if llm_bundle.response_persist_db_settings is not None:
+        if persist_db_session is not None:
+            session = persist_db_session
+        else:
+            session = llm_bundle.response_persist_db_settings.SessionLocal()
+        create_response(config=config, session=session,  response = out)
+        
+        # if locally created session, close it, otherwise it is assumed to be externally closed (e.g. api)
+        if not persist_db_session:
+            session.close()
     return out
 
 

@@ -57,7 +57,7 @@ def generate_response(question: str, _config: Config, _bundle):
     # _config and _bundle are under scored so paratemeters aren't hashed
     
     output = get_and_parse_response(
-        query=question, config=_config.semantic_search, llm_bundle=_bundle
+        query=question, config=_config, llm_bundle=_bundle
     )
     return output
 

@@ -126,6 +126,7 @@ class Config(BaseModel):
     embeddings: EmbeddingsConfig
     semantic_search: SemanticSearchConfig
     llm: LLMConfig
+    persist_response_db_path: Optional[str] = None
 
 
 class SemanticSearchOutput(BaseModel):
@@ -137,6 +138,7 @@ class SemanticSearchOutput(BaseModel):
 class ResponseModel(BaseModel):
     question: str
     response: str
+    average_score: float
     semantic_search: List[SemanticSearchOutput] = Field(default_factory=list)
 
 

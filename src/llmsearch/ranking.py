@@ -30,7 +30,7 @@ class Reranker:
         median_ = statistics.mean(sorted_scores[:5])
         return median_, [doc for doc in sorted(docs, key=lambda d: d.metadata["score"], reverse=True)]
 
-def get_relevant_documents(query: str, llm_bundle, config: SemanticSearchConfig) -> List[str]:
+def get_relevant_documents(query: str, llm_bundle, config: SemanticSearchConfig) -> Tuple[List[str], float]:
     
     most_relevant_docs = []
     docs = []
@@ -70,6 +70,7 @@ def get_relevant_documents(query: str, llm_bundle, config: SemanticSearchConfig)
             reranker_score, relevant_docs = llm_bundle.reranker.rerank(query, relevant_docs)
             if reranker_score > current_reranker_score:
                 docs = relevant_docs
+                current_reranker_score = reranker_score
         
         logger.info(f"Number of documents after stage 1 (sparse): {len(sparse_search_docs_ids)}")
         logger.info(f"Number of documents after stage 2 (dense + sparse): {len(relevant_docs)}")
@@ -83,4 +84,4 @@ def get_relevant_documents(query: str, llm_bundle, config: SemanticSearchConfig)
             most_relevant_docs.append(doc)
             len_ += doc_length
             
-    return most_relevant_docs
+    return most_relevant_docs, current_reranker_score
