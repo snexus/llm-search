@@ -29,39 +29,40 @@ def get_or_store_config(config: Config, session: Session) -> str:
 def create_response(config: Config, session: Session, response: ResponseModel) -> models.ResponseInteraction:
     config_id = get_or_store_config(config, session)
 
-    group_id = str(uuid.uuid4())
+    sources = []
     for ss_source in response.semantic_search:
-        db_source = models.Sources(
-            source_id=str(uuid.uuid4()),
-            group_id=group_id,
-            document_id=ss_source.metadata["document_id"],
+        sources.append(models.Sources(
+            source_id = models.create_uuid(), 
             text_blob=ss_source.chunk_text,
             text_link=ss_source.chunk_link,
             rank_score=ss_source.metadata["score"],
             additional_metadata=ss_source.metadata,
-        )
+        ))
 
-        session.add(db_source)
-
-    session.commit()
 
     db_response_interaction = models.ResponseInteraction(
-        response_id=str(uuid.uuid4()),
+        response_id = response.id,
         question_text=response.question,
         response_text=response.response,
         average_score=response.average_score,
-        source_group_id=group_id,
         config_id=config_id,
     )
+    
+    # Add bridge records
+    bridges = []
+    for s in sources:
+        session.add(s)
+        session.add(models.InteractionSourcesBridge(response_id = db_response_interaction.response_id, source_id = s.source_id))
 
     session.add(db_response_interaction)
+    session.add_all(bridges)
+    session.add_all(sources)
     session.commit()
     logger.info(f"Saved response to the database. Response id: {db_response_interaction.response_id}")
     return db_response_interaction
 
 def create_feedback(session: Session, response_id: str, is_positive: bool, feedback_text: str = ""):
     db_feedback = models.ResponseFeedback(
-        feedback_id=str(uuid.uuid4()),
         response_id=response_id,
         is_positive=is_positive,
         feedback_text=feedback_text,

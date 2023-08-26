@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 import yaml
 from loguru import logger
 from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
+from uuid import UUID, uuid4
 from pydantic.typing import Literal  # type: ignore
 
 from llmsearch.models.config import HuggingFaceModelConfig, LlamaModelConfig, OpenAIModelConfig
@@ -16,6 +17,8 @@ models_config = {
     "huggingface": HuggingFaceModelConfig,
 }
 
+def create_uuid() -> str:
+    return str(uuid4())
 
 class Document(BaseModel):
     """Interface for interacting with a document."""
@@ -141,6 +144,7 @@ class SemanticSearchOutput(BaseModel):
 
 
 class ResponseModel(BaseModel):
+    id: UUID = Field(default_factory=create_uuid)
     question: str
     response: str
     average_score: float
