@@ -34,6 +34,8 @@ class SparseEmbeddingsSplade:
         self._embeddings = None
         self._ids = None
         self._l2_norm_matrix = None
+        
+        self.n_batch = config.embeddings.splade_config.n_batch
 
     def _get_batch_embeddings(self, docs: List[str], free_memory: bool = True) -> np.ndarray:
         tokens = self.tokenizer(docs, return_tensors="pt", padding=True, truncation=True).to(self._device)
@@ -76,7 +78,7 @@ class SparseEmbeddingsSplade:
             raise FileNotFoundError("Embeddings don't exist, run generate_embeddings_from_docs(..) first.")
         logger.info(f"Loaded sparse (SPLADE) embeddings from {fn_embeddings}")
 
-    def generate_embeddings_from_docs(self, docs: List[Document], chunk_size: int = 5, persist: bool = True):
+    def generate_embeddings_from_docs(self, docs: List[Document], persist: bool = True):
         """Generates SPLADE embeddings from documents, in batches of chunk_size.
 
         Args:
@@ -84,7 +86,8 @@ class SparseEmbeddingsSplade:
             chunk_size (int, optional): Number of documents to process per batch. Defaults to 5. Can be higher for larger VRAM.
         """
 
-        logger.info(f"Calculating SPLADE embeddings for {len(docs)} documents.")
+        chunk_size = self.n_batch
+        logger.info(f"Calculating SPLADE embeddings for {len(docs)} documents. Using chunk size: {chunk_size}")
 
         ids = [d.metadata["document_id"] for d in docs]
 

@@ -60,6 +60,10 @@ class DocumentPathSettings(BaseModel):
         return value
     
 
+class EmbedddingsSpladeConfig(BaseModel):
+    n_batch: int = 5
+
+
 
 class EmbeddingsConfig(BaseModel):
     embedding_model: EmbeddingModel = EmbeddingModel(
@@ -68,6 +72,7 @@ class EmbeddingsConfig(BaseModel):
     embeddings_path: DirectoryPath
     document_settings: List[DocumentPathSettings]
     chunk_sizes: List[int] = [1024]
+    splade_config: EmbedddingsSpladeConfig = EmbedddingsSpladeConfig(n_batch=5)
     
     class Config:
         extra = Extra.forbid

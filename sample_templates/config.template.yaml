@@ -5,7 +5,10 @@ embeddings:
   
   embedding_model: # Optional embedding model specification, default is instructor-large
     type: sentence_transformer # other supported types - "huggingface" and "instruct"
-    model_name: "iintfloat/e5-large-v2"
+    model_name: "intfloat/e5-large-v2"
+  
+  splade_config: # Optional batch size of sparse embeddings. Reduced if getting out-of-memory errors on CUDA.
+    n_batch: 5
   
   chunk_sizes: # Specify one more chunk size to split (multiple can be slow)
     - 1024
