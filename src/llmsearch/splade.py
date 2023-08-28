@@ -21,28 +21,48 @@ def split(iterable: List, chunk_size: int):
 
 
 class SparseEmbeddingsSplade:
-    def __init__(self, config: Config, splade_model_id: str = "naver/splade-cocondenser-ensembledistil") -> None:
+    def __init__(
+        self,
+        config: Config,
+        splade_model_id: str = "naver/splade-cocondenser-ensembledistil",
+    ) -> None:
         self._config = config
 
-        self._device = f"cuda:{torch.cuda.current_device()}" if torch.cuda.is_available() else "cpu"
+        self._device = (
+            f"cuda:{torch.cuda.current_device()}"
+            if torch.cuda.is_available()
+            else "cpu"
+        )
         logger.info(f"Setting device to {self._device}")
 
         #        set_cache_folder(str(config.cache_folder))
-        self.tokenizer = AutoTokenizer.from_pretrained(splade_model_id, device=self._device, use_fast=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            splade_model_id, device=self._device, use_fast=True
+        )
         self.model = AutoModelForMaskedLM.from_pretrained(splade_model_id)
         self.model.to(self._device)
         self._embeddings = None
         self._ids = None
         self._l2_norm_matrix = None
 
-    def _get_batch_embeddings(self, docs: List[str], free_memory: bool = True) -> np.ndarray:
-        tokens = self.tokenizer(docs, return_tensors="pt", padding=True, truncation=True).to(self._device)
+        self.n_batch = config.embeddings.splade_config.n_batch
+
+    def _get_batch_embeddings(
+        self, docs: List[str], free_memory: bool = True
+    ) -> np.ndarray:
+        tokens = self.tokenizer(
+            docs, return_tensors="pt", padding=True, truncation=True
+        ).to(self._device)
 
         output = self.model(**tokens)
 
         # aggregate the token-level vecs and transform to sparse
         vecs = (
-            torch.max(torch.log(1 + torch.relu(output.logits)) * tokens.attention_mask.unsqueeze(-1), dim=1)[0]
+            torch.max(
+                torch.log(1 + torch.relu(output.logits))
+                * tokens.attention_mask.unsqueeze(-1),
+                dim=1,
+            )[0]
             .squeeze()
             .detach()
             .cpu()
@@ -73,18 +93,24 @@ class SparseEmbeddingsSplade:
                 self._ids = np.array(pickle.load(fp))
             self._l2_norm_matrix = scipy.sparse.linalg.norm(self._embeddings, axis=1)
         except FileNotFoundError:
-            raise FileNotFoundError("Embeddings don't exist, run generate_embeddings_from_docs(..) first.")
+            raise FileNotFoundError(
+                "Embeddings don't exist, run generate_embeddings_from_docs(..) first."
+            )
         logger.info(f"Loaded sparse (SPLADE) embeddings from {fn_embeddings}")
 
-    def generate_embeddings_from_docs(self, docs: List[Document], chunk_size: int = 5, persist: bool = True):
+    def generate_embeddings_from_docs(self, docs: List[Document], persist: bool = True):
         """Generates SPLADE embeddings from documents, in batches of chunk_size.
 
         Args:
             docs (List[Document]): list of Documents to generate the embeddings for.
-            chunk_size (int, optional): Number of documents to process per batch. Defaults to 5. Can be higher for larger VRAM.
+            chunk_size (int, optional): Number of documents to process per batch. 
+                                        Defaults to 5. Can be higher for larger VRAM.
         """
 
-        logger.info(f"Calculating SPLADE embeddings for {len(docs)} documents.")
+        chunk_size = self.n_batch
+        logger.info(
+            f"Calculating SPLADE embeddings for {len(docs)} documents. Using chunk size: {chunk_size}"
+        )
 
         ids = [d.metadata["document_id"] for d in docs]
 
@@ -131,15 +157,26 @@ class SparseEmbeddingsSplade:
         embed_query = self._get_batch_embeddings(docs=[search])
         l2_norm_query = scipy.linalg.norm(embed_query)
 
-        if self._embeddings is not None and self._l2_norm_matrix is not None and self._ids is not None:
-            cosine_similarity = self._embeddings.dot(embed_query) / (self._l2_norm_matrix * l2_norm_query)
+        if (
+            self._embeddings is not None
+            and self._l2_norm_matrix is not None
+            and self._ids is not None
+        ):
+            cosine_similarity = self._embeddings.dot(embed_query) / (
+                self._l2_norm_matrix * l2_norm_query
+            )
             print(cosine_similarity)
             most_similar = np.argsort(cosine_similarity)
 
             top_similar_indices = most_similar[-n:][::-1]
-            return self._ids[top_similar_indices], cosine_similarity[top_similar_indices]
+            return (
+                self._ids[top_similar_indices],
+                cosine_similarity[top_similar_indices],
+            )
         else:
-            raise Exception("Something went wrong..Embeddings weren't calculated or loaded properly.")
+            raise Exception(
+                "Something went wrong..Embeddings weren't calculated or loaded properly."
+            )
 
     def save_list(self, list_: list, fname: str) -> None:
         # store list in binary file so 'wb' mode

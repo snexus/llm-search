@@ -1,6 +1,3 @@
-from typing import List
-
-from loguru import logger
 from unstructured.partition.pdf import partition_pdf
 
 import fitz

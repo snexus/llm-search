@@ -28,7 +28,7 @@ def qa_with_llm(llm_bundle: LLMBundle, config: Config):
         question = input("\nENTER QUESTION >> ")
         output = get_and_parse_response(
             query=question,
-            llm_bundle = llm_bundle,
-            config=config.semantic_search,
+            llm_bundle=llm_bundle,
+            config=config,
         )
         print_llm_response(output)

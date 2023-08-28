@@ -5,9 +5,14 @@ from typing import Any, Dict, List, Optional, Union
 import yaml
 from loguru import logger
 from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
+from uuid import UUID, uuid4
 from pydantic.typing import Literal  # type: ignore
 
-from llmsearch.models.config import HuggingFaceModelConfig, LlamaModelConfig, OpenAIModelConfig
+from llmsearch.models.config import (
+    HuggingFaceModelConfig,
+    LlamaModelConfig,
+    OpenAIModelConfig,
+)
 
 models_config = {
     "llamacpp": LlamaModelConfig,
@@ -15,6 +20,10 @@ models_config = {
     # "auto-gptq": AutoGPTQModelConfig,
     "huggingface": HuggingFaceModelConfig,
 }
+
+
+def create_uuid() -> str:
+    return str(uuid4())
 
 
 class Document(BaseModel):
@@ -46,8 +55,8 @@ class EmbeddingModel(BaseModel):
 
 
 class DocumentPathSettings(BaseModel):
-    doc_path: DirectoryPath
-    exclude_paths: List[DirectoryPath] = Field(default_factory=list)
+    doc_path: Union[DirectoryPath, str]
+    exclude_paths: List[Union[DirectoryPath, str]] = Field(default_factory=list)
     scan_extensions: List[DocumentExtension]
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
     passage_prefix: str = ""
@@ -56,19 +65,25 @@ class DocumentPathSettings(BaseModel):
     def validate_extension(cls, value):
         for ext in value.keys():
             if ext not in DocumentExtension.__members__:
-                raise TypeError(f"Unknown document extension {value}. Supported: {DocumentExtension.__members__}")
+                raise TypeError(
+                    f"Unknown document extension {value}. Supported: {DocumentExtension.__members__}"
+                )
         return value
-    
+
+
+class EmbedddingsSpladeConfig(BaseModel):
+    n_batch: int = 5
 
 
 class EmbeddingsConfig(BaseModel):
     embedding_model: EmbeddingModel = EmbeddingModel(
         type=EmbeddingModelType.instruct, model_name="hkunlp/instructor-large"
     )
-    embeddings_path: DirectoryPath
+    embeddings_path: Union[DirectoryPath, str]
     document_settings: List[DocumentPathSettings]
     chunk_sizes: List[int] = [1024]
-    
+    splade_config: EmbedddingsSpladeConfig = EmbedddingsSpladeConfig(n_batch=5)
+
     class Config:
         extra = Extra.forbid
 
@@ -112,8 +127,12 @@ class LLMConfig(BaseModel):
             raise TypeError(f"Uknown model type {value}. Allowed types: ")
 
         config_type = models_config[type_]
-        logger.info(f"Loading model paramaters in configuration class {config_type.__name__}")
-        config = config_type(**value)  # An attempt to force conversion to the required model config
+        logger.info(
+            f"Loading model paramaters in configuration class {config_type.__name__}"
+        )
+        config = config_type(
+            **value
+        )  # An attempt to force conversion to the required model config
         return config
 
     class Config:
@@ -126,6 +145,7 @@ class Config(BaseModel):
     embeddings: EmbeddingsConfig
     semantic_search: SemanticSearchConfig
     llm: LLMConfig
+    persist_response_db_path: Optional[str] = None
 
 
 class SemanticSearchOutput(BaseModel):
@@ -135,7 +155,10 @@ class SemanticSearchOutput(BaseModel):
 
 
 class ResponseModel(BaseModel):
+    id: UUID = Field(default_factory=create_uuid)
+    question: str
     response: str
+    average_score: float
     semantic_search: List[SemanticSearchOutput] = Field(default_factory=list)
 
 

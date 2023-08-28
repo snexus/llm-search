@@ -5,6 +5,8 @@ embeddings:
   embedding_model:
     type: sentence_transformer
     model_name: "intfloat/e5-large-v2"
+  splade_config:
+    n_batch: 2
 
  # Support for multi-chunking
   chunk_sizes:
@@ -12,7 +14,7 @@ embeddings:
 
   document_settings:
   - doc_path: /home/snexus/projects/knowledge-base
- #  - doc_path: /storage/llm/docs
+    #- doc_path: /storage/llm/docs
     exclude_paths:
       - /home/snexus/projects/knowledge-base/daily_notes
       - /home/snexus/projects/knowledge-base/templates
@@ -45,6 +47,8 @@ semantic_search:
 
   max_char_size: 4096
   query_prefix: "query: "
+
+persist_response_db_path: responses_test.db
 
 
 llm:

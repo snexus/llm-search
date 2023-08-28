@@ -1,0 +1,91 @@
+cache_folder: /path/to/cache/folder ## specify a cache folder for embeddings models, huggingface and sentence transformers
+
+embeddings:
+  embeddings_path: /path/to/embedding/folder ## specify a folder where embeddings will be saves
+  
+  embedding_model: # Optional embedding model specification, default is instructor-large
+    type: sentence_transformer # other supported types - "huggingface" and "instruct"
+    model_name: "infloat/e5-large-v2"
+  
+  splade_config: # Optional batch size of sparse embeddings. Reduced if getting out-of-memory errors on CUDA.
+    n_batch: 5
+  
+  chunk_sizes: # Specify one more chunk size to split (multiple can be slow)
+    - 1024
+
+  document_settings:
+  - doc_path: /path/to/documents ## specify the docs folder
+    exclude_paths: # Optional paths to exclude
+      - /path/to/documents/subfolder1
+      - /path/to/documents/subfolder2
+    scan_extensions: # specifies files extensions to scan recursively in `doc_path`. Currently supproted - pdf, md, html, epub
+      - pdf
+      - md
+    additional_parser_settings: # Optional section, don't have to include
+      md: 
+        skip_first: True  # Skip first section which often contains metadata
+        merge_sections: False # Merge # headings if possible, can be turned on and off depending on document stucture
+        remove_images: True # Remove image links
+    
+    passage_prefix: "passage: " # Often, specific prefix needs to be included in the source text, for embedding models to work properly
+
+semantic_search:
+  search_type: similarity # Currently, only similarity is supported
+  replace_output_path: # Can specify list of search/replace settings
+    - substring_search: "/storage/llm/docs/" ## Specifies substring to replace  in the output path of the document
+      substring_replace: "obsidian://open?vault=knowledge-base&file=" ## Replaces with this string
+
+  append_suffix: # Specifies additional template to append to an output path, useful for deep linking
+    append_template: "#page={page}" # For example will append a page from metadata of the document parser
+
+  max_char_size: 4096 # Will ensure that context provided to LLM is less than max_char_size. Useful for locally hosted models and limited hardware
+  query_prefix: "query: " # Often queries have to be prefixed for embedding models, such as e5
+
+persist_response_db_path:  "/path/to/responses.db" # sqlite database filename. Allows to save responses offlien to sqlite, for future analysis.
+
+############ An example how to use OpenAI model, requires .env file with the OpenAI key
+# llm:
+#   type: openai
+#   params:
+#     prompt_template: |
+#         Context information is provided below. Given the context information and not prior knowledge, provide detailed answer to the question.
+
+#         ### Context:
+#         ---------------------
+#         {context}
+#         ---------------------
+
+#         ### Question: {question}
+#     model_kwargs:
+#       temperature: 0.2
+#       model_name: gpt-3.5-turbo
+
+############ An example how to specify a local model, supported types - llamacpp, huggingface, auto-gptq
+llm:
+  type: llamacpp
+  params:
+    model_path: /storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin
+    prompt_template: |
+          ### Instruction:
+          Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
+
+          ### Context:
+          ---------------
+          {context}
+          ---------------
+
+          ### Question: {question}
+          ### Response:
+    model_init_params:
+      n_ctx: 2048
+      n_batch: 512
+      n_gpu_layers: 30
+
+    model_kwargs:
+      max_tokens: 512
+      top_p: 0.1
+      top_k: 40
+      temperature: 0.7
+      #mirostat_mode: 1
+
+
