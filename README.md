@@ -29,7 +29,7 @@ The purpose of this package is to offer a convenient question-answering system w
 
 ## Demo
 
-i![Demo](media/llmsearch-demo.gif)
+![Demo](media/llmsearch-demo.gif)
 
 ## Prerequisites
 
