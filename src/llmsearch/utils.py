@@ -1,10 +1,9 @@
 import os
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from langchain.chains.base import Chain
 from langchain.chains.question_answering import load_qa_chain
-from langchain.vectorstores.base import VectorStoreRetriever
 from loguru import logger
 
 from llmsearch.chroma import VectorStoreChroma
@@ -35,7 +34,9 @@ def set_cache_folder(cache_folder_root: str):
     transformers_cache = os.path.join(cache_folder_root, "transformers")
     hf_home = os.path.join(cache_folder_root, "hf_home")
 
-    logger.info(f"Setting SENTENCE_TRANSFORMERS_HOME folder: {sentence_transformers_home}")
+    logger.info(
+        f"Setting SENTENCE_TRANSFORMERS_HOME folder: {sentence_transformers_home}"
+    )
     logger.info(f"Setting TRANSFORMERS_CACHE folder: {transformers_cache}")
     logger.info(f"Setting HF_HOME: {hf_home}")
     logger.info(f"Setting MODELS_CACHE_FOLDER: {cache_folder_root}")
@@ -57,10 +58,12 @@ def get_llm_bundle(config: Config) -> LLMBundle:
     """
 
     set_cache_folder(str(config.cache_folder))
-    llm = get_llm(config.llm.params) # type: ignore
+    llm = get_llm(config.llm.params)  # type: ignore
     chain = load_qa_chain(llm=llm.model, chain_type=CHAIN_TYPE, prompt=llm.prompt)
 
-    store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path), config=config)
+    store = VectorStoreChroma(
+        persist_folder=str(config.embeddings.embeddings_path), config=config
+    )
     store._load_retriever()
 
     reranker = Reranker() if config.semantic_search.reranker else None
@@ -71,7 +74,7 @@ def get_llm_bundle(config: Config) -> LLMBundle:
 
     if config.persist_response_db_path is not None:
         db_settings = get_local_session(db_path=config.persist_response_db_path)
-        Base.metadata.create_all(bind = db_settings.engine)
+        Base.metadata.create_all(bind=db_settings.engine)
         logger.info("Initialized persistence db.")
     else:
         db_settings = None

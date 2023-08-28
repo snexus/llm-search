@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from langchain.embeddings import HuggingFaceEmbeddings, HuggingFaceInstructEmbeddings, SentenceTransformerEmbeddings
+from langchain.embeddings import (
+    HuggingFaceEmbeddings,
+    HuggingFaceInstructEmbeddings,
+    SentenceTransformerEmbeddings,
+)
 from loguru import logger
 
 from llmsearch.config import Document, EmbeddingModel, EmbeddingModelType
@@ -34,11 +38,18 @@ def get_embedding_model(config: EmbeddingModel):
 
 class VectorStore(ABC):
     @abstractmethod
-    def create_index_from_documents(self, all_docs: List[Document], clear_persist_folder: bool = True):
+    def create_index_from_documents(
+        self, all_docs: List[Document], clear_persist_folder: bool = True
+    ):
         pass
 
     @abstractmethod
     def get_documents_by_id(self, docuemt_ids: List[str]):
+        pass
+
+    @property
+    @abstractmethod
+    def retriever(self):
         pass
 
     @abstractmethod

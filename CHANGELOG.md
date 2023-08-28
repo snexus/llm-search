@@ -1,3 +1,8 @@
+## 2023-08-28
+
+* Added support for saving LLM responses with corresponding sources to offline database
+* Added support configuring batch size for generation of SPLADE embeddings. Useful for low-memory GPUs.
+
 ## 2023-08-22
 
 * Implement hybrid search (sparse + dense embeddings). Sparse embeddings are implemented using SPLADE. Hybrid search is enabled by default.

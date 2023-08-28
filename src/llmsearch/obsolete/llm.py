@@ -9,7 +9,7 @@ import torch
 import transformers
 from auto_gptq import AutoGPTQForCausalLM
 from dotenv import load_dotenv
-from langchain import LLMChain, PromptTemplate
+from langchain import PromptTemplate
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import HuggingFacePipeline
 from transformers import (
@@ -28,9 +28,7 @@ from llmsearch.obsolete.prompts import (
     DOLLY_PROMPT_TEMPLATE,
     OPENAI_PROMPT_TEMPLATE,
     REDPAJAMA_TEMPLATE,
-    TULU8_TEMPLATE,
     LLAMA_TEMPLATE,
-    WIZARDLM10_TEMPLATE,
 )
 
 load_dotenv()
@@ -59,8 +57,6 @@ def get_llm_model(
     model_path: Optional[Union[str, Path]] = None,
 ):
     model = ModelConfig(model_name)
-
-    prompt = None
 
     if model == ModelConfig.OPENAI_GPT35:
         model_instance = LLMOpenAI()

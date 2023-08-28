@@ -3,20 +3,21 @@ from typing import Union
 from llmsearch.models.config import (
     OpenAIModelConfig,
     LlamaModelConfig,
-#    AutoGPTQModelConfig,
+    #    AutoGPTQModelConfig,
     HuggingFaceModelConfig,
 )
 
 from llmsearch.models.llama import LlamaModel
 from llmsearch.models.hf import HuggingFaceModel
 from llmsearch.models.openai import OpenAIModel
+
 # from llmsearch.models.autogptq import AutoGPTQModel
 
 model_mappings = {
     LlamaModelConfig: LlamaModel,
     HuggingFaceModelConfig: HuggingFaceModel,
     OpenAIModelConfig: OpenAIModel,
-  #  AutoGPTQModelConfig: AutoGPTQModel,
+    #  AutoGPTQModelConfig: AutoGPTQModel,
 }
 
 
@@ -25,7 +26,7 @@ def get_llm(
         OpenAIModelConfig,
         LlamaModelConfig,
         # AutoGPTQModelConfig,
-        HuggingFaceModelConfig
+        HuggingFaceModelConfig,
     ]
 ):
     model_type = model_mappings.get(type(llm_config), None)  # type: ignore
@@ -34,5 +35,3 @@ def get_llm(
 
     llm = model_type(llm_config)  # type: ignore
     return llm
-
-    

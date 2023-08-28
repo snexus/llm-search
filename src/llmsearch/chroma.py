@@ -16,7 +16,7 @@ class VectorStoreChroma(VectorStore):
         self._config = config
         self._embeddings = get_embedding_model(config.embeddings.embedding_model)
         self._retriever = None
-        
+
     @property
     def retriever(self):
         if self._retriever is None:
@@ -37,12 +37,17 @@ class VectorStoreChroma(VectorStore):
         logger.info("Generating and persisting the embeddings..")
         ids = [d.metadata["document_id"] for d in all_docs]
         vectordb = Chroma.from_documents(
-            documents=all_docs, embedding=self._embeddings, ids=ids, persist_directory=self._persist_folder
+            documents=all_docs, 
+            embedding=self._embeddings, 
+            ids=ids, 
+            persist_directory=self._persist_folder  # type: ignore
         )
         vectordb.persist()
 
     def _load_retriever(self, **kwargs):
-        vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
+        vectordb = Chroma(
+            persist_directory=self._persist_folder, embedding_function=self._embeddings
+        )
         return vectordb.as_retriever(**kwargs)
 
     def get_documents_by_id(self, document_ids: List[str]) -> List[Document]:
@@ -55,14 +60,16 @@ class VectorStoreChroma(VectorStore):
             List[Document]: list of documents belonging to document_ids
         """
 
-        results = self.retriever.vectorstore.get(ids=document_ids, include=["metadatas", "documents"])
-        docs = [Document(page_content=d, metadata=m) for d, m in zip(results["documents"], results["metadatas"])]
+        results = self.retriever.vectorstore.get(ids=document_ids, include=["metadatas", "documents"])  # type: ignore
+        docs = [
+            Document(page_content=d, metadata=m)
+            for d, m in zip(results["documents"], results["metadatas"])
+        ]
         return docs
 
     def similarity_search_with_relevance_scores(
         self, query: str, k: int, filter: dict
     ) -> List[Tuple[Document, float]]:
-
         return self.retriever.vectorstore.similarity_search_with_relevance_scores(
             query, k=self._config.semantic_search.max_k, filter=filter
         )  # type: ignore

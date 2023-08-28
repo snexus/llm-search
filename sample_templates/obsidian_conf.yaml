@@ -13,8 +13,8 @@ embeddings:
     - 1024
 
   document_settings:
- #  - doc_path: /home/snexus/projects/knowledge-base
-  - doc_path: /storage/llm/docs
+  - doc_path: /home/snexus/projects/knowledge-base
+    #- doc_path: /storage/llm/docs
     exclude_paths:
       - /home/snexus/projects/knowledge-base/daily_notes
       - /home/snexus/projects/knowledge-base/templates

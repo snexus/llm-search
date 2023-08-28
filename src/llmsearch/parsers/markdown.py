@@ -236,14 +236,16 @@ def get_logical_blocks_recursively(
     return all_sections
 
 
-def markdown_splitter(path: Union[str, Path], max_chunk_size: int, **additional_splitter_settings) -> List[dict]:
+def markdown_splitter(
+    path: Union[str, Path], max_chunk_size: int, **additional_splitter_settings
+) -> List[dict]:
     """Logical split based on top-level headings.
 
     Args:
         markdown (str): markdown string
         max_chunk_size (int): Maximum chunk size
     """
-    
+
     try:
         with open(path, "r") as f:
             markdown = f.read()
@@ -254,8 +256,10 @@ def markdown_splitter(path: Union[str, Path], max_chunk_size: int, **additional_
         return [{"text": markdown, "metadata": {"heading": ""}}]
 
     sections = [MarkdownChunk(string="", level=0)]
-    
-    markdown, additional_metadata = preprocess_markdown(markdown, additional_splitter_settings)
+
+    markdown, additional_metadata = preprocess_markdown(
+        markdown, additional_splitter_settings
+    )
 
     # Split by code and non-code
     chunks = markdown.split("```")
@@ -310,7 +314,13 @@ def markdown_splitter(path: Union[str, Path], max_chunk_size: int, **additional_
                     MarkdownChunk(string=all_code_str, level=CODE_BLOCK_LEVEL)
                 )
 
-    all_out = postprocess_sections(sections, max_chunk_size, additional_splitter_settings, additional_metadata, path)
+    all_out = postprocess_sections(
+        sections,
+        max_chunk_size,
+        additional_splitter_settings,
+        additional_metadata,
+        path,
+    )
 
     logger.info(f"Got {len(all_out)} text chunks:")
     for s in all_out:
@@ -325,39 +335,49 @@ def preprocess_markdown(markdown: str, additional_settings: dict) -> Tuple[str, 
         markdown (str): string containing the document
         additional_settings (dict): Dictionary of additional pre-processing settings:
                                     remove_images (bool) - removes image links the document
-                                    remove_extra_newlines (bool) - removes extra new lines (3 or more) 
+                                    remove_extra_newlines (bool) - removes extra new lines (3 or more)
 
     Returns:
         str, dict: processed markdown string, dictionary with additional metadata
     """
 
     preprocess_remove_images = additional_settings.get("remove_images", False)
-    preprocess_remove_extra_newlines = additional_settings.get("remove_extra_newlines", True)
+    preprocess_remove_extra_newlines = additional_settings.get(
+        "remove_extra_newlines", True
+    )
     preprocess_find_metadata = additional_settings.get("find_metadata", dict())
-    
+
     if preprocess_remove_images:
         markdown = remove_images(markdown)
-        
+
     if preprocess_remove_extra_newlines:
         markdown = remove_extra_newlines(markdown)
-        
+
     additional_metadata = {}
-    
+
     if preprocess_find_metadata:
         if not isinstance(preprocess_find_metadata, dict):
-            raise TypeError(f"find_metadata settings should be of type dict. Got {type(preprocess_find_metadata)}")
-        
+            raise TypeError(
+                f"find_metadata settings should be of type dict. Got {type(preprocess_find_metadata)}"
+            )
+
         for label, search_string in preprocess_find_metadata.items():
             logger.info(f"Looking for metadata: {search_string}")
             metadata = find_metadata(markdown, search_string)
             if metadata:
                 logger.info(f"\tFound metadata for {label} - {metadata}")
                 additional_metadata[label] = metadata
-        
+
     return markdown, additional_metadata
 
 
-def postprocess_sections(sections: List[MarkdownChunk], max_chunk_size: int,  additional_settings: dict, additional_metadata: dict, path: Union[str, Path]) -> List[dict]:
+def postprocess_sections(
+    sections: List[MarkdownChunk],
+    max_chunk_size: int,
+    additional_settings: dict,
+    additional_metadata: dict,
+    path: Union[str, Path],
+) -> List[dict]:
     all_out = []
 
     skip_first = additional_settings.get("skip_first", False)
@@ -365,17 +385,17 @@ def postprocess_sections(sections: List[MarkdownChunk], max_chunk_size: int,  ad
 
     # Remove all empty sections
     sections = [s for s in sections if s.string]
-    
+
     if sections and skip_first:
         logger.info("Removing first section ...")
         sections = sections[1:]
 
-    if  sections and merge_headers:
+    if sections and merge_headers:
         logger.info("Merging sections ...")
-        sections = merge_sections(sections, max_chunk_size=max_chunk_size)  
-    
+        sections = merge_sections(sections, max_chunk_size=max_chunk_size)
+
     current_heading = ""
-    
+
     sections_metadata = {"Document name": Path(path).name}
 
     for s in sections:
@@ -390,19 +410,28 @@ def postprocess_sections(sections: List[MarkdownChunk], max_chunk_size: int,  ad
                     heading = ""
                 if s.level == 0:
                     current_heading = heading
-                doc_metadata["heading"] = urllib.parse.quote(heading)  # isolate the heading
+                doc_metadata["heading"] = urllib.parse.quote(
+                    heading
+                )  # isolate the heading
             else:
                 doc_metadata["heading"] = ""
 
             final_section = add_section_metadata(
-                stripped_string, section_metadata={**sections_metadata, **{"Subsection of": current_heading}, **additional_metadata})
+                stripped_string,
+                section_metadata={
+                    **sections_metadata,
+                    **{"Subsection of": current_heading},
+                    **additional_metadata,
+                },
+            )
             all_out.append({"text": final_section, "metadata": doc_metadata})
     return all_out
 
 
 def remove_images(page_md: str) -> str:
     logger.info("Removing images ... ")
-    return  re.sub(r"""!\[[^\]]*\]\((.*?)\s*("(?:.*[^"])")?\s*\)""", '', page_md) 
+    return re.sub(r"""!\[[^\]]*\]\((.*?)\s*("(?:.*[^"])")?\s*\)""", "", page_md)
+
 
 def remove_extra_newlines(page_md) -> str:
     """Remove extra new lines from the text if there are 3 or more consecutive new lines
@@ -415,14 +444,15 @@ def remove_extra_newlines(page_md) -> str:
     """
 
     logger.info("Removing extra new lines ... ")
-    page_md = re.sub(r'\n{3,}', '\n\n', page_md)
+    page_md = re.sub(r"\n{3,}", "\n\n", page_md)
     return page_md
+
 
 def add_section_metadata(s, section_metadata: dict):
     metadata_s = ""
     for k, v in section_metadata.items():
         if v:
-            metadata_s+=f"{k}: {v}\n"
+            metadata_s += f"{k}: {v}\n"
     metadata = f"Metadata applicable to the next chunk of text delimited by five stars:\n>> METADATA START\n{metadata_s}>> METADATA END\n\n"
 
     return metadata + "*****\n" + s + "\n*****"
@@ -458,7 +488,7 @@ def merge_sections(
                 string=current_section.string + s.string, level=current_section.level
             )
             prev_level = s.level if s.level != CODE_BLOCK_LEVEL else prev_level
-    
+
     all_out.append(current_section)
 
     return all_out
@@ -467,14 +497,24 @@ def merge_sections(
 if __name__ == "__main__":
     from pathlib import Path
 
-    path = Path("/storage/gdp-platform-docs/docs/platform/how-to/onboard/get-onboard-data-platform.md")
+    path = Path(
+        "/storage/gdp-platform-docs/docs/platform/how-to/onboard/get-onboard-data-platform.md"
+    )
     # path = Path("/storage/gdp-platform-docs/docs/platform/how-to/release/synapse_cicd_release.md")
     # path = Path("/storage/gdp-platform-docs/docs/platform/how-to/connect/get-started-azure-data-studio.md")
 
-
     print("**************************************************")
     # chunks = get_logical_blocks_recursively(text, all_sections = [], max_chunk_size=1024)
-    chunks = markdown_splitter(path=path, max_chunk_size=1024, **{"merge_sections": True, "skip_first": True, "remove_images": True,"find_metadata": {"description":"description: "}})
+    chunks = markdown_splitter(
+        path=path,
+        max_chunk_size=1024,
+        **{
+            "merge_sections": True,
+            "skip_first": True,
+            "remove_images": True,
+            "find_metadata": {"description": "description: "},
+        },
+    )
     print(len(chunks))
 
     for chunk in chunks:
@@ -484,7 +524,4 @@ if __name__ == "__main__":
 
     for chunk in chunks:
         print(len(chunk["text"]))
-        
-    import re
-
 
