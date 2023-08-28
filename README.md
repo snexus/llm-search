@@ -27,6 +27,9 @@ The purpose of this package is to offer a convenient question-answering system w
     * Simple CLI and web interfaces
     * An ability to save responses to offline database for future analysis.
 
+## Demo
+
+i![Demo](media/llmsearch-demo.gif)
 
 ## Prerequisites
 
