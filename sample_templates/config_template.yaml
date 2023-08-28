@@ -1,16 +1,16 @@
 cache_folder: /path/to/cache/folder ## specify a cache folder for embeddings models, huggingface and sentence transformers
 
 embeddings:
-  embeddings_path: /path/to/embedding/folder ## specify a folder where embeddings will be saves
+  embeddings_path: /path/to/embedding/folder ## specify a folder where embeddings will be saved.
   
-  embedding_model: # Optional embedding model specification, default is instructor-large
+  embedding_model: # Optional embedding model specification, default is e5-large-v2. Swap to a smaller model if out of CUDA memory
     type: sentence_transformer # other supported types - "huggingface" and "instruct"
     model_name: "infloat/e5-large-v2"
   
   splade_config: # Optional batch size of sparse embeddings. Reduced if getting out-of-memory errors on CUDA.
     n_batch: 5
   
-  chunk_sizes: # Specify one more chunk size to split (multiple can be slow)
+  chunk_sizes: # Specify one more chunk size to split (querying multi-chunk results will be slower)
     - 1024
 
   document_settings:
@@ -18,7 +18,7 @@ embeddings:
     exclude_paths: # Optional paths to exclude
       - /path/to/documents/subfolder1
       - /path/to/documents/subfolder2
-    scan_extensions: # specifies files extensions to scan recursively in `doc_path`. Currently supproted - pdf, md, html, epub
+    scan_extensions: # specifies files extensions to scan recursively in `doc_path`. 
       - pdf
       - md
     additional_parser_settings: # Optional section, don't have to include
@@ -38,10 +38,12 @@ semantic_search:
   append_suffix: # Specifies additional template to append to an output path, useful for deep linking
     append_template: "#page={page}" # For example will append a page from metadata of the document parser
 
-  max_char_size: 4096 # Will ensure that context provided to LLM is less than max_char_size. Useful for locally hosted models and limited hardware
+  # Will ensure that context provided to LLM is less than max_char_size. Useful for locally hosted models and limited hardware. 
+  # Reduce if out of CUDA memory.
+  max_char_size: 4096 
   query_prefix: "query: " # Often queries have to be prefixed for embedding models, such as e5
 
-persist_response_db_path:  "/path/to/responses.db" # sqlite database filename. Allows to save responses offlien to sqlite, for future analysis.
+persist_response_db_path:  "/path/to/responses.db" # optional sqlite database filename. Allows to save responses offlien to sqlite, for future analysis.
 
 ############ An example how to use OpenAI model, requires .env file with the OpenAI key
 # llm:
@@ -77,7 +79,7 @@ llm:
           ### Question: {question}
           ### Response:
     model_init_params:
-      n_ctx: 2048
+      n_ctx: 2048 # Adjust if CUDA memory is low
       n_batch: 512
       n_gpu_layers: 30
 
