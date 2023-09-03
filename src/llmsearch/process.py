@@ -14,7 +14,7 @@ from llmsearch.database.crud import create_response
 
 
 def get_and_parse_response(
-    llm_bundle: LLMBundle, query: str, config: Config, persist_db_session=None
+    llm_bundle: LLMBundle, query: str, config: Config, persist_db_session=None, label: str = ""
 ) -> ResponseModel:
     """Performs retieval augmented search (RAG).
 
@@ -28,7 +28,7 @@ def get_and_parse_response(
 
     semantic_search_config = config.semantic_search
     most_relevant_docs, score = get_relevant_documents(
-        query, llm_bundle, semantic_search_config
+        query, llm_bundle, semantic_search_config, label = label
     )
 
     res = llm_bundle.chain(

@@ -1,6 +1,6 @@
 import shutil
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from langchain.vectorstores import Chroma
 from loguru import logger
@@ -27,6 +27,7 @@ class VectorStoreChroma(VectorStore):
         self,
         all_docs: List[Document],
         clear_persist_folder: bool = True,
+        max_chunk_size=40000,  # Limitation of Chromadb (2023/09 v0.4.8) - can add only 41666 documents at once
     ):
         if clear_persist_folder:
             pf = Path(self._persist_folder)
@@ -35,19 +36,29 @@ class VectorStoreChroma(VectorStore):
                 shutil.rmtree(pf)
 
         logger.info("Generating and persisting the embeddings..")
-        ids = [d.metadata["document_id"] for d in all_docs]
-        vectordb = Chroma.from_documents(
-            documents=all_docs, 
-            embedding=self._embeddings, 
-            ids=ids, 
-            persist_directory=self._persist_folder  # type: ignore
-        )
-        vectordb.persist()
+
+        vectordb = None
+        for group in chunker(all_docs, size=max_chunk_size):
+            ids = [d.metadata["document_id"] for d in group]
+            if vectordb is None:
+                vectordb = Chroma.from_documents(
+                    documents=group,
+                    embedding=self._embeddings,
+                    ids=ids,
+                    persist_directory=self._persist_folder,  # type: ignore
+                )
+            else:
+                vectordb.add_texts(
+                    texts=[doc.page_content for doc in group],
+                    embedding=self._embeddings,
+                    ids=ids,
+                    metadatas = [doc.metadata for doc in group],
+                )
+        if vectordb is not None:
+            vectordb.persist()
 
     def _load_retriever(self, **kwargs):
-        vectordb = Chroma(
-            persist_directory=self._persist_folder, embedding_function=self._embeddings
-        )
+        vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
         return vectordb.as_retriever(**kwargs)
 
     def get_documents_by_id(self, document_ids: List[str]) -> List[Document]:
@@ -61,15 +72,22 @@ class VectorStoreChroma(VectorStore):
         """
 
         results = self.retriever.vectorstore.get(ids=document_ids, include=["metadatas", "documents"])  # type: ignore
-        docs = [
-            Document(page_content=d, metadata=m)
-            for d, m in zip(results["documents"], results["metadatas"])
-        ]
+        docs = [Document(page_content=d, metadata=m) for d, m in zip(results["documents"], results["metadatas"])]
         return docs
 
     def similarity_search_with_relevance_scores(
-        self, query: str, k: int, filter: dict
+        self, query: str, k: int, filter: Optional[dict]
     ) -> List[Tuple[Document, float]]:
+
+        # If there are multiple key-value pairs, combine using AND rule - the syntax is chromadb specific
+        if isinstance(filter, dict) and len(filter) > 1:
+            filter = {"$and": [{key: {"$eq": value}} for key, value in filter.items()]}
+            print("Filter = ", filter)
+
         return self.retriever.vectorstore.similarity_search_with_relevance_scores(
             query, k=self._config.semantic_search.max_k, filter=filter
         )  # type: ignore
+
+
+def chunker(seq, size):
+    return (seq[pos : pos + size] for pos in range(0, len(seq), size))
