@@ -40,6 +40,7 @@ class DocumentSplitter:
         for setting in self.document_path_settings:
             passage_prefix = setting.passage_prefix
             docs_path = Path(setting.doc_path)
+            documents_label = setting.label
             exclusion_paths = [str(e) for e in setting.exclude_paths]
 
             for extension in setting.scan_extensions:
@@ -65,6 +66,7 @@ class DocumentSplitter:
                         splitter_func=splitter,
                         max_size=chunk_size,
                         passage_prefix=passage_prefix,
+                        label = documents_label,
                         **additional_parser_settings,
                     )
                     logger.info(f"Got {len(docs)} chunks for type: {extension}")
@@ -97,6 +99,7 @@ class DocumentSplitter:
         splitter_func,
         max_size,
         passage_prefix: str,
+        label: str,
         **additional_kwargs,
     ) -> List[Document]:
         """Gets list of nodes from a collection of documents
@@ -128,6 +131,7 @@ class DocumentSplitter:
                             "source": str(path),
                             "chunk_size": max_size,
                             "document_id": str(uuid.uuid1()),
+                            "label": label,
                         },
                     },
                 )

@@ -54,10 +54,10 @@ def get_bundle(config):
 
 
 @st.cache_data
-def generate_response(question: str, _config: Config, _bundle):
+def generate_response(question: str, _config: Config, _bundle, label_filter: str = ""):
     # _config and _bundle are under scored so paratemeters aren't hashed
 
-    output = get_and_parse_response(query=question, config=_config, llm_bundle=_bundle)
+    output = get_and_parse_response(query=question, config=_config, llm_bundle=_bundle, label=label_filter)
     return output
 
 
@@ -89,15 +89,18 @@ if config_file is not None:
     st.sidebar.write(
         f"**Max char size (semantic search):** {config.semantic_search.max_char_size}"
     )
-
+    label_filter = ""
+    if config.embeddings.labels:
+        label_filter = st.sidebar.selectbox(label="Filter by label", options = ["-"] + config.embeddings.labels)
+        if label_filter is None or label_filter == '-':
+            label_filter = ""
+    
     llm_bundle = get_bundle(config)
 
     text = st.chat_input("Enter text")
 
     if text:
-        print(text)
-        print(llm_bundle)
-        output = generate_response(question=text, _bundle=llm_bundle, _config=config)
+        output = generate_response(question=text, _bundle=llm_bundle, _config=config, label_filter = label_filter)
 
         for source in output.semantic_search[::-1]:
             source_path = source.metadata.pop("source")

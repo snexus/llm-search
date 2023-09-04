@@ -37,7 +37,7 @@ class Reranker:
 
 
 def get_relevant_documents(
-    query: str, llm_bundle, config: SemanticSearchConfig
+    query: str, llm_bundle, config: SemanticSearchConfig, label: str, 
 ) -> Tuple[List[str], float]:
     most_relevant_docs = []
     docs = []
@@ -49,19 +49,28 @@ def get_relevant_documents(
     sparse_retriever = llm_bundle.sparse_search
 
     # Get max_k  documents using sparse search
-    sparse_search_docs_ids, sparse_scores = sparse_retriever.query(
-        search=query, n=config.max_k
-    )
-
-    logger.info(f"Stage 1: Got {len(sparse_search_docs_ids)} documents.")
 
     current_reranker_score, reranker_score = -1e5, -1e5
 
     # Iterate over all available chunk sizes
     for chunk_size in llm_bundle.chunk_sizes:
+        sparse_search_docs_ids, sparse_scores = sparse_retriever.query(
+            search=query, n=config.max_k, label = label, chunk_size = chunk_size
+        )
+
+        logger.info(f"Stage 1: Got {len(sparse_search_docs_ids)} documents.")
+
         # Set a filter for current chunk size or skip filter if only one chunk size is present (considerably faster)
-        filter = {"chunk_size": chunk_size} if len(llm_bundle.chunk_sizes) > 1 else None
-        logger.info(f"Filter: {filter}")
+        filter = {"chunk_size": chunk_size} if len(llm_bundle.chunk_sizes) > 1 else dict()
+        
+        # Add label to filter, if present
+        if label:
+            filter.update({"label": label})
+        
+        if not filter: # if filter is empty (doesn't contain chunk_size or label), set it to None to speed up.
+            filter = None
+            
+        logger.info(f"Dense embeddings filter: {filter}")
 
         res = llm_bundle.store.similarity_search_with_relevance_scores(
             query, k=config.max_k, filter=filter

@@ -60,6 +60,7 @@ class DocumentPathSettings(BaseModel):
     scan_extensions: List[DocumentExtension]
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
     passage_prefix: str = ""
+    label: str = "" # Optional label, will be included in the metadata
 
     @validator("additional_parser_settings")
     def validate_extension(cls, value):
@@ -72,7 +73,7 @@ class DocumentPathSettings(BaseModel):
 
 
 class EmbedddingsSpladeConfig(BaseModel):
-    n_batch: int = 5
+    n_batch: int = 3
 
 
 class EmbeddingsConfig(BaseModel):
@@ -83,6 +84,11 @@ class EmbeddingsConfig(BaseModel):
     document_settings: List[DocumentPathSettings]
     chunk_sizes: List[int] = [1024]
     splade_config: EmbedddingsSpladeConfig = EmbedddingsSpladeConfig(n_batch=5)
+    
+    @property
+    def labels(self) -> List[str]:
+        """Returns list of labels in document settings"""
+        return [setting.label for setting in self.document_settings if setting.label]
 
     class Config:
         extra = Extra.forbid
@@ -140,14 +146,6 @@ class LLMConfig(BaseModel):
         extra = Extra.forbid
 
 
-class Config(BaseModel):
-    cache_folder: Path
-    embeddings: EmbeddingsConfig
-    semantic_search: SemanticSearchConfig
-    llm: LLMConfig
-    persist_response_db_path: Optional[str] = None
-
-
 class SemanticSearchOutput(BaseModel):
     chunk_link: str
     chunk_text: str
@@ -160,6 +158,17 @@ class ResponseModel(BaseModel):
     response: str
     average_score: float
     semantic_search: List[SemanticSearchOutput] = Field(default_factory=list)
+
+class Config(BaseModel):
+    cache_folder: Path
+    embeddings: EmbeddingsConfig
+    semantic_search: SemanticSearchConfig
+    llm: LLMConfig
+    persist_response_db_path: Optional[str] = None
+    
+        
+
+
 
 
 def get_config(path: Union[str, Path]) -> Config:

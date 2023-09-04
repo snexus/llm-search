@@ -2,7 +2,7 @@
 
 # LLM Search
 
-The purpose of this package is to offer a convenient question-answering system with a simple YAML-based configuration that enables interaction with local documents. Special attention is given to improvements in various components of the system **in addition to** the LLM, including better document parsing, the ability to customize embeddings, advanced strategies for semantic search, and more. The package is designed to seamlessly collaborate with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
+The purpose of this package is to offer a convenient question-answering system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system **in addition to LLMs** - better document parsing, hybrid search, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
 
 ## Features
 
@@ -11,6 +11,8 @@ The purpose of this package is to offer a convenient question-answering system w
     * `.pdf` - MuPDF-based parser.
     * `.html`, `.epub` - supported through the `Unstructured` pre-processor - https://unstructured-io.github.io/unstructured/
     * `.docx` - custom parser, supports nested tables.
+
+* Supports multiple collection of documents, and filtering the results by a collection.
 
 * Generates dense embeddings from a folder of documents and stores them in a vector database (ChromaDB).
   * The following embedding models are supported:
