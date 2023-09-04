@@ -5,11 +5,13 @@ from llmsearch.models.config import (
     LlamaModelConfig,
     #    AutoGPTQModelConfig,
     HuggingFaceModelConfig,
+    AzureOpenAIModelConfig
 )
 
 from llmsearch.models.llama import LlamaModel
 from llmsearch.models.hf import HuggingFaceModel
 from llmsearch.models.openai import OpenAIModel
+from llmsearch.models.azureopenai import AzureOpenAIModel
 
 # from llmsearch.models.autogptq import AutoGPTQModel
 
@@ -17,6 +19,7 @@ model_mappings = {
     LlamaModelConfig: LlamaModel,
     HuggingFaceModelConfig: HuggingFaceModel,
     OpenAIModelConfig: OpenAIModel,
+    AzureOpenAIModelConfig: AzureOpenAIModel
     #  AutoGPTQModelConfig: AutoGPTQModel,
 }
 

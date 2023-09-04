@@ -12,6 +12,7 @@ from llmsearch.models.config import (
     HuggingFaceModelConfig,
     LlamaModelConfig,
     OpenAIModelConfig,
+    AzureOpenAIModelConfig
 )
 
 models_config = {
@@ -19,6 +20,7 @@ models_config = {
     "openai": OpenAIModelConfig,
     # "auto-gptq": AutoGPTQModelConfig,
     "huggingface": HuggingFaceModelConfig,
+    "azureopenai": AzureOpenAIModelConfig 
 }
 
 
