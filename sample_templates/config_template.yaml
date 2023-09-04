@@ -28,6 +28,7 @@ embeddings:
         remove_images: True # Remove image links
     
     passage_prefix: "passage: " # Often, specific prefix needs to be included in the source text, for embedding models to work properly
+    label: "documment-collection-1" # Add a label to the current collection
 
 semantic_search:
   search_type: similarity # Currently, only similarity is supported

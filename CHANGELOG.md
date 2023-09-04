@@ -1,3 +1,8 @@
+## 2023-09-03
+
+* Add support for labels and ability to filter the results by labels.
+* Bump versions of the dependencies
+
 ## 2023-08-28
 
 * Added support for saving LLM responses with corresponding sources to offline database
