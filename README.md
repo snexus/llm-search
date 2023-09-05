@@ -38,7 +38,7 @@ The purpose of this package is to offer a convenient question-answering system w
 
 ## Demo
 
-![Demo](media/llmsearch-demo.gif)
+![Demo](media/llmsearch-demo-v2.gif)
 
 ## Prerequisites
 
@@ -65,7 +65,7 @@ source .venv/bin/activate
 # Set variables for llama-cpp to compile with CUDA.
 # Optionally, point to the location root of the install NVidia CUDA Toolkit (/usr/local/cuda on Ubuntu)
 # source ./setvars.sh /usr/local/cuda
-source ./setvars.sh 
+source ./setvars.sh /usr/local/cuda
 
 # Install the package
 pip install . # or `pip install -e .` for development
