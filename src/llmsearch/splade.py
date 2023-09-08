@@ -135,7 +135,7 @@ class SparseEmbeddingsSplade:
         metadatas = [d.metadata for d in docs]
 
         vecs = []
-        for chunk in tqdm.tqdm(split(docs, chunk_size=chunk_size)):
+        for chunk in tqdm.tqdm(split(docs, chunk_size=chunk_size),  total = int(len(docs) / chunk_size)):
             texts = [d.page_content for d in chunk if d.page_content]
             vecs.append(self._get_batch_embeddings(texts))
 
