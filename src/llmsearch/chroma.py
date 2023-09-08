@@ -1,4 +1,5 @@
 import shutil
+import tqdm
 from pathlib import Path
 from typing import List, Optional, Tuple
 
@@ -27,7 +28,7 @@ class VectorStoreChroma(VectorStore):
         self,
         all_docs: List[Document],
         clear_persist_folder: bool = True,
-        max_chunk_size=40000,  # Limitation of Chromadb (2023/09 v0.4.8) - can add only 41666 documents at once
+        batch_size=200,  # Limitation of Chromadb (2023/09 v0.4.8) - can add only 41666 documents at once
     ):
         if clear_persist_folder:
             pf = Path(self._persist_folder)
@@ -38,7 +39,7 @@ class VectorStoreChroma(VectorStore):
         logger.info("Generating and persisting the embeddings..")
 
         vectordb = None
-        for group in chunker(all_docs, size=max_chunk_size):
+        for group in tqdm.tqdm(chunker(all_docs, size=batch_size), total = int(len(all_docs) / batch_size)):
             ids = [d.metadata["document_id"] for d in group]
             if vectordb is None:
                 vectordb = Chroma.from_documents(
@@ -54,6 +55,7 @@ class VectorStoreChroma(VectorStore):
                     ids=ids,
                     metadatas = [doc.metadata for doc in group],
                 )
+        logger.info("Generated embeddings. Persisting...")
         if vectordb is not None:
             vectordb.persist()
 
