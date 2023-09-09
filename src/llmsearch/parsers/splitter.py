@@ -43,7 +43,8 @@ class DocumentSplitter:
             documents_label = setting.label
             exclusion_paths = [str(e) for e in setting.exclude_paths]
 
-            for extension in setting.scan_extensions:
+            for scan_extension in setting.scan_extensions:
+                extension = scan_extension.value
                 for chunk_size in self.chunk_sizes:  # type: ignore
                     logger.info(f"Scanning path for extension: {extension}")
 
