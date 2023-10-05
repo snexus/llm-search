@@ -1,4 +1,5 @@
 import os
+from typing import Any, List
 
 import langchain
 import uvicorn
@@ -9,7 +10,7 @@ from loguru import logger
 from sqlalchemy.orm import Session
 
 import llmsearch.database.crud as crud
-from llmsearch.config import Config, get_config
+from llmsearch.config import Config, get_config, ResponseModel
 from llmsearch.database.config import get_local_session
 from llmsearch.process import get_and_parse_response
 from llmsearch.ranking import get_relevant_documents
@@ -24,9 +25,7 @@ def read_config() -> Config:
     config_file = os.environ["FASTAPI_LLM_CONFIG"]
 
     if not config_file:
-        raise SystemError(
-            "Set 'FASTAPI_LLM_CONFG' environment variable to point to a model config file."
-        )
+        raise SystemError("Set 'FASTAPI_LLM_CONFG' environment variable to point to a model config file.")
 
     logger.info(f"Loading configuration from {config_file}")
     config = get_config(config_file)
@@ -39,9 +38,7 @@ def get_db() -> Session:
     """Creates a database session and makes sure to close it properly."""
 
     if config.persist_response_db_path is None:
-        raise Exception(
-            "Specify database filename in `persist_response_db_path` setting in config."
-        )
+        raise Exception("Specify database filename in `persist_response_db_path` setting in config.")
     db_settings = get_local_session(db_path=config.persist_response_db_path)
 
     db = db_settings.SessionLocal()
@@ -80,22 +77,30 @@ def test():
     return {"message": "Welcome to LLMSearch API"}
 
 
-@app.get("/llm")
+@app.get("/llm", response_model=ResponseModel)
 async def llmsearch(
-    question: str, db: Session = Depends(get_db)
-):  # switch to async to block execution
+    question: str, label: str = "", db: Session = Depends(get_db)
+) -> Any:  # switch to async to block execution
+    if label and (label not in config.embeddings.labels):
+        raise HTTPException(
+            status_code=404, detail=f"Label '{label}' doesn't exist. Use GET /labels to get a list of labels."
+        )
+
     output = get_and_parse_response(
-        query=question, llm_bundle=llm_bundle, config=config, persist_db_session=db
+        query=question, llm_bundle=llm_bundle, config=config, persist_db_session=db, label=label
     )
-    return output.json()
+    return output.dict()
 
 
 @app.get("/semantic")
 async def semanticsearch(question: str):
-    docs = get_relevant_documents(
-        query=question, llm_bundle=llm_bundle, config=config.semantic_search
-    )
+    docs = get_relevant_documents(query=question, llm_bundle=llm_bundle, config=config.semantic_search, label="")
     return {"sources": docs}
+
+
+@app.get("/labels")
+async def labels() -> List[str]:
+    return config.embeddings.labels
 
 
 @app.post("/feedback")

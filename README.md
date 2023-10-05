@@ -25,20 +25,21 @@ The purpose of this package is to offer a convenient question-answering system w
 * Supports the "Retrieve and Re-rank" strategy for semantic search, see - https://www.sbert.net/examples/applications/retrieve_rerank/README.html.
 
 * Allows interaction with embedded documents, supporting the following models and methods (including locally hosted):
-    * OpenAI models (ChatGPT 3.5/4).
+    * OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).
     * HuggingFace models.
-    * GGML models through LlamaCpp.
+    * Llama cpp supported models - for full list see https://github.com/ggerganov/llama.cpp#description
     * AutoGPTQ models (temporarily disabled due to broken dependencies).
 
 * Other features
     * Simple CLI and web interfaces.
     * Deep linking into document sections - jump to an individual PDF page or a header in a markdown file.
     * Ability to save responses to an offline database for future analysis.
+    * Experimental API
 
 
 ## Demo
 
-![Demo](media/llmsearch-demo.gif)
+![Demo](media/llmsearch-demo-v2.gif)
 
 ## Prerequisites
 
@@ -63,9 +64,11 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # Set variables for llama-cpp to compile with CUDA.
+
 # Assuming Nvidia CUDA Toolkit is installed and pointing to `usr/local/cuda` on Ubuntu
 
 source ./setvars.sh 
+
 
 # Install the package
 pip install . # or `pip install -e .` for development
