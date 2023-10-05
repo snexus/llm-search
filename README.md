@@ -64,9 +64,11 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # Set variables for llama-cpp to compile with CUDA.
-# Optionally, point to the location root of the install NVidia CUDA Toolkit (/usr/local/cuda on Ubuntu)
-# source ./setvars.sh /usr/local/cuda
-source ./setvars.sh /usr/local/cuda
+
+# Assuming Nvidia CUDA Toolkit is installed and pointing to `usr/local/cuda` on Ubuntu
+
+source ./setvars.sh 
+
 
 # Install the package
 pip install . # or `pip install -e .` for development
