@@ -1,6 +1,6 @@
 import string
 
-
+from loguru import logger
 from llmsearch.config import (
     AppendSuffix,
     ObsidianAdvancedURI,
@@ -11,6 +11,7 @@ from llmsearch.config import (
 from llmsearch.ranking import get_relevant_documents
 from llmsearch.utils import LLMBundle
 from llmsearch.database.crud import create_response
+from llmsearch.config import Document
 
 
 def get_and_parse_response(
@@ -26,19 +27,19 @@ def get_and_parse_response(
         OutputModel
     """
 
+    original_query = query
+    if llm_bundle.hyde_enabled:
+        query = get_hyde_response(llm_bundle, query)
+
     semantic_search_config = config.semantic_search
-    most_relevant_docs, score = get_relevant_documents(
-        query, llm_bundle, semantic_search_config, label = label
-    )
+    most_relevant_docs, score = get_relevant_documents(query, llm_bundle, semantic_search_config, label=label)
 
     res = llm_bundle.chain(
-        {"input_documents": most_relevant_docs, "question": query},
+        {"input_documents": most_relevant_docs, "question": original_query},
         return_only_outputs=False,
     )
 
-    out = ResponseModel(
-        response=res["output_text"], question=query, average_score=score
-    )
+    out = ResponseModel(response=res["output_text"], question=query, average_score=score)
     for doc in res["input_documents"]:
         doc_name = doc.metadata["source"]
 
@@ -49,21 +50,13 @@ def get_and_parse_response(
             )
 
         if semantic_search_config.obsidian_advanced_uri is not None:
-            doc_name = process_obsidian_uri(
-                doc_name, semantic_search_config.obsidian_advanced_uri, doc.metadata
-            )
+            doc_name = process_obsidian_uri(doc_name, semantic_search_config.obsidian_advanced_uri, doc.metadata)
 
         if semantic_search_config.append_suffix is not None:
-            doc_name = process_append_suffix(
-                doc_name, semantic_search_config.append_suffix, doc.metadata
-            )
+            doc_name = process_append_suffix(doc_name, semantic_search_config.append_suffix, doc.metadata)
 
         text = doc.page_content
-        out.semantic_search.append(
-            SemanticSearchOutput(
-                chunk_link=doc_name, metadata=doc.metadata, chunk_text=text
-            )
-        )
+        out.semantic_search.append(SemanticSearchOutput(chunk_link=doc_name, metadata=doc.metadata, chunk_text=text))
 
     if llm_bundle.response_persist_db_settings is not None:
         if persist_db_session is not None:
@@ -78,9 +71,7 @@ def get_and_parse_response(
     return out
 
 
-def process_obsidian_uri(
-    doc_name: str, adv_uri_config: ObsidianAdvancedURI, metadata: dict
-) -> str:
+def process_obsidian_uri(doc_name: str, adv_uri_config: ObsidianAdvancedURI, metadata: dict) -> str:
     """Adds a suffix pointing to a specific heading based on the metadata supplied if doc.metadata
 
     Args:
@@ -93,9 +84,7 @@ def process_obsidian_uri(
         str: document name with a header suffix.
     """
     print(metadata)
-    append_str = adv_uri_config.append_heading_template.format(
-        heading=metadata["heading"]
-    )
+    append_str = adv_uri_config.append_heading_template.format(heading=metadata["heading"])
     return doc_name + append_str
 
 
@@ -128,3 +117,22 @@ class PartialFormatter(string.Formatter):
                 return self.bad_fmt
             else:
                 raise
+
+
+def get_hyde_response(llm_bundle: LLMBundle, query: str) -> str:
+    """Generates an artificial response using HyDE technique (Hypothetical Document Embeddings)
+    See https://arxiv.org/pdf/2212.10496.pdf for more detail
+
+    Args:
+        llm_bundle (LLMBundle): instance of LLMBundle containing runtime parameters.
+        query (str): Original query
+
+    Returns:
+        str: Artifical passage which answers the query
+    """
+
+    if llm_bundle.hyde_chain is None:
+        raise TypeError("HyDE chain is not initialised. exiting.")
+    res = llm_bundle.hyde_chain.run(query)
+    logger.info(f"HYDE: got response: {res}")
+    return res

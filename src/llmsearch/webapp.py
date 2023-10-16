@@ -83,7 +83,7 @@ if config_file is not None:
     st.sidebar.write(f"**Model type:** {config.llm.type}")
 
     st.sidebar.write(
-        f"**Docuemnt path**: {config.embeddings.document_settings[0].doc_path}"
+        f"**Document path**: {config.embeddings.document_settings[0].doc_path}"
     )
     st.sidebar.write(f"**Embedding path:** {config.embeddings.embeddings_path}")
     st.sidebar.write(
@@ -98,8 +98,12 @@ if config_file is not None:
     llm_bundle = get_bundle(config)
 
     text = st.chat_input("Enter text")
+    is_hyde = st.sidebar.checkbox(label = "Use HyDE (cost: 2 api calls)", value=llm_bundle.hyde_enabled)
 
     if text:
+
+        # Dynamically switch hyde
+        llm_bundle.hyde_enabled = is_hyde
         output = generate_response(question=text, _bundle=llm_bundle, _config=config, label_filter = label_filter)
 
         for source in output.semantic_search[::-1]:
@@ -114,6 +118,9 @@ if config_file is not None:
                     st.write(f"\nScore: {score}")
 
                 st.text(f"\n\n{source.chunk_text}")
+        if llm_bundle.hyde_enabled:
+            with st.expander(label=':octagonal_sign: **HyDE Reponse**', expanded=False):
+                st.write(output.question)
 
         with chat_message("assistant"):
             st.write(f"**Search results quality score: {output.average_score:.2f}**\n")

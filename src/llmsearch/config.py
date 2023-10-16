@@ -108,6 +108,10 @@ class ReplaceOutputPath(BaseModel):
     substring_search: str
     substring_replace: str
 
+class HydeSettings(BaseModel):
+    enabled: bool = False
+    hyde_prompt: str = "Write a short passage to answer the question: {question}"
+
 
 class SemanticSearchConfig(BaseModel):
     search_type: Literal["mmr", "similarity"]
@@ -118,6 +122,7 @@ class SemanticSearchConfig(BaseModel):
     max_k: int = 15
     max_char_size: int = 2048
     query_prefix: str = ""
+    hyde: HydeSettings = HydeSettings()
 
     class Config:
         arbitrary_types_allowed = True
