@@ -31,6 +31,8 @@ semantic_search:
 
   max_char_size: 4096
   query_prefix: "query: "
+  hyde:
+    enabled: True
 
 
 llm:
