@@ -54,7 +54,7 @@ def get_bundle(config):
 
 
 @st.cache_data
-def generate_response(question: str, _config: Config, _bundle, label_filter: str = ""):
+def generate_response(question: str, use_hyde: bool, _config: Config, _bundle, label_filter: str = ""):
     # _config and _bundle are under scored so paratemeters aren't hashed
 
     output = get_and_parse_response(query=question, config=_config, llm_bundle=_bundle, label=label_filter)
@@ -73,6 +73,7 @@ else:
 # Initialsize state for historical resutls
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
+
 
 if config_file is not None:
     config = load_config(config_file)
@@ -100,14 +101,28 @@ if config_file is not None:
     if text:
         # Dynamically switch hyde
         llm_bundle.hyde_enabled = is_hyde
-        output = generate_response(question=text, _bundle=llm_bundle, _config=config, label_filter=label_filter)
+        output = generate_response(
+            question=text,
+            use_hyde=llm_bundle.hyde_enabled,
+            _bundle=llm_bundle,
+            _config=config,
+            label_filter=label_filter,
+        )
 
-        # Take care of historical response
+        # Add assistant response to chat history
+        st.session_state["messages"].append(
+            {
+                "question": text,
+                "response": output.response,
+                "links": [f'<a href="{s.chunk_link}">{s.chunk_link}</a>' for s in output.semantic_search[::-1]],
+                "quality": f"{output.average_score:.2f}",
+            }
+        )
         for h_response in st.session_state["messages"]:
             with st.expander(label=f":question: **{h_response['question']}**", expanded=False):
                 st.markdown(f"##### {h_response['question']}")
                 st.write(h_response["response"])
-                st.markdown(f"\n---\n##### Search Quality Score: {h_response['quality']}")
+                st.markdown(f"\n---\n##### Serrch Quality Score: {h_response['quality']}")
                 st.markdown("##### Links")
                 for link in h_response["links"]:
                     st.write("\t* " + link, unsafe_allow_html=True)
@@ -132,15 +147,6 @@ if config_file is not None:
             st.write(f"**Search results quality score: {output.average_score:.2f}**\n")
             st.write(output.response)  # Add user message to chat history
 
-            # Add assistant response to chat history
-        st.session_state["messages"].append(
-            {
-                "question": text,
-                "response": output.response,
-                "links": [f'<a href="{s.chunk_link}">{s.chunk_link}</a>' for s in output.semantic_search[::-1]],
-                "quality": f"{output.average_score:.2f}",
-            }
-        )
 
 else:
     st.info("Choose a configuration template to start...")
