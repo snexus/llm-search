@@ -25,6 +25,7 @@ The purpose of this package is to offer a convenient question-answering system w
 * Supports the "Retrieve and Re-rank" strategy for semantic search, see - https://www.sbert.net/examples/applications/retrieve_rerank/README.html.
 
 * Supports HyDE (Hypothetical Document Embeddings) - https://arxiv.org/pdf/2212.10496.pdf
+    * WARNING: Enabling HyDE can significantly alter the quality of the results. Please make sure to read the paper before enabling.
 
 * Allows interaction with embedded documents, supporting the following models and methods (including locally hosted):
     * OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).
@@ -83,7 +84,8 @@ pip install . # or `pip install -e .` for development
 
 To create a configuration file in YAML format, you can refer to the example template provided in `sample_templates/config_template.yaml`.
 
-The sample configuration file specifies how to load one of the supported locally hosted models, downloaded from Huggingface - https://huggingface.co/TheBloke/wizardLM-13B-1.0-GGML/resolve/main/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin
+The sample configuration file specifies how to load one of the supported locally hosted models, downloaded from Huggingface - 
+https://huggingface.co/TheBloke/airoboros-l2-13B-gpt4-1.4.1-GGUF/resolve/main/airoboros-l2-13b-gpt4-1.4.1.Q4_K_M.gguf
 
 As an alternative uncomment the llm section for OpenAI model.
 
@@ -130,7 +132,7 @@ llmsearch interact llm -c /path/to/config.yaml
 
 Based on the example configuration provided in the sample configuration file, the following actions will take place:
 
-- The system will load a quantized GGML model using the LlamaCpp framework. The model file is located at `/storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin`.
+- The system will load a quantized GGUF model using the LlamaCpp framework. The model file is located at `/storage/llm/cache/airoboros-l2-13b-gpt4-1.4.1.Q4_K_M.gguf`
 - The model will be partially loaded into the GPU (30 layers) and partially into the CPU (remaining layers). The `n_gpu_layers` parameter can be adjusted according to the hardware limitations.
 - Additional LlamaCpp specific parameters specified in `model_kwargs` from the `llm->params` section will be passed to the model.
 - The system will query the embeddings database using hybrid search algorithm using sparse and dense embeddings. It will provide the most relevant context from different documents, up to a maximum context size of 4096 characters (`max_char_size` in `semantic_search`).
