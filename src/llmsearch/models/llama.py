@@ -39,6 +39,9 @@ class CustomLlamaLangChainModel(LLM):
         cls.streaming = True
         return cls(**kwargs)
 
+    def __del__(self):
+       self.model.__del__()
+
     @property
     def _llm_type(self) -> str:
         return "custom"

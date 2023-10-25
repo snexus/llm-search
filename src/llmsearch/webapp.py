@@ -53,20 +53,31 @@ def load_config(config_file):
     return Config(**config_dict)
 
 
-# @st.cache_resource(hash_funcs={Config: hash_func})
-def get_bundle(config):
-    return get_llm_bundle(config)
+def unload_model():
+    """Unloads llm_bundle from the state to free up the GPU memory"""
+
+    if st.session_state["llm_bundle"] is not None:
+        st.session_state["llm_bundle"].store = None
+        st.session_state["llm_bundle"].chain = None
+        st.session_state["llm_bundle"].reranker = None
+        st.session_state["llm_bundle"].hyde_chain = None
+
+    st.cache_data.clear()
+    st.cache_resource.clear()
+    gc.collect()
+
+    st.session_state["llm_bundle"] = None
+    gc.collect()
+
+    with torch.no_grad():
+        torch.cuda.empty_cache()
 
 
 @st.cache_data
-def generate_response(
-    question: str, use_hyde: bool, _config: Config, _bundle, label_filter: str = ""
-):
+def generate_response(question: str, use_hyde: bool, _config: Config, _bundle, label_filter: str = ""):
     # _config and _bundle are under scored so paratemeters aren't hashed
 
-    output = get_and_parse_response(
-        query=question, config=_config, llm_bundle=_bundle, label=label_filter
-    )
+    output = get_and_parse_response(query=question, config=_config, llm_bundle=_bundle, label=label_filter)
     return output
 
 
@@ -92,11 +103,10 @@ if "llm_config" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
+
 if Path(args.cli_config_path).is_dir():
     config_paths = get_config_paths(args.cli_config_path)
-    config_file = st.sidebar.selectbox(
-        label="Choose config", options=config_paths, index=0
-    )
+    config_file = st.sidebar.selectbox(label="Choose config", options=config_paths, index=0)
 
     # Every form must have a submit button.
     load_button = st.sidebar.button("Load")
@@ -104,15 +114,11 @@ if Path(args.cli_config_path).is_dir():
     # This is required for memory management, we need to try and unload the model before loading new one
     if load_button:
         logger.info("Clearing state and re-loading model...")
-        del st.session_state["llm_bundle"]
-        gc.collect()
-
-        with torch.no_grad():
-            torch.cuda.empty_cache()
+        unload_model()
 
         with st.spinner("Loading configuration"):
             config = load_config(config_file)
-            st.session_state["llm_bundle"] = get_bundle(config)
+            st.session_state["llm_bundle"] = get_llm_bundle(config)
             st.session_state["llm_config"] = {"config": config, "file": config_file}
 
 
@@ -127,18 +133,12 @@ if st.session_state["llm_bundle"] is not None:
 
     st.sidebar.write(f"**Model type:** {config.llm.type}")
 
-    st.sidebar.write(
-        f"**Document path**: {config.embeddings.document_settings[0].doc_path}"
-    )
+    st.sidebar.write(f"**Document path**: {config.embeddings.document_settings[0].doc_path}")
     st.sidebar.write(f"**Embedding path:** {config.embeddings.embeddings_path}")
-    st.sidebar.write(
-        f"**Max char size (semantic search):** {config.semantic_search.max_char_size}"
-    )
+    st.sidebar.write(f"**Max char size (semantic search):** {config.semantic_search.max_char_size}")
     label_filter = ""
     if config.embeddings.labels:
-        label_filter = st.sidebar.selectbox(
-            label="Filter by label", options=["-"] + config.embeddings.labels
-        )
+        label_filter = st.sidebar.selectbox(label="Filter by label", options=["-"] + config.embeddings.labels)
         if label_filter is None or label_filter == "-":
             label_filter = ""
 
@@ -164,22 +164,15 @@ if st.session_state["llm_bundle"] is not None:
             {
                 "question": text,
                 "response": output.response,
-                "links": [
-                    f'<a href="{s.chunk_link}">{s.chunk_link}</a>'
-                    for s in output.semantic_search[::-1]
-                ],
+                "links": [f'<a href="{s.chunk_link}">{s.chunk_link}</a>' for s in output.semantic_search[::-1]],
                 "quality": f"{output.average_score:.2f}",
             }
         )
         for h_response in st.session_state["messages"]:
-            with st.expander(
-                label=f":question: **{h_response['question']}**", expanded=False
-            ):
+            with st.expander(label=f":question: **{h_response['question']}**", expanded=False):
                 st.markdown(f"##### {h_response['question']}")
                 st.write(h_response["response"])
-                st.markdown(
-                    f"\n---\n##### Serrch Quality Score: {h_response['quality']}"
-                )
+                st.markdown(f"\n---\n##### Serrch Quality Score: {h_response['quality']}")
                 st.markdown("##### Links")
                 for link in h_response["links"]:
                     st.write("\t* " + link, unsafe_allow_html=True)
