@@ -33,6 +33,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 .env.back
+templates-test-local
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

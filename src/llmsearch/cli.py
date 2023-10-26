@@ -70,7 +70,7 @@ def launch_qa_with_llm(config_file: str):
     "-c",
     "config_file",
     required=True,
-    type=click.Path(exists=True, dir_okay=False),
+    type=click.Path(exists=True, dir_okay=True, file_okay=False),
     help="Specifies YAML configuration file",
 )
 def launch_streamlit(config_file: str):

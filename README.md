@@ -82,14 +82,14 @@ pip install . # or `pip install -e .` for development
 ## 1) Create a configuration file
 
 
-To create a configuration file in YAML format, you can refer to the example template provided in `sample_templates/config_template.yaml`.
+To create a configuration file in YAML format, you can refer to the example template provided in `sample_templates/generic/config_template.yaml`.
 
 The sample configuration file specifies how to load one of the supported locally hosted models, downloaded from Huggingface - 
 https://huggingface.co/TheBloke/airoboros-l2-13B-gpt4-1.4.1-GGUF/resolve/main/airoboros-l2-13b-gpt4-1.4.1.Q4_K_M.gguf
 
 As an alternative uncomment the llm section for OpenAI model.
 
-[Sample configuration template](sample_templates/config_template.yaml)
+[Sample configuration template](sample_templates/generic/config_template.yaml)
 
 
 ## 2) Creating document Embeddings
@@ -120,8 +120,10 @@ To interact with the documents using one of the supported LLMs, follow these ste
 
 * Web interface:
 
+Scans the configs and allows to switch between them.
+
 ```bash
-llmsearch interact webapp -c /path/to/config.yaml
+llmsearch interact webapp -c /path/to/config_folder
 ```
 
 * CLI interface:
