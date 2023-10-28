@@ -156,7 +156,7 @@ class SparseEmbeddingsSplade:
             logger.info(f"Saved SPLADE embeddings to {fn_embeddings}")
         return csr_embeddings, ids
 
-    def query(self, search: str, chunk_size: int, n: int = 50, label: str = "") -> Tuple[List[str], np.array]:
+    def query(self, search: str, chunk_size: int, n: int = 50, label: str = "") -> Tuple[np.ndarray,  np.ndarray]:
         """Finds documents using sparse index similar to the search query in meaning
 
         Args:

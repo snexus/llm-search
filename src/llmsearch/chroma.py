@@ -43,7 +43,7 @@ class VectorStoreChroma(VectorStore):
             ids = [d.metadata["document_id"] for d in group]
             if vectordb is None:
                 vectordb = Chroma.from_documents(
-                    documents=group,
+                    documents=group, # type: ignore
                     embedding=self._embeddings,
                     ids=ids,
                     persist_directory=self._persist_folder,  # type: ignore

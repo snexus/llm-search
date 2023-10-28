@@ -8,6 +8,7 @@ from llmsearch.config import get_config
 from llmsearch.interact import qa_with_llm
 from llmsearch.parsers.splitter import DocumentSplitter
 from llmsearch.utils import get_llm_bundle, set_cache_folder
+from llmsearch.embeddings import create_embeddings, update_embeddings
 
 
 @click.group(name="index")
@@ -37,17 +38,30 @@ def generate_index(config_file: str):
     config = get_config(config_file)
     set_cache_folder(str(config.cache_folder))
 
-    splitter = DocumentSplitter(config)
-    all_docs = splitter.split()
+    vs = VectorStoreChroma(
+        persist_folder=str(config.embeddings.embeddings_path),
+        config=config
+    )
+    create_embeddings(config, vs)
+
+@click.command(name="udpate")
+@click.option(
+    "--config-file",
+    "-c",
+    "config_file",
+    required=True,
+    type=click.Path(exists=True, dir_okay=False),
+    help="Specifies YAML configuration file",
+)
+def udpate_index(config_file: str):
+    config = get_config(config_file)
+    set_cache_folder(str(config.cache_folder))
 
     vs = VectorStoreChroma(
         persist_folder=str(config.embeddings.embeddings_path),
-        config=config,
+        config=config
     )
-    vs.create_index_from_documents(all_docs=all_docs)
-
-    splade = SparseEmbeddingsSplade(config)
-    splade.generate_embeddings_from_docs(docs=all_docs)
+    update_embeddings(config, vs)
 
 
 @click.command("llm")
@@ -85,6 +99,7 @@ def launch_streamlit(config_file: str):
 
 
 index_group.add_command(generate_index)
+index_group.add_command(udpate_index)
 interact_group.add_command(launch_qa_with_llm)
 
 index_group.add_command(generate_index)
