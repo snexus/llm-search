@@ -2,7 +2,7 @@ import hashlib
 import urllib
 import uuid
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from loguru import logger
 import pandas as pd
@@ -59,7 +59,7 @@ class DocumentSplitter:
 
         
     
-    def split(self) -> Tuple[List[Document], pd.DataFrame, pd.DataFrame]:
+    def split(self, restrict_filenames: Optional[List[str]] = None) -> Tuple[List[Document], pd.DataFrame, pd.DataFrame]:
         """Splits documents based on document path settings
 
         Returns:
@@ -91,6 +91,11 @@ class DocumentSplitter:
                         for p in list(docs_path.glob(f"**/*.{extension}"))
                         if not self.is_exclusion(p, exclusion_paths)
                     ]
+
+                    # Used when updating the index, we don't need to parse all files again
+                    if restrict_filenames is not None:
+                        logger.warning(f"Restrict filenames specificed. Scanning at most {len(restrict_filenames)} files.")
+                        paths = [p for p in paths if p.name in set(restrict_filenames)]
 
                     splitter = self._splitter_conf[extension]
 

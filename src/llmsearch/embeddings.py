@@ -76,22 +76,75 @@ def create_embeddings(config: Config, vs: VectorStore):
 def update_embeddings(config: Config, vs: VectorStore):
     splitter = DocumentSplitter(config)
     new_hashes_df = splitter.get_hashes()
-    file_hashes_fn, _ = get_hash_mapping_filenames(config)
-    existing_hashes_df = pd.read_parquet(path=file_hashes_fn)
+    file_hashes_fn, docid_hash_fn = get_hash_mapping_filenames(config)
+    existing_fn_hash_mappings = pd.read_parquet(path=file_hashes_fn)
+    existing_docid_hash_mappings = pd.read_parquet(path=docid_hash_fn)
 
     print(new_hashes_df)
 
-    changed_or_new_df = get_changed_or_new_files(new_hashes_df, existing_hashes_df)
+    changed_or_new_df, changed_df = get_changed_or_new_files(new_hashes_df, existing_fn_hash_mappings)
     print("CHanged or new files")
     print(changed_or_new_df)
+    print("CHanged files")
+    print(changed_df)
 
+    splitter = DocumentSplitter(config)
 
-def get_changed_or_new_files(new_hashes_df: pd.DataFrame, existing_hashes_df: pd.DataFrame) -> pd.DataFrame:
-    changed_or_new = (
-        new_hashes_df.merge(existing_hashes_df, on=["filehash", "filename"], how="outer", indicator=True)
-        #   .loc[lambda df: df['_merge'] == 'left_only']
+    new_docs, new_fn_hash_mappings, new_docid_hash_mappings = splitter.split(
+        restrict_filenames=changed_or_new_df.loc[:, "filename"].tolist()
     )
-    return changed_or_new
+
+    updated_fn_hash_mappings, updated_docid_hash_mappings = update_mappings(
+        existing_fn_hash_mappings,
+        new_fn_hash_mappings,
+        existing_docid_hash_mappings,
+        new_docid_hash_mappings,
+        changed_df,
+    )
+
+    print("NEW HASH FN MAPPINGS\n")
+    print(new_fn_hash_mappings)
+    print("NEW HASH DOCID MAPPINGS\n")
+    print(new_docid_hash_mappings)
+
+    print("UPDATED HASH FN MAPPINGS\n")
+    print(updated_fn_hash_mappings)
+    print("UPDATED HASH DOCID MAPPINGS\n")
+    print(updated_docid_hash_mappings)
+
+
+def update_mappings(
+    existing_fn_hash_mappings: pd.DataFrame,
+    new_fn_hash_mappings: pd.DataFrame,
+    existing_docid_hash_mappings: pd.DataFrame,
+    new_docid_hash_mappings: pd.DataFrame,
+    changed_df,
+):
+    # In the existing mappings, delete all rows belonging to changed filenames
+    mask_delete_fn_hash = existing_fn_hash_mappings.loc[:, "filename"].isin(changed_df.loc[:, "filename"])
+    updated_fn_hash_mappings = existing_fn_hash_mappings.loc[~mask_delete_fn_hash, :]
+    # Update existings mappings with new fn mappings
+    updated_fn_hash_mappings = pd.concat([updated_fn_hash_mappings, new_fn_hash_mappings], axis=0)
+
+    mask_delete_docid_hash = existing_docid_hash_mappings.loc[:, "filehash"].isin(changed_df.loc[:, "filehash"])
+    updated_docid_hash_mappings = existing_docid_hash_mappings.loc[~mask_delete_docid_hash, :]
+    updated_docid_hash_mappings = pd.concat([updated_docid_hash_mappings, new_docid_hash_mappings], axis=0)
+    return updated_fn_hash_mappings, updated_docid_hash_mappings
+
+
+def get_changed_or_new_files(
+    new_hashes_df: pd.DataFrame, existing_hashes_df: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    merged_df = new_hashes_df.merge(existing_hashes_df, on=["filehash", "filename"], how="outer", indicator=True)
+
+    # Rows with left_only indicators contain files that are either changed or new in the new scan
+    # These files are to be re-scanned
+    changed_or_new = merged_df.loc[lambda df: df["_merge"] == "left_only"]
+
+    duplicated_filenames_mask = merged_df.loc[:, "filename"].duplicated()
+    changed = merged_df.loc[duplicated_filenames_mask, :]
+
+    return changed_or_new, changed
 
 
 def get_hash_mapping_filenames(
