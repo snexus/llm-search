@@ -92,7 +92,7 @@ def get_config_paths(config_dir: str) -> List[str]:
     return config_paths
 
 
-def reload_model():
+def reload_model(config_file: str):
     if st.session_state["disable_load"]:
         logger.info("In process of loading the model, please wait...")
         return
@@ -102,6 +102,7 @@ def reload_model():
     logger.info("Clearing state and re-loading model...")
     unload_model()
 
+    logger.debug(f"Reload model got CONFIG FILE NAME: {config_file}")
     with st.spinner("Loading configuration"):
         config = load_config(config_file)
         st.session_state["llm_bundle"] = get_llm_bundle(config)
@@ -133,9 +134,10 @@ if Path(args.cli_config_path).is_dir():
     config_file = st.sidebar.selectbox(
         label="Choose config", options=config_paths, index=0
     )
+    logger.debug(f"CONFIG FILE: {config_file}")
 
     # Every form must have a submit button.
-    load_button = st.sidebar.button("Load", on_click=reload_model)
+    load_button = st.sidebar.button("Load", on_click=reload_model, args=(config_file,))
 
     # Since in the event loop on_click will be called first, we need to re-enable the flag in case of multiple clicks
     if load_button:
