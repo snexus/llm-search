@@ -1,4 +1,5 @@
 import click
+from loguru import logger
 import os
 import streamlit.web.cli
 
@@ -61,7 +62,8 @@ def udpate_index(config_file: str):
         persist_folder=str(config.embeddings.embeddings_path),
         config=config
     )
-    update_embeddings(config, vs)
+    stats = update_embeddings(config, vs)
+    logger.info(stats)
 
 
 @click.command("llm")
