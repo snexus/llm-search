@@ -92,7 +92,7 @@ As an alternative uncomment the llm section for OpenAI model.
 [Sample configuration template](sample_templates/generic/config_template.yaml)
 
 
-## 2) Creating document Embeddings
+## 2) Create document embeddings
 
 To create embeddings from documents, follow these steps:
 
@@ -110,8 +110,17 @@ The default vector database for dense is ChromaDB, and default embedding model i
 
 In addition to dense embeddings, sparse embedding will be generated in `/path/to/embedding/folder/splade` using SPLADE algorithm. Both dense and sparse embeddings will be used for context search.
 
+## 3) Update document embeddings
 
-## 3) Interact with the documents
+When new files are added or existing documents are changed, follow these steps to update the embeddings:
+
+```bash
+llmsearch index update -c /path/to/config.yaml
+```
+
+Executing this command will detect changed or new files (based on MD5 hash) and will incrementally update only the changes, without the need to rescan the documents from scratch.
+
+## 4) Interact with the documents
 
 To interact with the documents using one of the supported LLMs, follow these steps:
 

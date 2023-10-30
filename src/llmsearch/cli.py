@@ -45,7 +45,7 @@ def generate_index(config_file: str):
     )
     create_embeddings(config, vs)
 
-@click.command(name="udpate")
+@click.command(name="update")
 @click.option(
     "--config-file",
     "-c",
