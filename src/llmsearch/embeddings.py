@@ -3,15 +3,13 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import pandas as pd
-
-from langchain.embeddings import (
-    HuggingFaceEmbeddings,
-    HuggingFaceInstructEmbeddings,
-    SentenceTransformerEmbeddings,
-)
+from langchain.embeddings import (HuggingFaceEmbeddings,
+                                  HuggingFaceInstructEmbeddings,
+                                  SentenceTransformerEmbeddings)
 from loguru import logger
 
-from llmsearch.config import Config, Document, EmbeddingModel, EmbeddingModelType
+from llmsearch.config import (Config, Document, EmbeddingModel,
+                              EmbeddingModelType)
 from llmsearch.parsers.splitter import DocumentSplitter
 from llmsearch.splade import SparseEmbeddingsSplade
 
@@ -24,7 +22,9 @@ MODELS = {
 
 class VectorStore(ABC):
     @abstractmethod
-    def create_index_from_documents(self, all_docs: List[Document], clear_persist_folder: bool = True):
+    def create_index_from_documents(
+        self, all_docs: List[Document], clear_persist_folder: bool = True
+    ):
         pass
 
     @abstractmethod
@@ -95,12 +95,12 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
         "changed_files": 0,
         "changed_chunks": 0,
         "deleted_files": 0,
-        "deleted_chunks": 0
-        
+        "deleted_chunks": 0,
     }
 
-
-    changed_or_new_df, changed_df, deleted_df = get_changed_or_new_files(new_hashes_df, existing_fn_hash_mappings)
+    changed_or_new_df, changed_df, deleted_df = get_changed_or_new_files(
+        new_hashes_df, existing_fn_hash_mappings
+    )
     logger.debug("===== Rescanned files ======")
     logger.debug(changed_or_new_df)
     logger.debug("===== Changed files ======")
@@ -108,62 +108,55 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
     logger.debug("===== Deleted files ======")
     logger.debug(deleted_df)
 
-
-    #print("Existing HASH FN MAPPINGS\n")
-    #print(existing_fn_hash_mappings)
-    #print("Existing HASH DOCID MAPPINGS\n")
-    #print(existing_docid_hash_mappings.info())
-
     if len(changed_or_new_df) == 0 and len(changed_df) == 0 and len(deleted_df) == 0:
-
         logger.info("The index is up to date. Exiting.")
         return stats
 
-        
-    splade = SparseEmbeddingsSplade(config = config)
+    splade = SparseEmbeddingsSplade(config=config)
     splade.load()
-    #print(splade._ids.shape)
-    #print(splade._embeddings.shape)
-    #print(splade._metadatas.shape)
 
     # Delete chunks belonging to changed documents that exist in both new and old index
     if len(changed_df) > 0:
-
         changed_doc_ids = existing_docid_hash_mappings.loc[
-        existing_docid_hash_mappings["filehash"].isin(changed_df["filehash"]), "docid"].tolist()
+            existing_docid_hash_mappings["filehash"].isin(changed_df["filehash"]),
+            "docid",
+        ].tolist()
 
-        logger.info("Removing chunks from vectorstore belonging to changed documents...")
-        vs.delete_by_id(ids = changed_doc_ids)
+        logger.info(
+            "Removing chunks from vectorstore belonging to changed documents..."
+        )
+        vs.delete_by_id(ids=changed_doc_ids)
         logger.info("Removing mappings belonging to changed documents...")
-        existing_fn_hash_mappings, existing_docid_hash_mappings = delete_mappings(existing_fn_hash_mappings, existing_docid_hash_mappings, changed_df)
+        existing_fn_hash_mappings, existing_docid_hash_mappings = delete_mappings(
+            existing_fn_hash_mappings, existing_docid_hash_mappings, changed_df
+        )
 
         # Delete splade embeddings
-        splade.delete_by_ids(delete_ids= changed_doc_ids)
+        splade.delete_by_ids(delete_ids=changed_doc_ids)
         stats["changed_files"] = len(changed_df)
         stats["changed_chunks"] = len(changed_doc_ids)
 
     # Delete chunks belonging to deleted documents that exist in only in old index
     if len(deleted_df) > 0:
-        logger.info("Removing chunks from vectorstore belonging to deleted documents...")
+        logger.info(
+            "Removing chunks from vectorstore belonging to deleted documents..."
+        )
         deleted_doc_ids = existing_docid_hash_mappings.loc[
-            existing_docid_hash_mappings["filehash"].isin(deleted_df["filehash"]), "docid"
+            existing_docid_hash_mappings["filehash"].isin(deleted_df["filehash"]),
+            "docid",
         ].tolist()
-        vs.delete_by_id(ids = deleted_doc_ids)
+        vs.delete_by_id(ids=deleted_doc_ids)
 
         logger.info("Removing mappings belonging to deleted documents...")
-        existing_fn_hash_mappings, existing_docid_hash_mappings = delete_mappings(existing_fn_hash_mappings, existing_docid_hash_mappings, deleted_df)
-        
+        existing_fn_hash_mappings, existing_docid_hash_mappings = delete_mappings(
+            existing_fn_hash_mappings, existing_docid_hash_mappings, deleted_df
+        )
+
         # Delete splade embeddings
-        splade.delete_by_ids(delete_ids= deleted_doc_ids)
+        splade.delete_by_ids(delete_ids=deleted_doc_ids)
         stats["deleted_files"] = len(deleted_df)
         stats["deleted_chunks"] = len(deleted_doc_ids)
 
-
-    #print(splade._ids.shape)
-    #print(splade._embeddings.shape)
-    #print(splade._metadatas.shape)
-
-    
     # Rescan new and changed documents and add them to vectorstore
     if len(changed_or_new_df) > 0:
         splitter = DocumentSplitter(config)
@@ -183,21 +176,13 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
         splade.add_embeddings(new_docs)
         stats["scanned_files"] = len(changed_or_new_df)
         stats["scanned_chunks"] = len(new_docs)
-    
+
     stats["updated_n_files"] = len(existing_fn_hash_mappings)
     # Save changed mappings
-    save_document_hashes(config, existing_fn_hash_mappings, existing_docid_hash_mappings)
+    save_document_hashes(
+        config, existing_fn_hash_mappings, existing_docid_hash_mappings
+    )
     return stats
-
-    
-    #print("Updated HASH FN MAPPINGS\n")
-    #print(existing_fn_hash_mappings)
-    #print("Updated HASH DOCID MAPPINGS\n")
-    #print(existing_docid_hash_mappings.info())
-
-
-
-
 
 
 def delete_mappings(
@@ -206,12 +191,18 @@ def delete_mappings(
     changed_df,
 ):
     # In the existing mappings, delete all rows belonging to changed filenames
-    mask_delete_fn_hash = existing_fn_hash_mappings.loc[:, "filename"].isin(changed_df.loc[:, "filename"])
+    mask_delete_fn_hash = existing_fn_hash_mappings.loc[:, "filename"].isin(
+        changed_df.loc[:, "filename"]
+    )
     updated_fn_hash_mappings = existing_fn_hash_mappings.loc[~mask_delete_fn_hash, :]
 
     # Update existings mappings with new fn mappings
-    mask_delete_docid_hash = existing_docid_hash_mappings.loc[:, "filehash"].isin(changed_df.loc[:, "filehash"])
-    updated_docid_hash_mappings = existing_docid_hash_mappings.loc[~mask_delete_docid_hash, :]
+    mask_delete_docid_hash = existing_docid_hash_mappings.loc[:, "filehash"].isin(
+        changed_df.loc[:, "filehash"]
+    )
+    updated_docid_hash_mappings = existing_docid_hash_mappings.loc[
+        ~mask_delete_docid_hash, :
+    ]
     return updated_fn_hash_mappings, updated_docid_hash_mappings
 
 
@@ -220,18 +211,45 @@ def add_mappings(
     new_fn_hash_mappings: pd.DataFrame,
     existing_docid_hash_mappings: pd.DataFrame,
     new_docid_hash_mappings: pd.DataFrame,
-):
-    # Update existings mappings with new fn mappings
-    updated_fn_hash_mappings = pd.concat([existing_fn_hash_mappings, new_fn_hash_mappings], axis=0)
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Adds new hash and docid mappings to the existing ones.
 
-    updated_docid_hash_mappings = pd.concat([existing_docid_hash_mappings, new_docid_hash_mappings], axis=0)
+    Returns:
+        Tuple[pd.DataFrame, pd.DataFrame]: updated filename to hash mapping df,
+            updated docid to hash mapping df
+    """
+
+    # Update existings mappings with new fn mappings
+    updated_fn_hash_mappings = pd.concat(
+        [existing_fn_hash_mappings, new_fn_hash_mappings], axis=0
+    )
+
+    updated_docid_hash_mappings = pd.concat(
+        [existing_docid_hash_mappings, new_docid_hash_mappings], axis=0
+    )
     return updated_fn_hash_mappings, updated_docid_hash_mappings
 
 
 def get_changed_or_new_files(
     new_hashes_df: pd.DataFrame, existing_hashes_df: pd.DataFrame
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    merged_df = new_hashes_df.merge(existing_hashes_df, on=["filehash", "filename"], how="outer", indicator=True)
+    """Calculates changes between new file hashes and existing file hashes
+
+    Args:
+        new_hashes_df (pd.DataFrame): Dataframe containing newly scanned file hashes
+        existing_hashes_df (pd.DataFrame): Dataframe containing existing file hashes
+
+
+    Returns:
+        Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: Dataframes containing:
+            changed or new files - these files will need to be (re)scanned.
+            changed_files - these files to be rescanned, and old docids to be deleted from the vector store
+            deleted - docids belonging to these files have to be deleted from the vector store.
+    """
+
+    merged_df = new_hashes_df.merge(
+        existing_hashes_df, on=["filehash", "filename"], how="outer", indicator=True
+    )
 
     # Rows with left_only indicators contain files that are either changed or new in the new scan
     # These files are to be re-scanned
@@ -241,7 +259,9 @@ def get_changed_or_new_files(
     changed = merged_df.loc[duplicated_filenames_mask, :]
 
     # Deleted files - mask is "right_only" (existed only in the previous df), but also not in the changed files
-    deleted_mask = (merged_df["_merge"] == "right_only") & (~merged_df['filename'].isin(changed['filename']))
+    deleted_mask = (merged_df["_merge"] == "right_only") & (
+        ~merged_df["filename"].isin(changed["filename"])
+    )
     deleted = merged_df.loc[deleted_mask, :]
 
     return changed_or_new, changed, deleted
@@ -275,9 +295,15 @@ def save_document_hashes(
     file_hashes_fn, docid_hashes_fn = get_hash_mapping_filenames(config)
 
     logger.info(f"Saving file hashes mappings to {file_hashes_fn}")
-    all_hash_filename_mappings.to_parquet(file_hashes_fn, compression="snappy", index=False)
-    logger.info(f"Distinct hashes generated: {len(all_hash_filename_mappings['filehash'].unique())}")
+    all_hash_filename_mappings.to_parquet(
+        file_hashes_fn, compression="snappy", index=False
+    )
+    logger.info(
+        f"Distinct hashes generated: {len(all_hash_filename_mappings['filehash'].unique())}"
+    )
 
     logger.info(f"Saving document id to hash mappings to {docid_hashes_fn}")
-    all_hash_docid_mappings.to_parquet(docid_hashes_fn, compression="snappy", index=False)
+    all_hash_docid_mappings.to_parquet(
+        docid_hashes_fn, compression="snappy", index=False
+    )
     logger.info(f"Hash to document id mappings: {len(all_hash_docid_mappings)}")

@@ -11,6 +11,7 @@ sample_data/md_index2/
 temp_data/
 *.npz
 *.db
+sample_templates/obsidian_conf_test.yaml
 
 # Distribution / packaging
 .Python
