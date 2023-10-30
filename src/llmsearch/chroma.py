@@ -16,6 +16,8 @@ class VectorStoreChroma(VectorStore):
         self._persist_folder = persist_folder
         self._config = config
         self._embeddings = get_embedding_model(config.embeddings.embedding_model)
+        self.batch_size = 200  # Limitation of Chromadb (2023/09 v0.4.8) - can add only 41666 documents at once
+
         self._retriever = None
 
     @property
@@ -28,7 +30,6 @@ class VectorStoreChroma(VectorStore):
         self,
         all_docs: List[Document],
         clear_persist_folder: bool = True,
-        batch_size=200,  # Limitation of Chromadb (2023/09 v0.4.8) - can add only 41666 documents at once
     ):
         if clear_persist_folder:
             pf = Path(self._persist_folder)
@@ -39,11 +40,11 @@ class VectorStoreChroma(VectorStore):
         logger.info("Generating and persisting the embeddings..")
 
         vectordb = None
-        for group in tqdm.tqdm(chunker(all_docs, size=batch_size), total = int(len(all_docs) / batch_size)):
+        for group in tqdm.tqdm(chunker(all_docs, size=self.batch_size), total=int(len(all_docs) / self.batch_size)):
             ids = [d.metadata["document_id"] for d in group]
             if vectordb is None:
                 vectordb = Chroma.from_documents(
-                    documents=group,
+                    documents=group,  # type: ignore
                     embedding=self._embeddings,
                     ids=ids,
                     persist_directory=self._persist_folder,  # type: ignore
@@ -53,7 +54,7 @@ class VectorStoreChroma(VectorStore):
                     texts=[doc.page_content for doc in group],
                     embedding=self._embeddings,
                     ids=ids,
-                    metadatas = [doc.metadata for doc in group],
+                    metadatas=[doc.metadata for doc in group],
                 )
         logger.info("Generated embeddings. Persisting...")
         if vectordb is not None:
@@ -62,6 +63,32 @@ class VectorStoreChroma(VectorStore):
     def _load_retriever(self, **kwargs):
         vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
         return vectordb.as_retriever(**kwargs)
+
+    def add_documents(self, docs: List[Document]):
+        """Adds new documents to existing vectordb
+
+        Args:
+            docs (List[Document]): List of documents
+        """
+
+        logger.info(f"Adding embeddings for {len(docs)} documents")
+        vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
+        for group in tqdm.tqdm(chunker(docs, size=self.batch_size), total=int(len(docs) / self.batch_size)):
+            ids = [d.metadata["document_id"] for d in group]
+            vectordb.add_texts(
+                texts=[doc.page_content for doc in group],
+                embedding=self._embeddings,
+                ids=ids,
+                metadatas=[doc.metadata for doc in group],
+            )
+        logger.info("Generated embeddings. Persisting...")
+        vectordb.persist()
+    
+    def delete_by_id(self, ids: List[str]):
+        logger.warning(f"Deleting {len(ids)} chunks.")
+        vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
+        vectordb.delete(ids = ids)
+        vectordb.persist()
 
     def get_documents_by_id(self, document_ids: List[str]) -> List[Document]:
         """Retrieves documents by ids
@@ -80,7 +107,6 @@ class VectorStoreChroma(VectorStore):
     def similarity_search_with_relevance_scores(
         self, query: str, k: int, filter: Optional[dict]
     ) -> List[Tuple[Document, float]]:
-
         # If there are multiple key-value pairs, combine using AND rule - the syntax is chromadb specific
         if isinstance(filter, dict) and len(filter) > 1:
             filter = {"$and": [{key: {"$eq": value}} for key, value in filter.items()]}
