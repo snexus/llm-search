@@ -48,6 +48,9 @@ class VectorStore(ABC):
     def add_documents(self, docs: List[Document]):
         pass
 
+class EmbeddingsHashNotExistError(Exception):
+    """Raised when embeddings can't be founrd"""
+
 
 def get_embedding_model(config: EmbeddingModel):
     """Loads an embedidng model
@@ -84,8 +87,11 @@ def create_embeddings(config: Config, vs: VectorStore):
 def update_embeddings(config: Config, vs: VectorStore) -> dict:
     splitter = DocumentSplitter(config)
     new_hashes_df = splitter.get_hashes()
-    file_hashes_fn, docid_hash_fn = get_hash_mapping_filenames(config)
-    existing_fn_hash_mappings = pd.read_parquet(path=file_hashes_fn)
+    try:
+        file_hashes_fn, docid_hash_fn = get_hash_mapping_filenames(config)
+        existing_fn_hash_mappings = pd.read_parquet(path=file_hashes_fn)
+    except FileNotFoundError:
+        raise EmbeddingsHashNotExistError("Hash file don't exist, please re-create the index.")
     existing_docid_hash_mappings = pd.read_parquet(path=docid_hash_fn)
     stats = {
         "original_n_files": len(existing_fn_hash_mappings),

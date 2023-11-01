@@ -14,8 +14,10 @@ from loguru import logger
 from streamlit import chat_message
 
 from llmsearch.config import Config
+from llmsearch.chroma import VectorStoreChroma
 from llmsearch.process import get_and_parse_response
-from llmsearch.utils import get_llm_bundle
+from llmsearch.utils import get_llm_bundle, set_cache_folder
+from llmsearch.embeddings import update_embeddings, EmbeddingsHashNotExistError
 
 st.set_page_config(page_title="LLMSearch", page_icon=":robot:", layout="wide")
 
@@ -38,6 +40,23 @@ def parse_cli_arguments():
 def hash_func(obj: Config) -> str:
     return str(obj.embeddings.embeddings_path)
 
+def udpate_index(config_file: str ):
+    with st.spinner("Updating index, please wait..."):
+        config = load_config(config_file)
+        set_cache_folder(str(config.cache_folder))
+
+        vs = VectorStoreChroma(
+            persist_folder=str(config.embeddings.embeddings_path),
+            config=config
+        )
+        try:
+            stats = update_embeddings(config, vs)
+        except EmbeddingsHashNotExistError:
+            st.error("Couldn't find hash files. Please re-create the index using current version of the app.")
+            return
+        else:
+            logger.info(stats)
+    st.success("Done updating")
 
 @st.cache_data
 def load_config(config_file):
@@ -137,11 +156,12 @@ if Path(args.cli_config_path).is_dir():
     logger.debug(f"CONFIG FILE: {config_file}")
 
     # Every form must have a submit button.
-    load_button = st.sidebar.button("Load", on_click=reload_model, args=(config_file,))
+    load_button = st.sidebar.button("Load", on_click=reload_model, args=(config_file,), type="primary")
 
     # Since in the event loop on_click will be called first, we need to re-enable the flag in case of multiple clicks
     if load_button:
         st.session_state["disable_load"] = False
+
 
 
 if st.session_state["llm_bundle"] is not None:
@@ -149,7 +169,7 @@ if st.session_state["llm_bundle"] is not None:
 
     config_file = st.session_state["llm_config"]["file"]
     config_file_name = config_file if isinstance(config_file, str) else config_file.name
-    st.sidebar.subheader("Parameters:")
+    st.sidebar.subheader("Loaded Parameters:")
     with st.sidebar.expander(config_file_name):
         st.json(config.json())
 
@@ -159,6 +179,7 @@ if st.session_state["llm_bundle"] is not None:
         f"**Document path**: {config.embeddings.document_settings[0].doc_path}"
     )
     st.sidebar.write(f"**Embedding path:** {config.embeddings.embeddings_path}")
+    update_embeddings_button = st.sidebar.button("Update embeddings", on_click=udpate_index, args=(config_file,), type="secondary")
     st.sidebar.write(
         f"**Max char size (semantic search):** {config.semantic_search.max_char_size}"
     )
