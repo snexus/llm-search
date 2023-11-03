@@ -41,7 +41,15 @@ def hash_func(obj: Config) -> str:
     return str(obj.embeddings.embeddings_path)
 
 def udpate_index(config_file: str ):
+    """Updates index on-fly
+
+    Args:
+        config_file (str): _description_
+    """
+
     with st.spinner("Updating index, please wait..."):
+        logger.debug("Unloading model...")
+        unload_model()
         config = load_config(config_file)
         set_cache_folder(str(config.cache_folder))
 
@@ -50,13 +58,25 @@ def udpate_index(config_file: str ):
             config=config
         )
         try:
+            logger.debug("Updating embeddings")
             stats = update_embeddings(config, vs)
         except EmbeddingsHashNotExistError:
             st.error("Couldn't find hash files. Please re-create the index using current version of the app.")
-            return
         else:
             logger.info(stats)
-    st.success("Done updating")
+        finally:
+            logger.debug("Cleaning memory and re-Loading model...")
+
+            vs.unload()
+
+            vs = None
+
+            gc.collect()
+            with torch.no_grad():
+                torch.cuda.empty_cache()
+
+            reload_model(config_file=config_file)
+    st.success("Done updating.")
 
 @st.cache_data
 def load_config(config_file):
