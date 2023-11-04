@@ -50,7 +50,7 @@ class DocumentSplitter:
                 paths = [
                     p
                     for p in list(docs_path.glob(f"**/*.{extension}"))
-                    if not self.is_exclusion(p, exclusion_paths)
+                    if (not self.is_exclusion(p, exclusion_paths)) and (p.is_file())
                 ]
                 hashes = [{"filename": path.name, "filehash": get_md5_hash(path)} for path in paths]
                 hash_filename_mappings.extend(hashes)

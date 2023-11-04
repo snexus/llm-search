@@ -1,3 +1,4 @@
+import gc
 import shutil
 import tqdm
 from pathlib import Path
@@ -19,12 +20,26 @@ class VectorStoreChroma(VectorStore):
         self.batch_size = 200  # Limitation of Chromadb (2023/09 v0.4.8) - can add only 41666 documents at once
 
         self._retriever = None
+        self._vectordb = None
 
     @property
     def retriever(self):
         if self._retriever is None:
             self._retriever = self._load_retriever()
         return self._retriever
+
+    @property
+    def vectordb(self):
+        if self._vectordb is None:
+            self._vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
+        return self._vectordb
+
+    def unload(self):
+        self._vectordb = None
+        self._retriever = None
+
+        gc.collect()
+
 
     def create_index_from_documents(
         self,
@@ -59,10 +74,11 @@ class VectorStoreChroma(VectorStore):
         logger.info("Generated embeddings. Persisting...")
         if vectordb is not None:
             vectordb.persist()
+        vectordb = None
 
     def _load_retriever(self, **kwargs):
-        vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
-        return vectordb.as_retriever(**kwargs)
+        # vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
+        return self.vectordb.as_retriever(**kwargs)
 
     def add_documents(self, docs: List[Document]):
         """Adds new documents to existing vectordb
@@ -72,23 +88,23 @@ class VectorStoreChroma(VectorStore):
         """
 
         logger.info(f"Adding embeddings for {len(docs)} documents")
-        vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
+        # vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
         for group in tqdm.tqdm(chunker(docs, size=self.batch_size), total=int(len(docs) / self.batch_size)):
             ids = [d.metadata["document_id"] for d in group]
-            vectordb.add_texts(
+            self.vectordb.add_texts(
                 texts=[doc.page_content for doc in group],
                 embedding=self._embeddings,
                 ids=ids,
                 metadatas=[doc.metadata for doc in group],
             )
         logger.info("Generated embeddings. Persisting...")
-        vectordb.persist()
+        self.vectordb.persist()
     
     def delete_by_id(self, ids: List[str]):
         logger.warning(f"Deleting {len(ids)} chunks.")
-        vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
-        vectordb.delete(ids = ids)
-        vectordb.persist()
+        # vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
+        self.vectordb.delete(ids = ids)
+        self.vectordb.persist()
 
     def get_documents_by_id(self, document_ids: List[str]) -> List[Document]:
         """Retrieves documents by ids
