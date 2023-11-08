@@ -95,7 +95,7 @@ class DocumentSplitter:
                     # Used when updating the index, we don't need to parse all files again
                     if restrict_filenames is not None:
                         logger.warning(f"Restrict filenames specificed. Scanning at most {len(restrict_filenames)} files.")
-                        paths = [p for p in paths if p.name in set(restrict_filenames)]
+                        paths = [p for p in paths if str(p) in set(restrict_filenames)]
 
                     splitter = self._splitter_conf[extension]
 
