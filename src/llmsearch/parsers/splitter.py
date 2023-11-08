@@ -52,7 +52,7 @@ class DocumentSplitter:
                     for p in list(docs_path.glob(f"**/*.{extension}"))
                     if (not self.is_exclusion(p, exclusion_paths)) and (p.is_file())
                 ]
-                hashes = [{"filename": path.name, "filehash": get_md5_hash(path)} for path in paths]
+                hashes = [{"filename": str(path), "filehash": get_md5_hash(path)} for path in paths]
                 hash_filename_mappings.extend(hashes)
         return pd.DataFrame(hash_filename_mappings)
 
@@ -174,7 +174,7 @@ class DocumentSplitter:
             )
 
             # docs_data = splitter_func(text, max_size)
-            filename = path.name
+            filename = str(path)
             additional_kwargs.update({"filename": filename})
             docs_data = splitter_func(path, max_size, **additional_kwargs)
             file_hash = get_md5_hash(path)
