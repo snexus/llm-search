@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -42,6 +42,11 @@ class DocumentExtension(str, Enum):
     epub = "epub"
     docx = "docx"
     doc = "doc"
+
+    
+class RerankerModel(Enum):
+    MARCO_RERANKER = "marco" 
+    BGE_RERANKER = "bge"
 
 
 class EmbeddingModelType(str, Enum):
@@ -112,17 +117,34 @@ class HydeSettings(BaseModel):
     enabled: bool = False
     hyde_prompt: str = "Write a short passage to answer the question: {question}"
 
+class RerankerSettings(BaseModel):
+    enabled: bool = True
+    model: RerankerModel = RerankerModel.BGE_RERANKER 
+
+class MultiQuerySettings(BaseModel):
+    enabled: bool = False
+    multiquery_prompt: str = """You are a helpful assistant that generates multiple questions based on the source question.
+    Generate {n_versions} other questions related to: ```{question}```
+
+    Generated questions should be separated by newlines, but shouldn't be enumerated.
+    """
+    # multiquery_prompt: str =  """You are an AI language model assistant. Your task is 
+    # to generate {n_versions} different versions of the given user 
+    # question. The questions can be generated using domain specific language to clarify the intent. Provide these alternative 
+    # questions separated by newlines. Don't enumerate the alternative questions. Original question: {question}"""   
+    n_versions: int = 3
 
 class SemanticSearchConfig(BaseModel):
     search_type: Literal["mmr", "similarity"]
     replace_output_path: List[ReplaceOutputPath] = Field(default_factory=list)
     obsidian_advanced_uri: Optional[ObsidianAdvancedURI] = None
     append_suffix: Optional[AppendSuffix] = None
-    reranker: bool = True
+    reranker: RerankerSettings = RerankerSettings()
     max_k: int = 15
     max_char_size: int = 2048
     query_prefix: str = ""
     hyde: HydeSettings = HydeSettings()
+    multiquery: MultiQuerySettings = MultiQuerySettings()
 
     class Config:
         arbitrary_types_allowed = True
@@ -165,6 +187,7 @@ class ResponseModel(BaseModel):
     response: str
     average_score: float
     semantic_search: List[SemanticSearchOutput] = Field(default_factory=list)
+    hyde_response: str = ""
 
 class Config(BaseModel):
     cache_folder: Path

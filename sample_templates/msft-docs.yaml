@@ -20,17 +20,17 @@ embeddings:
     passage_prefix: "passage: "
     label: "databricks"
 
-  - doc_path: /storage/llm/microsoft-docs/azure-devops-docs-main
-    scan_extensions: 
-      - md
-      - pdf
-    additional_parser_settings:
-      md: 
-        skip_first: False
-        merge_sections: False
-        remove_images: True
-    passage_prefix: "passage: "
-    label: "azure-devops"
+  # - doc_path: /storage/llm/microsoft-docs/azure-devops-docs-main
+  #   scan_extensions: 
+  #     - md
+  #     - pdf
+  #   additional_parser_settings:
+  #     md: 
+  #       skip_first: False
+  #       merge_sections: False
+  #       remove_images: True
+  #   passage_prefix: "passage: "
+  #   label: "azure-devops"
 
     
 
@@ -38,12 +38,13 @@ semantic_search:
   search_type: similarity # mmr # similarity #
   replace_output_path:
     - substring_search: "/storage"
-      substring_replace: "file:///storage"
+      substring_replace: "okular:///storage"
 
   append_suffix:
     append_template: "#page={page}"
 
   max_char_size: 4096
+  max_k: 15
   query_prefix: "query: "
   hyde:
     enabled: True
