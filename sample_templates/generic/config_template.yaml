@@ -43,8 +43,17 @@ semantic_search:
   # Reduce if out of CUDA memory.
   max_char_size: 4096 
   query_prefix: "query: " # Often queries have to be prefixed for embedding models, such as e5
+
   hyde:
+    enabled: False
+  
+  multiquery: 
+    enabled: False
+  
+  reranker:
     enabled: True
+    model: "bge" # for `BAAI/bge-reranker-base` or "marco" for cross-encoder/ms-marco-MiniLM-L-6-v2
+  
 
 persist_response_db_path:  "/path/to/responses.db" # optional sqlite database filename. Allows to save responses offlien to sqlite, for future analysis.
 

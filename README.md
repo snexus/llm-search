@@ -23,9 +23,14 @@ The purpose of this package is to offer a convenient question-answering system w
 * Generates sparse embeddings using SPLADE (https://github.com/naver/splade) to enable hybrid search (sparse + dense).
 
 * Supports the "Retrieve and Re-rank" strategy for semantic search, see - https://www.sbert.net/examples/applications/retrieve_rerank/README.html.
+    * Besides the originally `ms-marco-MiniLM` cross-encoder, more modern `bge-reranker` is supported.
 
 * Supports HyDE (Hypothetical Document Embeddings) - https://arxiv.org/pdf/2212.10496.pdf
-    * WARNING: Enabling HyDE can significantly alter the quality of the results. Please make sure to read the paper before enabling.
+    * WARNING: Enabling HyDE (via config OR webapp) can significantly alter the quality of the results. Please make sure to read the paper before enabling.
+    * From my own experiments, enabling HyDE significantly boosts quality of the output on a topics where user can't formulate the quesiton using domain specific language of the topic - e.g. when learning new topics.
+
+* Support for multi-querying, inspired by `RAG Fusion` - https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1
+    * When multi-querying is turned on (either config or webapp), the original query will be replaced by 3 variants of the same query, allowing to bridge the gap in the terminology and "offer different angles or perspectives" according to the article.
 
 * Allows interaction with embedded documents, supporting the following models and methods (including locally hosted):
     * OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).
