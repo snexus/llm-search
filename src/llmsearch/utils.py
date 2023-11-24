@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from langchain.chains.base import Chain
 from langchain.chains.question_answering import load_qa_chain
@@ -8,9 +8,9 @@ from loguru import logger
 
 from llmsearch.chroma import VectorStoreChroma
 from llmsearch.splade import SparseEmbeddingsSplade
-from llmsearch.config import Config
+from llmsearch.config import Config, RerankerModel
 from llmsearch.models.utils import get_llm
-from llmsearch.ranking import Reranker
+from llmsearch.ranking import BGEReranker, MarcoReranker
 from llmsearch.embeddings import VectorStore
 from llmsearch.database.config import DBSettings, get_local_session, Base
 from langchain.chains import LLMChain
@@ -23,12 +23,14 @@ CHAIN_TYPE = "stuff"
 class LLMBundle:
     chain: Chain
     store: VectorStore
-    reranker: Optional[Reranker]
+    reranker: Optional[Union[BGEReranker, MarcoReranker]]
     sparse_search: SparseEmbeddingsSplade
     chunk_sizes: List[int]
     response_persist_db_settings: Optional[DBSettings] = None
     hyde_chain: Optional[LLMChain] = None
     hyde_enabled: bool = False
+    multiquery_chain: Optional[LLMChain] = None
+    multiquery_enabled: bool = False
 
 
 def set_cache_folder(cache_folder_root: str):
@@ -66,7 +68,15 @@ def get_llm_bundle(config: Config) -> LLMBundle:
     store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path), config=config)
     store._load_retriever()
 
-    reranker = Reranker() if config.semantic_search.reranker else None
+    reranker = None
+    if config.semantic_search.reranker.enabled:
+        if config.semantic_search.reranker.model ==  RerankerModel.BGE_RERANKER:
+            reranker = BGEReranker()
+        elif  config.semantic_search.reranker.model ==  RerankerModel.MARCO_RERANKER:
+            reranker = MarcoReranker()
+        else:
+            raise TypeError("Invalid reranker type: {}", config.semantic_search.reranker.model)
+            
     chunk_sizes = config.embeddings.chunk_sizes
 
     splade = SparseEmbeddingsSplade(config=config)
@@ -80,6 +90,7 @@ def get_llm_bundle(config: Config) -> LLMBundle:
         db_settings = None
 
     hyde_chain = get_hyde_chain(config, llm.model)
+    multiquery_chain = get_multiquery_chain(config, llm.model)
 
     return LLMBundle(
         chain=chain,
@@ -90,6 +101,8 @@ def get_llm_bundle(config: Config) -> LLMBundle:
         response_persist_db_settings=db_settings,
         hyde_chain=hyde_chain,
         hyde_enabled=config.semantic_search.hyde.enabled,
+        multiquery_chain=multiquery_chain,
+        multiquery_enabled=config.semantic_search.multiquery.enabled,
     )
 
 
@@ -98,4 +111,11 @@ def get_hyde_chain(config, llm_model) -> LLMChain:
     return LLMChain(
         llm=llm_model,
         prompt=PromptTemplate(template=config.semantic_search.hyde.hyde_prompt, input_variables=["question"]),
+    )
+
+def get_multiquery_chain(config, llm_model) -> LLMChain:
+    logger.info("Creating MultiQUery chain...")
+    return LLMChain(
+        llm=llm_model,
+        prompt=PromptTemplate(template=config.semantic_search.multiquery.multiquery_prompt, input_variables=["question", "n_versions"]),
     )

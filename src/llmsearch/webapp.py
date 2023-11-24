@@ -100,6 +100,7 @@ def unload_model():
         st.session_state["llm_bundle"].chain = None
         st.session_state["llm_bundle"].reranker = None
         st.session_state["llm_bundle"].hyde_chain = None
+        st.session_state["llm_bundle"].multiquery_chain = None
 
     st.cache_data.clear()
     st.cache_resource.clear()
@@ -114,7 +115,7 @@ def unload_model():
 
 @st.cache_data
 def generate_response(
-    question: str, use_hyde: bool, _config: Config, _bundle, label_filter: str = ""
+    question: str, use_hyde: bool, use_multiquery, _config: Config, _bundle, label_filter: str = ""
 ):
     # _config and _bundle are under scored so paratemeters aren't hashed
 
@@ -216,13 +217,19 @@ if st.session_state["llm_bundle"] is not None:
         label="Use HyDE (cost: 2 api calls)",
         value=st.session_state["llm_bundle"].hyde_enabled,
     )
+    is_multiquery = st.sidebar.checkbox(
+        label="Use MultiQuery (cost: 2 api calls)",
+        value=st.session_state["llm_bundle"].multiquery_enabled,
+    )
 
     if text:
         # Dynamically switch hyde
         st.session_state["llm_bundle"].hyde_enabled = is_hyde
+        st.session_state["llm_bundle"].multiquery_enabled = is_multiquery
         output = generate_response(
             question=text,
             use_hyde=st.session_state["llm_bundle"].hyde_enabled,
+            use_multiquery=st.session_state["llm_bundle"].multiquery_enabled,
             _bundle=st.session_state["llm_bundle"],
             _config=config,
             label_filter=label_filter,
@@ -267,7 +274,7 @@ if st.session_state["llm_bundle"] is not None:
                 st.text(f"\n\n{source.chunk_text}")
         if st.session_state["llm_bundle"].hyde_enabled:
             with st.expander(label=":octagonal_sign: **HyDE Reponse**", expanded=False):
-                st.write(output.question)
+                st.write(output.hyde_response)
 
         with chat_message("assistant"):
             st.write(f"**Search results quality score: {output.average_score:.2f}**\n")

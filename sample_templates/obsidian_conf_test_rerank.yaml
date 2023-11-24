@@ -55,7 +55,9 @@ semantic_search:
   max_char_size: 4096
   query_prefix: "query: "
   multiquery:
-    enabled: False
+    enabled: True
+  reranker:
+    model: "marco"
 
 persist_response_db_path: responses_test.db
 

@@ -1,4 +1,5 @@
 import string
+from typing import List
 
 from loguru import logger
 from llmsearch.config import (
@@ -28,18 +29,28 @@ def get_and_parse_response(
     """
 
     original_query = query
+    
+    queries = []
+    hyde_response = ""
+    # Add HYDE queries, if required
     if llm_bundle.hyde_enabled:
-        query = get_hyde_response(llm_bundle, query)
+        hyde_response = get_hyde_response(llm_bundle, query)
+        queries+= [hyde_response]
+    
+    elif llm_bundle.multiquery_enabled:
+        queries+= get_multiquery_response(llm_bundle, query, config.semantic_search.multiquery.n_versions)
+    else:
+        queries = [query]
 
     semantic_search_config = config.semantic_search
-    most_relevant_docs, score = get_relevant_documents(query, llm_bundle, semantic_search_config, label=label)
+    most_relevant_docs, score = get_relevant_documents(original_query, queries, llm_bundle, semantic_search_config, label=label)
 
     res = llm_bundle.chain(
         {"input_documents": most_relevant_docs, "question": original_query},
         return_only_outputs=False,
     )
 
-    out = ResponseModel(response=res["output_text"], question=query, average_score=score)
+    out = ResponseModel(response=res["output_text"], question=query, average_score=score, hyde_response=hyde_response)
     for doc in res["input_documents"]:
         doc_name = doc.metadata["source"]
 
@@ -136,3 +147,15 @@ def get_hyde_response(llm_bundle: LLMBundle, query: str) -> str:
     res = llm_bundle.hyde_chain.run(query)
     logger.info(f"HYDE: got response: {res}")
     return res
+
+
+def get_multiquery_response(llm_bundle: LLMBundle, query: str, n_versions: int) -> List[str]:
+    if llm_bundle.multiquery_chain is None:
+        raise TypeError("MultiQuery chain is not initialised. exiting.")
+    res = llm_bundle.multiquery_chain.run(question = query, n_versions = n_versions)
+
+    logger.info(f"MultiQuery: got response: {res}")
+    queries = [q.strip() for q in res.strip().split("\n") if q.strip()]
+    if len(queries) != n_versions:
+        raise ValueError("Number of versions in multi-queries response isn't equal {}".format(n_versions))
+    return queries

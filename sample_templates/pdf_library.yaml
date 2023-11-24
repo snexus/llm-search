@@ -26,8 +26,7 @@ semantic_search:
   append_suffix:
     append_template: "#page={page}"
 
-  max_k: 20
-  reranker: True
+  max_k: 15
 
   max_char_size: 4096
   query_prefix: "query: "
