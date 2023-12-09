@@ -195,7 +195,15 @@ class Config(BaseModel):
     semantic_search: SemanticSearchConfig
     llm: LLMConfig
     persist_response_db_path: Optional[str] = None
-    
+
+    def check_embeddings_exist(self) -> bool:
+        """Checks if embedings exist in the specified folder"""
+
+        p_splade = Path(self.embeddings.embeddings_path) / "splade" / "splade_embeddings.npz"
+        p_embeddings = Path(self.embeddings.embeddings_path)
+        all_parquets = list(p_embeddings.glob("*.parquet"))
+        return p_splade.exists() and len(all_parquets) > 0
+
         
 
 

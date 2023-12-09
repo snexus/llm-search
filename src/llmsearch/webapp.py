@@ -17,7 +17,7 @@ from llmsearch.config import Config
 from llmsearch.chroma import VectorStoreChroma
 from llmsearch.process import get_and_parse_response
 from llmsearch.utils import get_llm_bundle, set_cache_folder
-from llmsearch.embeddings import update_embeddings, EmbeddingsHashNotExistError
+from llmsearch.embeddings import update_embeddings, create_embeddings, EmbeddingsHashNotExistError
 
 st.set_page_config(page_title="LLMSearch", page_icon=":robot:", layout="wide")
 
@@ -39,6 +39,26 @@ def parse_cli_arguments():
 
 def hash_func(obj: Config) -> str:
     return str(obj.embeddings.embeddings_path)
+
+def generate_index(config: Config):
+    with st.spinner("Creading index, please wait..."):
+        logger.debug("Unloading existing models...")
+        unload_model()
+        set_cache_folder(str(config.cache_folder))
+
+        vs = VectorStoreChroma(
+            persist_folder=str(config.embeddings.embeddings_path),
+            config=config
+        )
+        create_embeddings(config, vs)
+        logger.debug("Cleaning memory and re-Loading model...")
+        vs.unload()
+        vs = None
+        gc.collect()
+        with torch.no_grad():
+            torch.cuda.empty_cache()
+
+    st.success("Done generating index.")
 
 def udpate_index(config_file: str ):
     """Updates index on-fly
@@ -145,8 +165,12 @@ def reload_model(config_file: str):
     logger.debug(f"Reload model got CONFIG FILE NAME: {config_file}")
     with st.spinner("Loading configuration"):
         config = load_config(config_file)
-        st.session_state["llm_bundle"] = get_llm_bundle(config)
-        st.session_state["llm_config"] = {"config": config, "file": config_file}
+        if config.check_embeddings_exist():
+            st.session_state["llm_bundle"] = get_llm_bundle(config)
+            st.session_state["llm_config"] = {"config": config, "file": config_file}
+        else:
+            st.error("Couldn't find embeddings in {}. Please generate first.".format(config.embeddings.embeddings_path))
+            update_embeddings_button = st.button("Generate", on_click=generate_index, args=(config,), type="secondary")
 
     st.session_state["disable_load"] = False
 

@@ -1,6 +1,7 @@
 cache_folder: /path/to/cache/folder ## specify a cache folder for embeddings models, huggingface and sentence transformers
 
 embeddings:
+  # ** Attention ** - `embedding_path` should be uniquer per configuration file.
   embeddings_path: /path/to/embedding/folder ## specify a folder where embeddings will be saved.
   
   embedding_model: # Optional embedding model specification, default is e5-large-v2. Swap to a smaller model if out of CUDA memory
@@ -14,6 +15,9 @@ embeddings:
     - 1024
 
   document_settings:
+
+  # Can specify multiple documents collections and filter by label
+
   - doc_path: /path/to/documents ## specify the docs folder
     exclude_paths: # Optional paths to exclude
       - /path/to/documents/subfolder1
