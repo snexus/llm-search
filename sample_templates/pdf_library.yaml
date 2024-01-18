@@ -12,7 +12,7 @@ embeddings:
   document_settings:
   - doc_path: /storage/llm/pdf_docs
     scan_extensions: 
-      # - epub
+      - epub
       - md
       - pdf
     passage_prefix: "passage: "

@@ -33,6 +33,13 @@ embeddings:
     
     passage_prefix: "passage: " # Often, specific prefix needs to be included in the source text, for embedding models to work properly
     label: "documment-collection-1" # Add a label to the current collection
+  
+  - doc_path: /another/path/to/documents ## specify the docs folder
+    scan_extensions: # specifies files extensions to scan recursively in `doc_path`. 
+      - md
+    
+    passage_prefix: "passage: " # Often, specific prefix needs to be included in the source text, for embedding models to work properly
+    label: "documment-collection-2" # Add a label to the current collection
 
 semantic_search:
   search_type: similarity # Currently, only similarity is supported

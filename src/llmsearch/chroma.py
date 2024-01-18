@@ -4,7 +4,7 @@ import tqdm
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from loguru import logger
 
 from llmsearch.config import Config
