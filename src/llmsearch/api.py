@@ -25,7 +25,9 @@ def read_config() -> Config:
     config_file = os.environ["FASTAPI_LLM_CONFIG"]
 
     if not config_file:
-        raise SystemError("Set 'FASTAPI_LLM_CONFG' environment variable to point to a model config file.")
+        raise SystemError(
+            "Set 'FASTAPI_LLM_CONFG' environment variable to point to a model config file."
+        )
 
     logger.info(f"Loading configuration from {config_file}")
     config = get_config(config_file)
@@ -38,7 +40,9 @@ def get_db() -> Session:
     """Creates a database session and makes sure to close it properly."""
 
     if config.persist_response_db_path is None:
-        raise Exception("Specify database filename in `persist_response_db_path` setting in config.")
+        raise Exception(
+            "Specify database filename in `persist_response_db_path` setting in config."
+        )
     db_settings = get_local_session(db_path=config.persist_response_db_path)
 
     db = db_settings.SessionLocal()
@@ -83,18 +87,25 @@ async def llmsearch(
 ) -> Any:  # switch to async to block execution
     if label and (label not in config.embeddings.labels):
         raise HTTPException(
-            status_code=404, detail=f"Label '{label}' doesn't exist. Use GET /labels to get a list of labels."
+            status_code=404,
+            detail=f"Label '{label}' doesn't exist. Use GET /labels to get a list of labels.",
         )
 
     output = get_and_parse_response(
-        query=question, llm_bundle=llm_bundle, config=config, persist_db_session=db, label=label
+        query=question,
+        llm_bundle=llm_bundle,
+        config=config,
+        persist_db_session=db,
+        label=label,
     )
     return output.dict()
 
 
 @app.get("/semantic")
 async def semanticsearch(question: str):
-    docs = get_relevant_documents(query=question, llm_bundle=llm_bundle, config=config.semantic_search, label="")
+    docs = get_relevant_documents(
+        query=question, llm_bundle=llm_bundle, config=config.semantic_search, label=""
+    )
     return {"sources": docs}
 
 

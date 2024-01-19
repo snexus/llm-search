@@ -4,8 +4,8 @@ from typing import Optional, Union
 
 
 class LlamaModelConfig(BaseModel):
-    model_config = ConfigDict() 
-    model_config['protected_namespaces'] = ()
+    model_config = ConfigDict()
+    model_config["protected_namespaces"] = ()
 
     model_path: Union[Path, str]
     prompt_template: str
@@ -14,15 +14,16 @@ class LlamaModelConfig(BaseModel):
 
 
 class OpenAIModelConfig(BaseModel):
-    model_config = ConfigDict() 
-    model_config['protected_namespaces'] = ()
+    model_config = ConfigDict()
+    model_config["protected_namespaces"] = ()
 
     prompt_template: str
     model_kwargs: dict = {}
 
+
 class AzureOpenAIModelConfig(BaseModel):
-    model_config = ConfigDict() 
-    model_config['protected_namespaces'] = ()
+    model_config = ConfigDict()
+    model_config["protected_namespaces"] = ()
 
     prompt_template: str
     deployment_name: str
@@ -31,6 +32,7 @@ class AzureOpenAIModelConfig(BaseModel):
     openai_api_type: str = "azure"
     openai_api_version: str = "2023-05-15"
     openai_api_base: str
+
 
 # class AutoGPTQModelConfig(BaseModel):
 #     model_folder: Union[str, Path]
@@ -44,8 +46,8 @@ class AzureOpenAIModelConfig(BaseModel):
 
 
 class HuggingFaceModelConfig(BaseModel):
-    model_config = ConfigDict() 
-    model_config['protected_namespaces'] = ()
+    model_config = ConfigDict()
+    model_config["protected_namespaces"] = ()
 
     cache_folder: Optional[Union[Path, str]] = None  # will be copied from
     tokenizer_name: Optional[str] = None

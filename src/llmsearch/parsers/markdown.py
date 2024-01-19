@@ -524,4 +524,3 @@ if __name__ == "__main__":
 
     for chunk in chunks:
         print(len(chunk["text"]))
-

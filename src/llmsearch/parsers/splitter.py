@@ -16,6 +16,7 @@ from llmsearch.parsers.unstructured import UnstructuredSplitter, UnstructuredSpl
 
 HASH_BLOCKSIZE = 65536
 
+
 class DocumentSplitter:
     def __init__(self, config: Config) -> None:
         self._splitter_conf = {
@@ -33,11 +34,9 @@ class DocumentSplitter:
         self.document_path_settings = config.embeddings.document_settings
         self.chunk_sizes = config.embeddings.chunk_sizes
 
-    
     def get_hashes(self) -> pd.DataFrame:
         hash_filename_mappings = []
-        logger.info(f"Scanning hashes of the existing files.")
-        
+        logger.info("Scanning hashes of the existing files.")
 
         for setting in self.document_path_settings:
             docs_path = Path(setting.doc_path)
@@ -46,20 +45,22 @@ class DocumentSplitter:
             for scan_extension in setting.scan_extensions:
                 extension = scan_extension.value
 
-                    # Create a list of document paths to process. Filter out paths in the exclusion list
+                # Create a list of document paths to process. Filter out paths in the exclusion list
                 paths = [
                     p
                     for p in list(docs_path.glob(f"**/*.{extension}"))
                     if (not self.is_exclusion(p, exclusion_paths)) and (p.is_file())
                 ]
-                hashes = [{"filename": str(path), "filehash": get_md5_hash(path)} for path in paths]
+                hashes = [
+                    {"filename": str(path), "filehash": get_md5_hash(path)}
+                    for path in paths
+                ]
                 hash_filename_mappings.extend(hashes)
         return pd.DataFrame(hash_filename_mappings)
 
-
-        
-    
-    def split(self, restrict_filenames: Optional[List[str]] = None) -> Tuple[List[Document], pd.DataFrame, pd.DataFrame]:
+    def split(
+        self, restrict_filenames: Optional[List[str]] = None
+    ) -> Tuple[List[Document], pd.DataFrame, pd.DataFrame]:
         """Splits documents based on document path settings
 
         Returns:
@@ -69,10 +70,9 @@ class DocumentSplitter:
 
         # Maps between file name and it's hash
         hash_filename_mappings = []
-        
+
         # Mapping between hash and document ids
         hash_docid_mappings = []
-        
 
         for setting in self.document_path_settings:
             passage_prefix = setting.passage_prefix
@@ -94,7 +94,9 @@ class DocumentSplitter:
 
                     # Used when updating the index, we don't need to parse all files again
                     if restrict_filenames is not None:
-                        logger.warning(f"Restrict filenames specificed. Scanning at most {len(restrict_filenames)} files.")
+                        logger.warning(
+                            f"Restrict filenames specificed. Scanning at most {len(restrict_filenames)} files."
+                        )
                         paths = [p for p in paths if str(p) in set(restrict_filenames)]
 
                     splitter = self._splitter_conf[extension]
@@ -104,12 +106,16 @@ class DocumentSplitter:
                         extension, dict()
                     )
 
-                    docs, hf_mappings, hd_mappings = self._get_documents_from_custom_splitter(
+                    (
+                        docs,
+                        hf_mappings,
+                        hd_mappings,
+                    ) = self._get_documents_from_custom_splitter(
                         document_paths=paths,
                         splitter_func=splitter,
                         max_size=chunk_size,
                         passage_prefix=passage_prefix,
-                        label = documents_label,
+                        label=documents_label,
                         **additional_parser_settings,
                     )
 
@@ -161,7 +167,7 @@ class DocumentSplitter:
 
         # Maps between file name and it's hash
         hash_filename_mappings = []
-        
+
         # Mapping between hash and document ids
         hash_docid_mappings = []
 
@@ -198,29 +204,26 @@ class DocumentSplitter:
                 for d in docs_data
             ]
             all_docs.extend(docs)
-            
+
             # Add hash to filename mapping and hash to doc ids mapping
-            hash_filename_mappings.append(
-                dict(filename = filename, filehash = file_hash)
+            hash_filename_mappings.append(dict(filename=filename, filehash=file_hash))
+
+            df_hash_docid = (
+                pd.DataFrame()
+                .assign(docid=[d.metadata["document_id"] for d in docs])
+                .assign(filehash=file_hash)
             )
 
-            df_hash_docid = (pd.DataFrame()
-                             .assign(docid = [d.metadata['document_id'] for d in docs])
-                             .assign(filehash = file_hash)
-            )
-        
-            hash_docid_mappings.append(
-                df_hash_docid
-            )
-
+            hash_docid_mappings.append(df_hash_docid)
 
         logger.info(f"Got {len(all_docs)} nodes.")
         return all_docs, hash_filename_mappings, hash_docid_mappings
 
+
 def get_md5_hash(file_path: Path) -> str:
     hasher = hashlib.md5()
 
-    with open(file_path, 'rb') as file:
+    with open(file_path, "rb") as file:
         buf = file.read(HASH_BLOCKSIZE)
         while buf:
             hasher.update(buf)

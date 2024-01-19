@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union, Literal
 
@@ -6,13 +6,14 @@ import yaml
 from loguru import logger
 from pydantic import BaseModel, DirectoryPath, Field, validator, ConfigDict
 from uuid import UUID, uuid4
-#from pydantic.typing import Literal  # type: ignore
+
+# from pydantic.typing import Literal  # type: ignore
 
 from llmsearch.models.config import (
     HuggingFaceModelConfig,
     LlamaModelConfig,
     OpenAIModelConfig,
-    AzureOpenAIModelConfig
+    AzureOpenAIModelConfig,
 )
 
 models_config = {
@@ -20,7 +21,7 @@ models_config = {
     "openai": OpenAIModelConfig,
     # "auto-gptq": AutoGPTQModelConfig,
     "huggingface": HuggingFaceModelConfig,
-    "azureopenai": AzureOpenAIModelConfig 
+    "azureopenai": AzureOpenAIModelConfig,
 }
 
 
@@ -43,9 +44,9 @@ class DocumentExtension(str, Enum):
     docx = "docx"
     doc = "doc"
 
-    
+
 class RerankerModel(Enum):
-    MARCO_RERANKER = "marco" 
+    MARCO_RERANKER = "marco"
     BGE_RERANKER = "bge"
 
 
@@ -56,9 +57,9 @@ class EmbeddingModelType(str, Enum):
 
 
 class EmbeddingModel(BaseModel):
-    model_config = ConfigDict() 
-    model_config['protected_namespaces'] = ()
-    
+    model_config = ConfigDict()
+    model_config["protected_namespaces"] = ()
+
     type: EmbeddingModelType
     model_name: str
     additional_kwargs: dict = Field(default_factory=dict)
@@ -70,7 +71,7 @@ class DocumentPathSettings(BaseModel):
     scan_extensions: List[DocumentExtension]
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
     passage_prefix: str = ""
-    label: str = "" # Optional label, will be included in the metadata
+    label: str = ""  # Optional label, will be included in the metadata
 
     @validator("additional_parser_settings")
     def validate_extension(cls, value):
@@ -87,7 +88,7 @@ class EmbedddingsSpladeConfig(BaseModel):
 
 
 class EmbeddingsConfig(BaseModel):
-    model_config = ConfigDict(extra = "forbid") 
+    model_config = ConfigDict(extra="forbid")
 
     embedding_model: EmbeddingModel = EmbeddingModel(
         type=EmbeddingModelType.instruct, model_name="hkunlp/instructor-large"
@@ -96,12 +97,11 @@ class EmbeddingsConfig(BaseModel):
     document_settings: List[DocumentPathSettings]
     chunk_sizes: List[int] = [1024]
     splade_config: EmbedddingsSpladeConfig = EmbedddingsSpladeConfig(n_batch=5)
-    
+
     @property
     def labels(self) -> List[str]:
         """Returns list of labels in document settings"""
         return [setting.label for setting in self.document_settings if setting.label]
-
 
 
 class ObsidianAdvancedURI(BaseModel):
@@ -116,13 +116,16 @@ class ReplaceOutputPath(BaseModel):
     substring_search: str
     substring_replace: str
 
+
 class HydeSettings(BaseModel):
     enabled: bool = False
     hyde_prompt: str = "Write a short passage to answer the question: {question}"
 
+
 class RerankerSettings(BaseModel):
     enabled: bool = True
-    model: RerankerModel = RerankerModel.BGE_RERANKER 
+    model: RerankerModel = RerankerModel.BGE_RERANKER
+
 
 class MultiQuerySettings(BaseModel):
     enabled: bool = False
@@ -131,14 +134,15 @@ class MultiQuerySettings(BaseModel):
 
     Generated questions should be separated by newlines, but shouldn't be enumerated.
     """
-    # multiquery_prompt: str =  """You are an AI language model assistant. Your task is 
-    # to generate {n_versions} different versions of the given user 
-    # question. The questions can be generated using domain specific language to clarify the intent. Provide these alternative 
-    # questions separated by newlines. Don't enumerate the alternative questions. Original question: {question}"""   
+    # multiquery_prompt: str =  """You are an AI language model assistant. Your task is
+    # to generate {n_versions} different versions of the given user
+    # question. The questions can be generated using domain specific language to clarify the intent. Provide these alternative
+    # questions separated by newlines. Don't enumerate the alternative questions. Original question: {question}"""
     n_versions: int = 3
 
+
 class SemanticSearchConfig(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed = True, extra = "forbid") 
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra="forbid")
 
     search_type: Literal["mmr", "similarity"]
     replace_output_path: List[ReplaceOutputPath] = Field(default_factory=list)
@@ -153,8 +157,8 @@ class SemanticSearchConfig(BaseModel):
 
 
 class LLMConfig(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed = True, extra = "forbid") 
-    model_config['protected_namespaces'] = ()
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra="forbid")
+    model_config["protected_namespaces"] = ()
 
     type: str
     params: dict
@@ -189,6 +193,7 @@ class ResponseModel(BaseModel):
     semantic_search: List[SemanticSearchOutput] = Field(default_factory=list)
     hyde_response: str = ""
 
+
 class Config(BaseModel):
     cache_folder: Path
     embeddings: EmbeddingsConfig
@@ -199,14 +204,12 @@ class Config(BaseModel):
     def check_embeddings_exist(self) -> bool:
         """Checks if embedings exist in the specified folder"""
 
-        p_splade = Path(self.embeddings.embeddings_path) / "splade" / "splade_embeddings.npz"
+        p_splade = (
+            Path(self.embeddings.embeddings_path) / "splade" / "splade_embeddings.npz"
+        )
         p_embeddings = Path(self.embeddings.embeddings_path)
         all_parquets = list(p_embeddings.glob("*.parquet"))
         return p_splade.exists() and len(all_parquets) > 0
-
-        
-
-
 
 
 def get_config(path: Union[str, Path]) -> Config:

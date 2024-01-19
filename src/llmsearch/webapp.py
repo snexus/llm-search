@@ -17,7 +17,11 @@ from llmsearch.config import Config
 from llmsearch.chroma import VectorStoreChroma
 from llmsearch.process import get_and_parse_response
 from llmsearch.utils import get_llm_bundle, set_cache_folder
-from llmsearch.embeddings import update_embeddings, create_embeddings, EmbeddingsHashNotExistError
+from llmsearch.embeddings import (
+    update_embeddings,
+    create_embeddings,
+    EmbeddingsHashNotExistError,
+)
 
 st.set_page_config(page_title="LLMSearch", page_icon=":robot:", layout="wide")
 
@@ -40,6 +44,7 @@ def parse_cli_arguments():
 def hash_func(obj: Config) -> str:
     return str(obj.embeddings.embeddings_path)
 
+
 def generate_index(config: Config):
     with st.spinner("Creading index, please wait..."):
         logger.debug("Unloading existing models...")
@@ -47,8 +52,7 @@ def generate_index(config: Config):
         set_cache_folder(str(config.cache_folder))
 
         vs = VectorStoreChroma(
-            persist_folder=str(config.embeddings.embeddings_path),
-            config=config
+            persist_folder=str(config.embeddings.embeddings_path), config=config
         )
         create_embeddings(config, vs)
         logger.debug("Cleaning memory and re-Loading model...")
@@ -60,7 +64,8 @@ def generate_index(config: Config):
 
     st.success("Done generating index.")
 
-def udpate_index(config_file: str ):
+
+def udpate_index(config_file: str):
     """Updates index on-fly
 
     Args:
@@ -74,14 +79,15 @@ def udpate_index(config_file: str ):
         set_cache_folder(str(config.cache_folder))
 
         vs = VectorStoreChroma(
-            persist_folder=str(config.embeddings.embeddings_path),
-            config=config
+            persist_folder=str(config.embeddings.embeddings_path), config=config
         )
         try:
             logger.debug("Updating embeddings")
             stats = update_embeddings(config, vs)
         except EmbeddingsHashNotExistError:
-            st.error("Couldn't find hash files. Please re-create the index using current version of the app.")
+            st.error(
+                "Couldn't find hash files. Please re-create the index using current version of the app."
+            )
         else:
             logger.info(stats)
         finally:
@@ -97,6 +103,7 @@ def udpate_index(config_file: str ):
 
             reload_model(config_file=config_file)
     st.success("Done updating.")
+
 
 @st.cache_data
 def load_config(config_file):
@@ -135,7 +142,12 @@ def unload_model():
 
 @st.cache_data
 def generate_response(
-    question: str, use_hyde: bool, use_multiquery, _config: Config, _bundle, label_filter: str = ""
+    question: str,
+    use_hyde: bool,
+    use_multiquery,
+    _config: Config,
+    _bundle,
+    label_filter: str = "",
 ):
     # _config and _bundle are under scored so paratemeters aren't hashed
 
@@ -169,8 +181,14 @@ def reload_model(config_file: str):
             st.session_state["llm_bundle"] = get_llm_bundle(config)
             st.session_state["llm_config"] = {"config": config, "file": config_file}
         else:
-            st.error("Couldn't find embeddings in {}. Please generate first.".format(config.embeddings.embeddings_path))
-            update_embeddings_button = st.button("Generate", on_click=generate_index, args=(config,), type="secondary")
+            st.error(
+                "Couldn't find embeddings in {}. Please generate first.".format(
+                    config.embeddings.embeddings_path
+                )
+            )
+            update_embeddings_button = st.button(
+                "Generate", on_click=generate_index, args=(config,), type="secondary"
+            )
 
     st.session_state["disable_load"] = False
 
@@ -201,12 +219,13 @@ if Path(args.cli_config_path).is_dir():
     logger.debug(f"CONFIG FILE: {config_file}")
 
     # Every form must have a submit button.
-    load_button = st.sidebar.button("Load", on_click=reload_model, args=(config_file,), type="primary")
+    load_button = st.sidebar.button(
+        "Load", on_click=reload_model, args=(config_file,), type="primary"
+    )
 
     # Since in the event loop on_click will be called first, we need to re-enable the flag in case of multiple clicks
     if load_button:
         st.session_state["disable_load"] = False
-
 
 
 if st.session_state["llm_bundle"] is not None:
@@ -224,7 +243,12 @@ if st.session_state["llm_bundle"] is not None:
         f"**Document path**: {config.embeddings.document_settings[0].doc_path}"
     )
     st.sidebar.write(f"**Embedding path:** {config.embeddings.embeddings_path}")
-    update_embeddings_button = st.sidebar.button("Update embeddings", on_click=udpate_index, args=(config_file,), type="secondary")
+    update_embeddings_button = st.sidebar.button(
+        "Update embeddings",
+        on_click=udpate_index,
+        args=(config_file,),
+        type="secondary",
+    )
     st.sidebar.write(
         f"**Max char size (semantic search):** {config.semantic_search.max_char_size}"
     )
