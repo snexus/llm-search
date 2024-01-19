@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import pandas as pd
-from langchain.embeddings import (HuggingFaceEmbeddings,
+from langchain_community.embeddings import (HuggingFaceEmbeddings,
                                   HuggingFaceInstructEmbeddings,
                                   SentenceTransformerEmbeddings)
 from loguru import logger

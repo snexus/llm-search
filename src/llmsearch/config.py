@@ -1,12 +1,12 @@
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Literal
 
 import yaml
 from loguru import logger
-from pydantic import BaseModel, DirectoryPath, Extra, Field, validator
+from pydantic import BaseModel, DirectoryPath, Field, validator, ConfigDict
 from uuid import UUID, uuid4
-from pydantic.typing import Literal  # type: ignore
+#from pydantic.typing import Literal  # type: ignore
 
 from llmsearch.models.config import (
     HuggingFaceModelConfig,
@@ -56,6 +56,9 @@ class EmbeddingModelType(str, Enum):
 
 
 class EmbeddingModel(BaseModel):
+    model_config = ConfigDict() 
+    model_config['protected_namespaces'] = ()
+    
     type: EmbeddingModelType
     model_name: str
     additional_kwargs: dict = Field(default_factory=dict)
@@ -84,6 +87,8 @@ class EmbedddingsSpladeConfig(BaseModel):
 
 
 class EmbeddingsConfig(BaseModel):
+    model_config = ConfigDict(extra = "forbid") 
+
     embedding_model: EmbeddingModel = EmbeddingModel(
         type=EmbeddingModelType.instruct, model_name="hkunlp/instructor-large"
     )
@@ -97,8 +102,6 @@ class EmbeddingsConfig(BaseModel):
         """Returns list of labels in document settings"""
         return [setting.label for setting in self.document_settings if setting.label]
 
-    class Config:
-        extra = Extra.forbid
 
 
 class ObsidianAdvancedURI(BaseModel):
@@ -135,6 +138,8 @@ class MultiQuerySettings(BaseModel):
     n_versions: int = 3
 
 class SemanticSearchConfig(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed = True, extra = "forbid") 
+
     search_type: Literal["mmr", "similarity"]
     replace_output_path: List[ReplaceOutputPath] = Field(default_factory=list)
     obsidian_advanced_uri: Optional[ObsidianAdvancedURI] = None
@@ -146,12 +151,11 @@ class SemanticSearchConfig(BaseModel):
     hyde: HydeSettings = HydeSettings()
     multiquery: MultiQuerySettings = MultiQuerySettings()
 
-    class Config:
-        arbitrary_types_allowed = True
-        extra = Extra.forbid
-
 
 class LLMConfig(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed = True, extra = "forbid") 
+    model_config['protected_namespaces'] = ()
+
     type: str
     params: dict
 
@@ -169,10 +173,6 @@ class LLMConfig(BaseModel):
             **value
         )  # An attempt to force conversion to the required model config
         return config
-
-    class Config:
-        arbitrary_types_allowed = True
-        extra = Extra.forbid
 
 
 class SemanticSearchOutput(BaseModel):

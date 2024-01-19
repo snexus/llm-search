@@ -1,9 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from pathlib import Path
 from typing import Optional, Union
 
 
 class LlamaModelConfig(BaseModel):
+    model_config = ConfigDict() 
+    model_config['protected_namespaces'] = ()
+
     model_path: Union[Path, str]
     prompt_template: str
     model_init_params: dict = {}
@@ -11,10 +14,16 @@ class LlamaModelConfig(BaseModel):
 
 
 class OpenAIModelConfig(BaseModel):
+    model_config = ConfigDict() 
+    model_config['protected_namespaces'] = ()
+
     prompt_template: str
     model_kwargs: dict = {}
 
 class AzureOpenAIModelConfig(BaseModel):
+    model_config = ConfigDict() 
+    model_config['protected_namespaces'] = ()
+
     prompt_template: str
     deployment_name: str
     model_name: str
@@ -35,6 +44,9 @@ class AzureOpenAIModelConfig(BaseModel):
 
 
 class HuggingFaceModelConfig(BaseModel):
+    model_config = ConfigDict() 
+    model_config['protected_namespaces'] = ()
+
     cache_folder: Optional[Union[Path, str]] = None  # will be copied from
     tokenizer_name: Optional[str] = None
     model_name: str

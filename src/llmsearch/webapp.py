@@ -216,7 +216,7 @@ if st.session_state["llm_bundle"] is not None:
     config_file_name = config_file if isinstance(config_file, str) else config_file.name
     st.sidebar.subheader("Loaded Parameters:")
     with st.sidebar.expander(config_file_name):
-        st.json(config.json())
+        st.json(config.model_dump_json())
 
     st.sidebar.write(f"**Model type:** {config.llm.type}")
 

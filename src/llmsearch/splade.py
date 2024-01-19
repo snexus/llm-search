@@ -219,7 +219,7 @@ class SparseEmbeddingsSplade:
 
         if embeddings is not None and l2_norm_matrix is not None and ids is not None:
             cosine_similarity = embeddings.dot(embed_query) / (l2_norm_matrix * l2_norm_query)
-            print(cosine_similarity)
+            # print(cosine_similarity)
             most_similar = np.argsort(cosine_similarity)
 
             top_similar_indices = most_similar[-n:][::-1]

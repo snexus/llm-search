@@ -1,6 +1,6 @@
 import torch
 import transformers
-from langchain.llms import HuggingFacePipeline
+from langchain_community.llms import HuggingFacePipeline
 
 from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import HuggingFaceModelConfig
