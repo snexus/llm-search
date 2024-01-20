@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Union, Literal
 
 import yaml
 from loguru import logger
-from pydantic import BaseModel, DirectoryPath, Field, validator, ConfigDict
+from pydantic import BaseModel, DirectoryPath, Field, field_validator, ConfigDict, ValidationInfo
 from uuid import UUID, uuid4
 
 # from pydantic.typing import Literal  # type: ignore
@@ -73,7 +73,7 @@ class DocumentPathSettings(BaseModel):
     passage_prefix: str = ""
     label: str = ""  # Optional label, will be included in the metadata
 
-    @validator("additional_parser_settings")
+    @field_validator("additional_parser_settings")
     def validate_extension(cls, value):
         for ext in value.keys():
             if ext not in DocumentExtension.__members__:
@@ -163,8 +163,9 @@ class LLMConfig(BaseModel):
     type: str
     params: dict
 
-    @validator("params")
-    def validate_params(cls, value, values):
+    @field_validator("params")
+    def validate_params(cls, value, info: ValidationInfo):
+        values = info.data
         type_ = values.get("type")
         if type_ not in models_config:
             raise TypeError(f"Uknown model type {value}. Allowed types: ")
