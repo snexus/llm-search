@@ -33,7 +33,8 @@ langchain.debug = True
 @st.cache_data
 def parse_cli_arguments():
     parser = argparse.ArgumentParser(description="Web application for LLMSearch")
-    parser.add_argument("--config_path", dest="cli_config_path", type=str, default="")
+    parser.add_argument("--doc_config_path", dest="cli_doc_config_path", type=str, default="")
+    parser.add_argument("--model_config_path", dest="cli_model_config_path", type=str, default="")
     try:
         args = parser.parse_args()
     except SystemExit as e:
@@ -65,7 +66,7 @@ def generate_index(config: Config):
     st.success("Done generating index.")
 
 
-def udpate_index(config_file: str):
+def udpate_index(doc_config_path: str, model_config_file):
     """Updates index on-fly
 
     Args:
@@ -75,7 +76,7 @@ def udpate_index(config_file: str):
     with st.spinner("Updating index, please wait..."):
         logger.debug("Unloading model...")
         unload_model()
-        config = load_config(config_file)
+        config = load_config(doc_config_path, model_config_file)
         set_cache_folder(str(config.cache_folder))
 
         vs = VectorStoreChroma(
@@ -101,22 +102,32 @@ def udpate_index(config_file: str):
             with torch.no_grad():
                 torch.cuda.empty_cache()
 
-            reload_model(config_file=config_file)
+            reload_model(doc_config_path=doc_config_path, model_config_file=model_config_file)
     st.success("Done updating.")
 
 
 @st.cache_data
-def load_config(config_file):
-    if isinstance(config_file, str):
-        logger.info(f"Loading data from a file: {config_file}")
-        with open(config_file, "r") as f:
+def load_config(doc_config, model_config) -> Config:
+    """Loads doc and model configurations, combines, and returns an instance of Config"""
+
+    doc_config_dict = load_yaml_file(doc_config)
+    model_config_dict = load_yaml_file(model_config)
+
+    config_dict = {**doc_config_dict, **model_config_dict}
+    return Config(**config_dict)
+
+@st.cache_data
+def load_yaml_file(config) -> dict:
+    if isinstance(config, str):
+        logger.info(f"Loading doc config from a file: {config}")
+        with open(config, "r") as f:
             string_data = f.read()
     else:
-        stringio = StringIO(config_file.getvalue().decode("utf-8"))
+        stringio = StringIO(config.getvalue().decode("utf-8"))
         string_data = stringio.read()
 
     config_dict = yaml.safe_load(string_data)
-    return Config(**config_dict)
+    return config_dict
 
 
 def unload_model():
@@ -164,7 +175,7 @@ def get_config_paths(config_dir: str) -> List[str]:
     return config_paths
 
 
-def reload_model(config_file: str):
+def reload_model(doc_config_path: str, model_config_file: str):
     if st.session_state["disable_load"]:
         logger.info("In process of loading the model, please wait...")
         return
@@ -174,12 +185,13 @@ def reload_model(config_file: str):
     logger.info("Clearing state and re-loading model...")
     unload_model()
 
-    logger.debug(f"Reload model got CONFIG FILE NAME: {config_file}")
+    logger.debug(f"Reload model got DOC CONFIG FILE NAME: {doc_config_path}")
+    logger.debug(f"Reload model got MODEL CONFIG FILE NAME: {model_config_file}")
     with st.spinner("Loading configuration"):
-        config = load_config(config_file)
+        config = load_config(doc_config_path, model_config_file)
         if config.check_embeddings_exist():
             st.session_state["llm_bundle"] = get_llm_bundle(config)
-            st.session_state["llm_config"] = {"config": config, "file": config_file}
+            st.session_state["llm_config"] = {"config": config, "doc_config_path": doc_config_path, "model_config_file": model_config_file}
         else:
             st.error(
                 "Couldn't find embeddings in {}. Please generate first.".format(
@@ -211,16 +223,17 @@ if "messages" not in st.session_state:
 if "disable_load" not in st.session_state:
     st.session_state["disable_load"] = False
 
-if Path(args.cli_config_path).is_dir():
-    config_paths = get_config_paths(args.cli_config_path)
-    config_file = st.sidebar.selectbox(
+if Path(args.cli_doc_config_path).is_dir():
+    config_paths = get_config_paths(args.cli_doc_config_path)
+    doc_config_path = st.sidebar.selectbox(
         label="Choose config", options=config_paths, index=0
     )
-    logger.debug(f"CONFIG FILE: {config_file}")
+    model_config_file = args.cli_model_config_path
+    logger.debug(f"CONFIG FILE: {doc_config_path}")
 
     # Every form must have a submit button.
     load_button = st.sidebar.button(
-        "Load", on_click=reload_model, args=(config_file,), type="primary"
+        "Load", on_click=reload_model, args=(doc_config_path, model_config_file), type="primary"
     )
 
     # Since in the event loop on_click will be called first, we need to re-enable the flag in case of multiple clicks
@@ -231,8 +244,9 @@ if Path(args.cli_config_path).is_dir():
 if st.session_state["llm_bundle"] is not None:
     config = st.session_state["llm_config"]["config"]
 
-    config_file = st.session_state["llm_config"]["file"]
-    config_file_name = config_file if isinstance(config_file, str) else config_file.name
+    doc_config_path = st.session_state["llm_config"]["doc_config_path"]
+    model_config_file = st.session_state["llm_config"]["model_config_file"]
+    config_file_name = doc_config_path if isinstance(doc_config_path, str) else doc_config_path.name
     st.sidebar.subheader("Loaded Parameters:")
     with st.sidebar.expander(config_file_name):
         st.json(config.model_dump_json())
@@ -246,7 +260,7 @@ if st.session_state["llm_bundle"] is not None:
     update_embeddings_button = st.sidebar.button(
         "Update embeddings",
         on_click=udpate_index,
-        args=(config_file,),
+        args=(doc_config_path, model_config_file),
         type="secondary",
     )
     st.sidebar.write(
