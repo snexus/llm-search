@@ -1,9 +1,7 @@
 llama-cpp-python
-# torch==2.1.2 ; python_version >= "3.10" and python_version < "4.0"
-# torchvision==0.16.2 ; python_version >= "3.10" and python_version < "4.0"
 chromadb==0.4.22
 langchain==0.1.1
-# llama-index==0.6.9
+pydantic==2.5.3
 transformers==4.36.2
 sentence-transformers==2.2.2
 pypdf2==3.0.1
