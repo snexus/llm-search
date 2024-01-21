@@ -200,7 +200,7 @@ class Config(BaseModel):
     cache_folder: Path
     embeddings: EmbeddingsConfig
     semantic_search: SemanticSearchConfig
-    llm: LLMConfig
+    llm: Optional[LLMConfig] = None
     persist_response_db_path: Optional[str] = None
 
     def check_embeddings_exist(self) -> bool:
