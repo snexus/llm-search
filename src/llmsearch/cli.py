@@ -4,7 +4,7 @@ import os
 import streamlit.web.cli
 
 from llmsearch.chroma import VectorStoreChroma
-from llmsearch.config import get_config
+from llmsearch.config import get_config, get_doc_with_model_config
 from llmsearch.interact import qa_with_llm
 from llmsearch.utils import get_llm_bundle, set_cache_folder
 from llmsearch.embeddings import create_embeddings, update_embeddings
@@ -66,15 +66,23 @@ def udpate_index(config_file: str):
 
 @click.command("llm")
 @click.option(
-    "--config-file",
+    "--doc-config-file",
     "-c",
-    "config_file",
+    "doc_config_file",
     required=True,
-    type=click.Path(exists=True, dir_okay=False),
-    help="Specifies YAML configuration file",
+    type=click.Path(exists=True, dir_okay=False, file_okay=True),
+    help="Specifies documents YAML configuration file",
 )
-def launch_qa_with_llm(config_file: str):
-    config = get_config(config_file)
+@click.option(
+    "--model-config-file",
+    "-m",
+    "model_config_file",
+    required=True,
+    type=click.Path(exists=True, dir_okay=False, file_okay=True),
+    help="Specifies model YAML configuration file",
+)
+def launch_qa_with_llm(doc_config_file: str, model_config_file: str):
+    config = get_doc_with_model_config(doc_config_file, model_config_file)
     llm_bundle = get_llm_bundle(config)
     qa_with_llm(llm_bundle, config)
 
