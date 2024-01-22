@@ -1,6 +1,6 @@
 import os
 
-from langchain.chat_models import AzureChatOpenAI
+from langchain_community.chat_models import AzureChatOpenAI
 
 from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import AzureOpenAIModelConfig
@@ -17,4 +17,8 @@ class AzureOpenAIModel(AbstractLLMModel):
         os.environ["OPENAI_API_BASE"] = self.config.openai_api_base
         os.environ["OPENAI_API_VERSION"] = self.config.openai_api_version
 
-        return AzureChatOpenAI(deployment_name=self.config.deployment_name, model = self.config.model_name, **self.config.model_kwargs)
+        return AzureChatOpenAI(
+            deployment_name=self.config.deployment_name,
+            model=self.config.model_name,
+            **self.config.model_kwargs
+        )

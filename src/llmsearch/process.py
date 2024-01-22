@@ -12,11 +12,14 @@ from llmsearch.config import (
 from llmsearch.ranking import get_relevant_documents
 from llmsearch.utils import LLMBundle
 from llmsearch.database.crud import create_response
-from llmsearch.config import Document
 
 
 def get_and_parse_response(
-    llm_bundle: LLMBundle, query: str, config: Config, persist_db_session=None, label: str = ""
+    llm_bundle: LLMBundle,
+    query: str,
+    config: Config,
+    persist_db_session=None,
+    label: str = "",
 ) -> ResponseModel:
     """Performs retieval augmented search (RAG).
 
@@ -29,28 +32,37 @@ def get_and_parse_response(
     """
 
     original_query = query
-    
+
     queries = []
     hyde_response = ""
     # Add HYDE queries, if required
     if llm_bundle.hyde_enabled:
         hyde_response = get_hyde_response(llm_bundle, query)
-        queries+= [hyde_response]
-    
+        queries += [hyde_response]
+
     elif llm_bundle.multiquery_enabled:
-        queries+= get_multiquery_response(llm_bundle, query, config.semantic_search.multiquery.n_versions)
+        queries += get_multiquery_response(
+            llm_bundle, query, config.semantic_search.multiquery.n_versions
+        )
     else:
         queries = [query]
 
     semantic_search_config = config.semantic_search
-    most_relevant_docs, score = get_relevant_documents(original_query, queries, llm_bundle, semantic_search_config, label=label)
+    most_relevant_docs, score = get_relevant_documents(
+        original_query, queries, llm_bundle, semantic_search_config, label=label
+    )
 
     res = llm_bundle.chain(
         {"input_documents": most_relevant_docs, "question": original_query},
         return_only_outputs=False,
     )
 
-    out = ResponseModel(response=res["output_text"], question=query, average_score=score, hyde_response=hyde_response)
+    out = ResponseModel(
+        response=res["output_text"],
+        question=query,
+        average_score=score,
+        hyde_response=hyde_response,
+    )
     for doc in res["input_documents"]:
         doc_name = doc.metadata["source"]
 
@@ -61,13 +73,21 @@ def get_and_parse_response(
             )
 
         if semantic_search_config.obsidian_advanced_uri is not None:
-            doc_name = process_obsidian_uri(doc_name, semantic_search_config.obsidian_advanced_uri, doc.metadata)
+            doc_name = process_obsidian_uri(
+                doc_name, semantic_search_config.obsidian_advanced_uri, doc.metadata
+            )
 
         if semantic_search_config.append_suffix is not None:
-            doc_name = process_append_suffix(doc_name, semantic_search_config.append_suffix, doc.metadata)
+            doc_name = process_append_suffix(
+                doc_name, semantic_search_config.append_suffix, doc.metadata
+            )
 
         text = doc.page_content
-        out.semantic_search.append(SemanticSearchOutput(chunk_link=doc_name, metadata=doc.metadata, chunk_text=text))
+        out.semantic_search.append(
+            SemanticSearchOutput(
+                chunk_link=doc_name, metadata=doc.metadata, chunk_text=text
+            )
+        )
 
     if llm_bundle.response_persist_db_settings is not None:
         if persist_db_session is not None:
@@ -82,7 +102,9 @@ def get_and_parse_response(
     return out
 
 
-def process_obsidian_uri(doc_name: str, adv_uri_config: ObsidianAdvancedURI, metadata: dict) -> str:
+def process_obsidian_uri(
+    doc_name: str, adv_uri_config: ObsidianAdvancedURI, metadata: dict
+) -> str:
     """Adds a suffix pointing to a specific heading based on the metadata supplied if doc.metadata
 
     Args:
@@ -95,7 +117,9 @@ def process_obsidian_uri(doc_name: str, adv_uri_config: ObsidianAdvancedURI, met
         str: document name with a header suffix.
     """
     print(metadata)
-    append_str = adv_uri_config.append_heading_template.format(heading=metadata["heading"])
+    append_str = adv_uri_config.append_heading_template.format(
+        heading=metadata["heading"]
+    )
     return doc_name + append_str
 
 
@@ -149,13 +173,19 @@ def get_hyde_response(llm_bundle: LLMBundle, query: str) -> str:
     return res
 
 
-def get_multiquery_response(llm_bundle: LLMBundle, query: str, n_versions: int) -> List[str]:
+def get_multiquery_response(
+    llm_bundle: LLMBundle, query: str, n_versions: int
+) -> List[str]:
     if llm_bundle.multiquery_chain is None:
         raise TypeError("MultiQuery chain is not initialised. exiting.")
-    res = llm_bundle.multiquery_chain.run(question = query, n_versions = n_versions)
+    res = llm_bundle.multiquery_chain.run(question=query, n_versions=n_versions)
 
     logger.info(f"MultiQuery: got response: {res}")
     queries = [q.strip() for q in res.strip().split("\n") if q.strip()]
     if len(queries) != n_versions:
-        raise ValueError("Number of versions in multi-queries response isn't equal {}".format(n_versions))
+        raise ValueError(
+            "Number of versions in multi-queries response isn't equal {}".format(
+                n_versions
+            )
+        )
     return queries

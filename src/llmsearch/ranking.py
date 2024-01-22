@@ -13,8 +13,6 @@ from sentence_transformers.cross_encoder import CrossEncoder
 from llmsearch.config import Document
 
 
-
-
 class MarcoReranker:
     def __init__(
         self, cross_encoder_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
@@ -30,11 +28,14 @@ class MarcoReranker:
         features = [[query, doc.page_content] for doc in docs]
         scores = self.model.predict(features).tolist()
         return scores
-    
+
+
 class BGEReranker:
     def __init__(self) -> None:
-        self.tokenizer = AutoTokenizer.from_pretrained('BAAI/bge-reranker-base')
-        self.model = AutoModelForSequenceClassification.from_pretrained('BAAI/bge-reranker-base')
+        self.tokenizer = AutoTokenizer.from_pretrained("BAAI/bge-reranker-base")
+        self.model = AutoModelForSequenceClassification.from_pretrained(
+            "BAAI/bge-reranker-base"
+        )
         self.model.eval()
         logger.info("Initialized BGE-base Reranker")
 
@@ -42,12 +43,27 @@ class BGEReranker:
         logger.info("Reranking documents ... ")
         features = [[query, doc.page_content] for doc in docs]
         with torch.no_grad():
-            inputs = self.tokenizer(features, padding=True, truncation=True, return_tensors='pt', max_length=512)
-            scores = self.model(**inputs, return_dict=True).logits.view(-1, ).float().tolist()
+            inputs = self.tokenizer(
+                features,
+                padding=True,
+                truncation=True,
+                return_tensors="pt",
+                max_length=512,
+            )
+            scores = (
+                self.model(**inputs, return_dict=True)
+                .logits.view(
+                    -1,
+                )
+                .float()
+                .tolist()
+            )
         return scores
-        
 
-def rerank(rerank_model, query: str, docs: List[Document]) -> Tuple[float, List[Document]]:
+
+def rerank(
+    rerank_model, query: str, docs: List[Document]
+) -> Tuple[float, List[Document]]:
     logger.info("Reranking documents ... ")
     scores = rerank_model.get_scores(query, docs)
     print(scores)
@@ -61,13 +77,17 @@ def rerank(rerank_model, query: str, docs: List[Document]) -> Tuple[float, List[
     return median_, [
         doc for doc in sorted(docs, key=lambda d: d.metadata["score"], reverse=True)
     ]
-        
-    
-def get_relevant_documents(original_query: str, queries: List[str], llm_bundle, config: SemanticSearchConfig, label: str, 
+
+
+def get_relevant_documents(
+    original_query: str,
+    queries: List[str],
+    llm_bundle,
+    config: SemanticSearchConfig,
+    label: str,
 ) -> Tuple[List[str], float]:
     most_relevant_docs = []
     docs = []
-
 
     # original_query = queries[0]
     sparse_retriever = llm_bundle.sparse_search
@@ -86,21 +106,27 @@ def get_relevant_documents(original_query: str, queries: List[str], llm_bundle, 
                 logger.info(f"Adding query prefix for retrieval: {config.query_prefix}")
                 query = config.query_prefix + query
             sparse_search_docs_ids, sparse_scores = sparse_retriever.query(
-                search=query, n=config.max_k, label = label, chunk_size = chunk_size
+                search=query, n=config.max_k, label=label, chunk_size=chunk_size
             )
 
             logger.info(f"Stage 1: Got {len(sparse_search_docs_ids)} documents.")
 
             # Set a filter for current chunk size or skip filter if only one chunk size is present (considerably faster)
-            filter = {"chunk_size": chunk_size} if len(llm_bundle.chunk_sizes) > 1 else dict()
-            
+            filter = (
+                {"chunk_size": chunk_size}
+                if len(llm_bundle.chunk_sizes) > 1
+                else dict()
+            )
+
             # Add label to filter, if present
             if label:
                 filter.update({"label": label})
-            
-            if not filter: # if filter is empty (doesn't contain chunk_size or label), set it to None to speed up.
+
+            if (
+                not filter
+            ):  # if filter is empty (doesn't contain chunk_size or label), set it to None to speed up.
                 filter = None
-                
+
             logger.info(f"Dense embeddings filter: {filter}")
 
             res = llm_bundle.store.similarity_search_with_relevance_scores(
@@ -109,32 +135,36 @@ def get_relevant_documents(original_query: str, queries: List[str], llm_bundle, 
             dense_search_doc_ids = [r[0].metadata["document_id"] for r in res]
 
             # Create union of documents fetched using sprase and dense embeddings
-            all_doc_ids = (set(sparse_search_docs_ids).union(set(dense_search_doc_ids))).difference(all_relevant_doc_ids)
+            all_doc_ids = (
+                set(sparse_search_docs_ids).union(set(dense_search_doc_ids))
+            ).difference(all_relevant_doc_ids)
             logger.debug("NUMBER OF NEW DOCS to RETRIEVE: {}", len(all_doc_ids))
             if all_doc_ids:
                 relevant_docs = llm_bundle.store.get_documents_by_id(
                     document_ids=list(all_doc_ids)
                 )
-                all_relevant_docs+=relevant_docs
+                all_relevant_docs += relevant_docs
                 all_relevant_doc_ids = all_relevant_doc_ids.union(all_doc_ids)
 
         # Choose chunk size that is best suitable to answer the questoin
         # Re-rank embeddings
         if llm_bundle.reranker is not None:
-            #reranker_score, relevant_docs = llm_bundle.reranker.rerank(
-                #original_query, all_relevant_docs
-            #)
-            reranker_score, relevant_docs = rerank(rerank_model = llm_bundle.reranker,
-                query = original_query, docs = all_relevant_docs
+            # reranker_score, relevant_docs = llm_bundle.reranker.rerank(
+            # original_query, all_relevant_docs
+            # )
+            reranker_score, relevant_docs = rerank(
+                rerank_model=llm_bundle.reranker,
+                query=original_query,
+                docs=all_relevant_docs,
             )
             if reranker_score > current_reranker_score:
                 logger.info("New most relevant query: {}", original_query)
                 docs = relevant_docs
                 current_reranker_score = reranker_score
 
-        #logger.info(
-            #f"Number of documents after stage 1 (sparse): {len(sparse_search_docs_ids)}"
-        #)
+        # logger.info(
+        # f"Number of documents after stage 1 (sparse): {len(sparse_search_docs_ids)}"
+        # )
         logger.info(
             f"Number of documents after stage 2 (dense + sparse): {len(all_relevant_docs)}"
         )

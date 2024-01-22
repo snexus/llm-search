@@ -3,13 +3,14 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import pandas as pd
-from langchain.embeddings import (HuggingFaceEmbeddings,
-                                  HuggingFaceInstructEmbeddings,
-                                  SentenceTransformerEmbeddings)
+from langchain_community.embeddings import (
+    HuggingFaceEmbeddings,
+    HuggingFaceInstructEmbeddings,
+    SentenceTransformerEmbeddings,
+)
 from loguru import logger
 
-from llmsearch.config import (Config, Document, EmbeddingModel,
-                              EmbeddingModelType)
+from llmsearch.config import Config, Document, EmbeddingModel, EmbeddingModelType
 from llmsearch.parsers.splitter import DocumentSplitter
 from llmsearch.splade import SparseEmbeddingsSplade
 
@@ -47,6 +48,7 @@ class VectorStore(ABC):
     @abstractmethod
     def add_documents(self, docs: List[Document]):
         pass
+
 
 class EmbeddingsHashNotExistError(Exception):
     """Raised when embeddings can't be founrd"""
@@ -91,7 +93,9 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
         file_hashes_fn, docid_hash_fn = get_hash_mapping_filenames(config)
         existing_fn_hash_mappings = pd.read_parquet(path=file_hashes_fn)
     except FileNotFoundError:
-        raise EmbeddingsHashNotExistError("Hash file don't exist, please re-create the index.")
+        raise EmbeddingsHashNotExistError(
+            "Hash file don't exist, please re-create the index."
+        )
     existing_docid_hash_mappings = pd.read_parquet(path=docid_hash_fn)
     stats = {
         "original_n_files": len(existing_fn_hash_mappings),

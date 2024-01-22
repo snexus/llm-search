@@ -1,9 +1,9 @@
 # This file contains a configuration section relevant to LLM, not the entire config
 
 llm:
-  type: openai
-  params:
-    prompt_template: |
+   type: openai
+   params:
+     prompt_template: |
        Contex information is provided below. Given only the context and not prior knowledge, provide detailed answer to the question and references to the provided context. If answer isn't in the context, say you don't know.
         
          ### Context:
@@ -12,6 +12,8 @@ llm:
          ---------------------
 
          ### Question: {question}
-    model_kwargs:
-      temperature: 0.0
-      model_name: gpt-3.5-turbo
+     model_kwargs:
+       temperature: 0.2
+       model: "any"
+       api_key: "any"
+       base_url: "http://0.0.0.0:8000"

@@ -40,7 +40,9 @@ def set_cache_folder(cache_folder_root: str):
     transformers_cache = os.path.join(cache_folder_root, "transformers")
     hf_home = os.path.join(cache_folder_root, "hf_home")
 
-    logger.info(f"Setting SENTENCE_TRANSFORMERS_HOME folder: {sentence_transformers_home}")
+    logger.info(
+        f"Setting SENTENCE_TRANSFORMERS_HOME folder: {sentence_transformers_home}"
+    )
     logger.info(f"Setting TRANSFORMERS_CACHE folder: {transformers_cache}")
     logger.info(f"Setting HF_HOME: {hf_home}")
     logger.info(f"Setting MODELS_CACHE_FOLDER: {cache_folder_root}")
@@ -65,18 +67,22 @@ def get_llm_bundle(config: Config) -> LLMBundle:
     llm = get_llm(config.llm.params)  # type: ignore
     chain = load_qa_chain(llm=llm.model, chain_type=CHAIN_TYPE, prompt=llm.prompt)
 
-    store = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path), config=config)
+    store = VectorStoreChroma(
+        persist_folder=str(config.embeddings.embeddings_path), config=config
+    )
     store._load_retriever()
 
     reranker = None
     if config.semantic_search.reranker.enabled:
-        if config.semantic_search.reranker.model ==  RerankerModel.BGE_RERANKER:
+        if config.semantic_search.reranker.model == RerankerModel.BGE_RERANKER:
             reranker = BGEReranker()
-        elif  config.semantic_search.reranker.model ==  RerankerModel.MARCO_RERANKER:
+        elif config.semantic_search.reranker.model == RerankerModel.MARCO_RERANKER:
             reranker = MarcoReranker()
         else:
-            raise TypeError("Invalid reranker type: {}", config.semantic_search.reranker.model)
-            
+            raise TypeError(
+                "Invalid reranker type: {}", config.semantic_search.reranker.model
+            )
+
     chunk_sizes = config.embeddings.chunk_sizes
 
     splade = SparseEmbeddingsSplade(config=config)
@@ -110,12 +116,19 @@ def get_hyde_chain(config, llm_model) -> LLMChain:
     logger.info("Creating HyDE chain...")
     return LLMChain(
         llm=llm_model,
-        prompt=PromptTemplate(template=config.semantic_search.hyde.hyde_prompt, input_variables=["question"]),
+        prompt=PromptTemplate(
+            template=config.semantic_search.hyde.hyde_prompt,
+            input_variables=["question"],
+        ),
     )
+
 
 def get_multiquery_chain(config, llm_model) -> LLMChain:
     logger.info("Creating MultiQUery chain...")
     return LLMChain(
         llm=llm_model,
-        prompt=PromptTemplate(template=config.semantic_search.multiquery.multiquery_prompt, input_variables=["question", "n_versions"]),
+        prompt=PromptTemplate(
+            template=config.semantic_search.multiquery.multiquery_prompt,
+            input_variables=["question", "n_versions"],
+        ),
     )

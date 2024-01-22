@@ -8,7 +8,7 @@ embeddings:
     type: sentence_transformer # other supported types - "huggingface" and "instruct"
     model_name: "infloat/e5-large-v2"
   
-  splade_config: # Optional batch size of sparse embeddings. Reduced if getting out-of-memory errors on CUDA.
+  splade_config: # Optional batch size of sparse embeddings. Reduce if getting out-of-memory errors on CUDA.
     n_batch: 5
   
   chunk_sizes: # Specify one more chunk size to split (querying multi-chunk results will be slower)
@@ -33,6 +33,13 @@ embeddings:
     
     passage_prefix: "passage: " # Often, specific prefix needs to be included in the source text, for embedding models to work properly
     label: "documment-collection-1" # Add a label to the current collection
+  
+  - doc_path: /another/path/to/documents ## specify the docs folder
+    scan_extensions: # specifies files extensions to scan recursively in `doc_path`. 
+      - md
+    
+    passage_prefix: "passage: " # Often, specific prefix needs to be included in the source text, for embedding models to work properly
+    label: "documment-collection-2" # Add a label to the current collection
 
 semantic_search:
   search_type: similarity # Currently, only similarity is supported
@@ -60,50 +67,5 @@ semantic_search:
   
 
 persist_response_db_path:  "/path/to/responses.db" # optional sqlite database filename. Allows to save responses offlien to sqlite, for future analysis.
-
-############ An example how to use OpenAI model, requires .env file with the OpenAI key
-# llm:
-#   type: openai
-#   params:
-#     prompt_template: |
-#         Context information is provided below. Given the context information and not prior knowledge, provide detailed answer to the question.
-
-#         ### Context:
-#         ---------------------
-#         {context}
-#         ---------------------
-
-#         ### Question: {question}
-#     model_kwargs:
-#       temperature: 0.2
-#       model_name: gpt-3.5-turbo
-
-############ An example how to specify a local model, supported types - llamacpp, huggingface, auto-gptq
-llm:
-  type: llamacpp
-  params:
-    model_path: /storage/llm/cache/airoboros-l2-13b-gpt4-1.4.1.Q4_K_M.gguf
-    prompt_template: |
-          ### Instruction:
-          Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
-
-          ### Context:
-          ---------------
-          {context}
-          ---------------
-
-          ### Question: {question}
-          ### Response:
-    model_init_params:
-      n_ctx: 2048 # Adjust if CUDA memory is low
-      n_batch: 512
-      n_gpu_layers: 30
-
-    model_kwargs:
-      max_tokens: 512
-      top_p: 0.1
-      top_k: 40
-      temperature: 0.7
-      #mirostat_mode: 1
 
 

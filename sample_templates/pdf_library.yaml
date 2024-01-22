@@ -12,7 +12,7 @@ embeddings:
   document_settings:
   - doc_path: /storage/llm/pdf_docs
     scan_extensions: 
-      # - epub
+      - epub
       - md
       - pdf
     passage_prefix: "passage: "
@@ -32,75 +32,3 @@ semantic_search:
   query_prefix: "query: "
   hyde:
     enabled: True
-
-
-llm:
-  type: openai
-  params:
-    prompt_template: |
-        Contex information is provided below. Given only the context and not prior knowledge, provide detailed answer to the question and references to the provided context. If answer isn't in the context, say you don't know.
-
-        ### Context:
-        ---------------------
-        {context}
-        ---------------------
-
-        ### Question: {question}
-    model_kwargs:
-      temperature: 0.0
-      model_name: gpt-3.5-turbo
-
-#
-# llm:
-#   type: llamacpp
-#   params:
-#     model_path: /storage/llm/cache/WizardLM-13B-1.0-GGML/WizardLM-13B-1.0.ggmlv3.q5_K_S.bin
-#     prompt_template: |
-#           ### Instruction:
-#           Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
-
-#           ### Context:
-#           ---------------
-#           {context}
-#           ---------------
-
-#           ### Question: {question}
-#           ### Response:
-#     model_init_params:
-#       n_ctx: 2048
-#       n_batch: 512
-#       n_gpu_layers: 30
-
-#     model_kwargs:
-#       max_tokens: 512
-#       top_p: 0.1
-#       top_k: 40
-#       temperature: 0.7
-#       #mirostat_mode: 1
-
-
-
-
-### An attempt to load 33B model on RTX 3060 with 10GB VRAM
-# llm:
-#   type: llamacpp
-#   params:
-#     model_path: /storage/llm/cache/airoboros-33b-ggml/airoboros-33b-gpt4-1.2.ggmlv3.q4_K_S.bin
-#     prompt_template: |
-#           ### Instruction:
-#           Use the following pieces of context to answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
-#
-#           ### Context:
-#           ---------------
-#           {context}
-#           ---------------
-#
-#           ### Question: {question}
-#           ### Response:
-#     model_kwargs:
-#       n_ctx: 1024
-#       max_tokens: 512
-#       temperature: 0.0
-#       n_gpu_layers: 20
-#       n_batch: 512
-

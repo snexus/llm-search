@@ -41,7 +41,7 @@ class InteractionSourcesBridge(Base):
 
     record_id = Column(Integer, primary_key=True, autoincrement=True)
     response_id = Column(String, ForeignKey("interactions.response_id"), index=True)
-    source_id = Column(String, ForeignKey("sources.source_id"), index = True)
+    source_id = Column(String, ForeignKey("sources.source_id"), index=True)
 
 
 class Sources(Base):

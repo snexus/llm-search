@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from langchain import PromptTemplate
+from langchain.prompts import PromptTemplate
 
 
 class AbstractLLMModel(ABC):

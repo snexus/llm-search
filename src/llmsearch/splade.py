@@ -29,11 +29,17 @@ class SparseEmbeddingsSplade:
     ) -> None:
         self._config = config
 
-        self._device = f"cuda:{torch.cuda.current_device()}" if torch.cuda.is_available() else "cpu"
+        self._device = (
+            f"cuda:{torch.cuda.current_device()}"
+            if torch.cuda.is_available()
+            else "cpu"
+        )
         logger.info(f"Setting device to {self._device}")
 
         #        set_cache_folder(str(config.cache_folder))
-        self.tokenizer = AutoTokenizer.from_pretrained(splade_model_id, device=self._device, use_fast=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            splade_model_id, device=self._device, use_fast=True
+        )
         self.model = AutoModelForMaskedLM.from_pretrained(splade_model_id)
         self.model.to(self._device)
         self._embeddings = None
@@ -44,15 +50,20 @@ class SparseEmbeddingsSplade:
 
         self.n_batch = config.embeddings.splade_config.n_batch
 
-    def _get_batch_embeddings(self, docs: List[str], free_memory: bool = True) -> np.ndarray:
-        tokens = self.tokenizer(docs, return_tensors="pt", padding=True, truncation=True).to(self._device)
+    def _get_batch_embeddings(
+        self, docs: List[str], free_memory: bool = True
+    ) -> np.ndarray:
+        tokens = self.tokenizer(
+            docs, return_tensors="pt", padding=True, truncation=True
+        ).to(self._device)
 
         output = self.model(**tokens)
 
         # aggregate the token-level vecs and transform to sparse
         vecs = (
             torch.max(
-                torch.log(1 + torch.relu(output.logits)) * tokens.attention_mask.unsqueeze(-1),
+                torch.log(1 + torch.relu(output.logits))
+                * tokens.attention_mask.unsqueeze(-1),
                 dim=1,
             )[0]
             .squeeze()
@@ -100,7 +111,9 @@ class SparseEmbeddingsSplade:
             logger.info(f"SPLADE: Got {len(self._labels_to_ind)} labels.")
 
         except FileNotFoundError:
-            raise FileNotFoundError("Embeddings don't exist, run generate_embeddings_from_docs(..) first.")
+            raise FileNotFoundError(
+                "Embeddings don't exist, run generate_embeddings_from_docs(..) first."
+            )
         logger.info(f"Loaded sparse (SPLADE) embeddings from {fn_embeddings}")
 
     def generate_embeddings_from_docs(
@@ -115,13 +128,17 @@ class SparseEmbeddingsSplade:
         """
 
         chunk_size = self.n_batch
-        logger.info(f"Calculating SPLADE embeddings for {len(docs)} documents. Using chunk size: {chunk_size}")
+        logger.info(
+            f"Calculating SPLADE embeddings for {len(docs)} documents. Using chunk size: {chunk_size}"
+        )
 
         ids = [d.metadata["document_id"] for d in docs]
         metadatas = [d.metadata for d in docs]
 
         vecs = []
-        for chunk in tqdm.tqdm(split(docs, chunk_size=chunk_size), total=int(len(docs) / chunk_size)):
+        for chunk in tqdm.tqdm(
+            split(docs, chunk_size=chunk_size), total=int(len(docs) / chunk_size)
+        ):
             texts = [d.page_content for d in chunk if d.page_content]
             vecs.append(self._get_batch_embeddings(texts))
 
@@ -137,18 +154,26 @@ class SparseEmbeddingsSplade:
             logger.info("Loading embeddings...")
             self.load()
 
-        embeddings, ids, metadatas = self.generate_embeddings_from_docs(docs=new_docs, persist=False)
+        embeddings, ids, metadatas = self.generate_embeddings_from_docs(
+            docs=new_docs, persist=False
+        )
         if self._ids is not None and self._embeddings is not None:
-            logger.debug(f"Splade embeddings shape before update: {self._embeddings.shape}")
+            logger.debug(
+                f"Splade embeddings shape before update: {self._embeddings.shape}"
+            )
             updated_embeddings = np.vstack((self._embeddings.toarray(), embeddings))
-            logger.debug(f"Splade embeddings shape after update: {updated_embeddings.shape}")
+            logger.debug(
+                f"Splade embeddings shape after update: {updated_embeddings.shape}"
+            )
             updated_ids = self._ids.tolist() + ids
             updated_metadata = self._metadatas.tolist() + metadatas
             logger.debug(f"Splade: Updated metadata length: {len(updated_metadata)}")
             logger.debug(f"Splade: Updated ids length: {len(updated_ids)}")
             self.persist_embeddings(updated_embeddings, updated_metadata, updated_ids)
         else:
-            raise Exception("Something is wrong: ids and embeddings weren't loaded properly.")
+            raise Exception(
+                "Something is wrong: ids and embeddings weren't loaded properly."
+            )
 
     def persist_embeddings(self, embeddings, metadatas, ids):
         folder_name, fn_embeddings, fn_ids, fn_metadatas = self._get_embedding_fnames()
@@ -168,15 +193,21 @@ class SparseEmbeddingsSplade:
             self.load()
 
         if self._ids is not None and self._embeddings is not None:
-            indices = [ind for ind, id_ in enumerate(self._ids) if id_ not in set(delete_ids)]
+            indices = [
+                ind for ind, id_ in enumerate(self._ids) if id_ not in set(delete_ids)
+            ]
             self._ids = self._ids[indices]
             self._embeddings = self._embeddings[indices]
             self._metadatas = self._metadatas[indices]
 
         else:
-            raise Exception("Something is wrong: ids and embeddings weren't loaded properly.")
+            raise Exception(
+                "Something is wrong: ids and embeddings weren't loaded properly."
+            )
 
-    def query(self, search: str, chunk_size: int, n: int = 50, label: str = "") -> Tuple[np.ndarray, np.ndarray]:
+    def query(
+        self, search: str, chunk_size: int, n: int = 50, label: str = ""
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Finds documents using sparse index similar to the search query in meaning
 
         Args:
@@ -195,9 +226,18 @@ class SparseEmbeddingsSplade:
             self.load()
 
         # If label is present, restrict the search to a subset of documents containing the label
-        if label and label in self._labels_to_ind and self._embeddings is not None and self._ids is not None:
+        if (
+            label
+            and label in self._labels_to_ind
+            and self._embeddings is not None
+            and self._ids is not None
+        ):
             indices = sorted(
-                list(set(self._labels_to_ind[label]).intersection(set(self._chunk_size_to_ind[chunk_size])))
+                list(
+                    set(self._labels_to_ind[label]).intersection(
+                        set(self._chunk_size_to_ind[chunk_size])
+                    )
+                )
             )
             logger.info(
                 f"SPLADE - restricting search to label: {label}, chunk size: {chunk_size}. Number of docs: {len(indices)}"
@@ -218,8 +258,10 @@ class SparseEmbeddingsSplade:
         l2_norm_query = scipy.linalg.norm(embed_query)
 
         if embeddings is not None and l2_norm_matrix is not None and ids is not None:
-            cosine_similarity = embeddings.dot(embed_query) / (l2_norm_matrix * l2_norm_query)
-            print(cosine_similarity)
+            cosine_similarity = embeddings.dot(embed_query) / (
+                l2_norm_matrix * l2_norm_query
+            )
+            # print(cosine_similarity)
             most_similar = np.argsort(cosine_similarity)
 
             top_similar_indices = most_similar[-n:][::-1]
@@ -228,7 +270,9 @@ class SparseEmbeddingsSplade:
                 cosine_similarity[top_similar_indices],
             )
         else:
-            raise Exception("Something went wrong..Embeddings weren't calculated or loaded properly.")
+            raise Exception(
+                "Something went wrong..Embeddings weren't calculated or loaded properly."
+            )
 
     def save_list(self, list_: list, fname: str) -> None:
         # store list in binary file so 'wb' mode

@@ -4,7 +4,7 @@ import tqdm
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from loguru import logger
 
 from llmsearch.config import Config
@@ -31,7 +31,10 @@ class VectorStoreChroma(VectorStore):
     @property
     def vectordb(self):
         if self._vectordb is None:
-            self._vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
+            self._vectordb = Chroma(
+                persist_directory=self._persist_folder,
+                embedding_function=self._embeddings,
+            )
         return self._vectordb
 
     def unload(self):
@@ -39,7 +42,6 @@ class VectorStoreChroma(VectorStore):
         self._retriever = None
 
         gc.collect()
-
 
     def create_index_from_documents(
         self,
@@ -55,7 +57,10 @@ class VectorStoreChroma(VectorStore):
         logger.info("Generating and persisting the embeddings..")
 
         vectordb = None
-        for group in tqdm.tqdm(chunker(all_docs, size=self.batch_size), total=int(len(all_docs) / self.batch_size)):
+        for group in tqdm.tqdm(
+            chunker(all_docs, size=self.batch_size),
+            total=int(len(all_docs) / self.batch_size),
+        ):
             ids = [d.metadata["document_id"] for d in group]
             if vectordb is None:
                 vectordb = Chroma.from_documents(
@@ -89,7 +94,9 @@ class VectorStoreChroma(VectorStore):
 
         logger.info(f"Adding embeddings for {len(docs)} documents")
         # vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
-        for group in tqdm.tqdm(chunker(docs, size=self.batch_size), total=int(len(docs) / self.batch_size)):
+        for group in tqdm.tqdm(
+            chunker(docs, size=self.batch_size), total=int(len(docs) / self.batch_size)
+        ):
             ids = [d.metadata["document_id"] for d in group]
             self.vectordb.add_texts(
                 texts=[doc.page_content for doc in group],
@@ -99,11 +106,11 @@ class VectorStoreChroma(VectorStore):
             )
         logger.info("Generated embeddings. Persisting...")
         self.vectordb.persist()
-    
+
     def delete_by_id(self, ids: List[str]):
         logger.warning(f"Deleting {len(ids)} chunks.")
         # vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
-        self.vectordb.delete(ids = ids)
+        self.vectordb.delete(ids=ids)
         self.vectordb.persist()
 
     def get_documents_by_id(self, document_ids: List[str]) -> List[Document]:
@@ -117,7 +124,10 @@ class VectorStoreChroma(VectorStore):
         """
 
         results = self.retriever.vectorstore.get(ids=document_ids, include=["metadatas", "documents"])  # type: ignore
-        docs = [Document(page_content=d, metadata=m) for d, m in zip(results["documents"], results["metadatas"])]
+        docs = [
+            Document(page_content=d, metadata=m)
+            for d, m in zip(results["documents"], results["metadatas"])
+        ]
         return docs
 
     def similarity_search_with_relevance_scores(

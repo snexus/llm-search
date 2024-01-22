@@ -17,7 +17,11 @@ from llmsearch.config import Config
 from llmsearch.chroma import VectorStoreChroma
 from llmsearch.process import get_and_parse_response
 from llmsearch.utils import get_llm_bundle, set_cache_folder
-from llmsearch.embeddings import update_embeddings, create_embeddings, EmbeddingsHashNotExistError
+from llmsearch.embeddings import (
+    update_embeddings,
+    create_embeddings,
+    EmbeddingsHashNotExistError,
+)
 
 st.set_page_config(page_title="LLMSearch", page_icon=":robot:", layout="wide")
 
@@ -29,7 +33,8 @@ langchain.debug = True
 @st.cache_data
 def parse_cli_arguments():
     parser = argparse.ArgumentParser(description="Web application for LLMSearch")
-    parser.add_argument("--config_path", dest="cli_config_path", type=str, default="")
+    parser.add_argument("--doc_config_path", dest="cli_doc_config_path", type=str, default="")
+    parser.add_argument("--model_config_path", dest="cli_model_config_path", type=str, default="")
     try:
         args = parser.parse_args()
     except SystemExit as e:
@@ -40,6 +45,7 @@ def parse_cli_arguments():
 def hash_func(obj: Config) -> str:
     return str(obj.embeddings.embeddings_path)
 
+
 def generate_index(config: Config):
     with st.spinner("Creading index, please wait..."):
         logger.debug("Unloading existing models...")
@@ -47,8 +53,7 @@ def generate_index(config: Config):
         set_cache_folder(str(config.cache_folder))
 
         vs = VectorStoreChroma(
-            persist_folder=str(config.embeddings.embeddings_path),
-            config=config
+            persist_folder=str(config.embeddings.embeddings_path), config=config
         )
         create_embeddings(config, vs)
         logger.debug("Cleaning memory and re-Loading model...")
@@ -60,7 +65,8 @@ def generate_index(config: Config):
 
     st.success("Done generating index.")
 
-def udpate_index(config_file: str ):
+
+def udpate_index(doc_config_path: str, model_config_file):
     """Updates index on-fly
 
     Args:
@@ -70,18 +76,19 @@ def udpate_index(config_file: str ):
     with st.spinner("Updating index, please wait..."):
         logger.debug("Unloading model...")
         unload_model()
-        config = load_config(config_file)
+        config = load_config(doc_config_path, model_config_file)
         set_cache_folder(str(config.cache_folder))
 
         vs = VectorStoreChroma(
-            persist_folder=str(config.embeddings.embeddings_path),
-            config=config
+            persist_folder=str(config.embeddings.embeddings_path), config=config
         )
         try:
             logger.debug("Updating embeddings")
             stats = update_embeddings(config, vs)
         except EmbeddingsHashNotExistError:
-            st.error("Couldn't find hash files. Please re-create the index using current version of the app.")
+            st.error(
+                "Couldn't find hash files. Please re-create the index using current version of the app."
+            )
         else:
             logger.info(stats)
         finally:
@@ -95,21 +102,32 @@ def udpate_index(config_file: str ):
             with torch.no_grad():
                 torch.cuda.empty_cache()
 
-            reload_model(config_file=config_file)
+            reload_model(doc_config_path=doc_config_path, model_config_file=model_config_file)
     st.success("Done updating.")
 
+
 @st.cache_data
-def load_config(config_file):
-    if isinstance(config_file, str):
-        logger.info(f"Loading data from a file: {config_file}")
-        with open(config_file, "r") as f:
+def load_config(doc_config, model_config) -> Config:
+    """Loads doc and model configurations, combines, and returns an instance of Config"""
+
+    doc_config_dict = load_yaml_file(doc_config)
+    model_config_dict = load_yaml_file(model_config)
+
+    config_dict = {**doc_config_dict, **model_config_dict}
+    return Config(**config_dict)
+
+@st.cache_data
+def load_yaml_file(config) -> dict:
+    if isinstance(config, str):
+        logger.info(f"Loading doc config from a file: {config}")
+        with open(config, "r") as f:
             string_data = f.read()
     else:
-        stringio = StringIO(config_file.getvalue().decode("utf-8"))
+        stringio = StringIO(config.getvalue().decode("utf-8"))
         string_data = stringio.read()
 
     config_dict = yaml.safe_load(string_data)
-    return Config(**config_dict)
+    return config_dict
 
 
 def unload_model():
@@ -135,7 +153,12 @@ def unload_model():
 
 @st.cache_data
 def generate_response(
-    question: str, use_hyde: bool, use_multiquery, _config: Config, _bundle, label_filter: str = ""
+    question: str,
+    use_hyde: bool,
+    use_multiquery,
+    _config: Config,
+    _bundle,
+    label_filter: str = "",
 ):
     # _config and _bundle are under scored so paratemeters aren't hashed
 
@@ -152,7 +175,7 @@ def get_config_paths(config_dir: str) -> List[str]:
     return config_paths
 
 
-def reload_model(config_file: str):
+def reload_model(doc_config_path: str, model_config_file: str):
     if st.session_state["disable_load"]:
         logger.info("In process of loading the model, please wait...")
         return
@@ -162,15 +185,22 @@ def reload_model(config_file: str):
     logger.info("Clearing state and re-loading model...")
     unload_model()
 
-    logger.debug(f"Reload model got CONFIG FILE NAME: {config_file}")
+    logger.debug(f"Reload model got DOC CONFIG FILE NAME: {doc_config_path}")
+    logger.debug(f"Reload model got MODEL CONFIG FILE NAME: {model_config_file}")
     with st.spinner("Loading configuration"):
-        config = load_config(config_file)
+        config = load_config(doc_config_path, model_config_file)
         if config.check_embeddings_exist():
             st.session_state["llm_bundle"] = get_llm_bundle(config)
-            st.session_state["llm_config"] = {"config": config, "file": config_file}
+            st.session_state["llm_config"] = {"config": config, "doc_config_path": doc_config_path, "model_config_file": model_config_file}
         else:
-            st.error("Couldn't find embeddings in {}. Please generate first.".format(config.embeddings.embeddings_path))
-            update_embeddings_button = st.button("Generate", on_click=generate_index, args=(config,), type="secondary")
+            st.error(
+                "Couldn't find embeddings in {}. Please generate first.".format(
+                    config.embeddings.embeddings_path
+                )
+            )
+            update_embeddings_button = st.button(
+                "Generate", on_click=generate_index, args=(config,), type="secondary"
+            )
 
     st.session_state["disable_load"] = False
 
@@ -193,30 +223,33 @@ if "messages" not in st.session_state:
 if "disable_load" not in st.session_state:
     st.session_state["disable_load"] = False
 
-if Path(args.cli_config_path).is_dir():
-    config_paths = get_config_paths(args.cli_config_path)
-    config_file = st.sidebar.selectbox(
+if Path(args.cli_doc_config_path).is_dir():
+    config_paths = get_config_paths(args.cli_doc_config_path)
+    doc_config_path = st.sidebar.selectbox(
         label="Choose config", options=config_paths, index=0
     )
-    logger.debug(f"CONFIG FILE: {config_file}")
+    model_config_file = args.cli_model_config_path
+    logger.debug(f"CONFIG FILE: {doc_config_path}")
 
     # Every form must have a submit button.
-    load_button = st.sidebar.button("Load", on_click=reload_model, args=(config_file,), type="primary")
+    load_button = st.sidebar.button(
+        "Load", on_click=reload_model, args=(doc_config_path, model_config_file), type="primary"
+    )
 
     # Since in the event loop on_click will be called first, we need to re-enable the flag in case of multiple clicks
     if load_button:
         st.session_state["disable_load"] = False
 
 
-
 if st.session_state["llm_bundle"] is not None:
     config = st.session_state["llm_config"]["config"]
 
-    config_file = st.session_state["llm_config"]["file"]
-    config_file_name = config_file if isinstance(config_file, str) else config_file.name
+    doc_config_path = st.session_state["llm_config"]["doc_config_path"]
+    model_config_file = st.session_state["llm_config"]["model_config_file"]
+    config_file_name = doc_config_path if isinstance(doc_config_path, str) else doc_config_path.name
     st.sidebar.subheader("Loaded Parameters:")
     with st.sidebar.expander(config_file_name):
-        st.json(config.json())
+        st.json(config.model_dump_json())
 
     st.sidebar.write(f"**Model type:** {config.llm.type}")
 
@@ -224,7 +257,12 @@ if st.session_state["llm_bundle"] is not None:
         f"**Document path**: {config.embeddings.document_settings[0].doc_path}"
     )
     st.sidebar.write(f"**Embedding path:** {config.embeddings.embeddings_path}")
-    update_embeddings_button = st.sidebar.button("Update embeddings", on_click=udpate_index, args=(config_file,), type="secondary")
+    update_embeddings_button = st.sidebar.button(
+        "Update embeddings",
+        on_click=udpate_index,
+        args=(doc_config_path, model_config_file),
+        type="secondary",
+    )
     st.sidebar.write(
         f"**Max char size (semantic search):** {config.semantic_search.max_char_size}"
     )

@@ -5,6 +5,7 @@ from typing import List, Union
 from loguru import logger
 from unstructured.documents.elements import NarrativeText, Text, Title
 from unstructured.partition.html import partition_html
+
 # from unstructured.partition.pdf import partition_pdf
 from unstructured.partition.epub import partition_epub
 
@@ -18,7 +19,7 @@ class UnstructuredSplitType(Enum):
 class UnstructuredSplitter:
     def __init__(self, document_type: UnstructuredSplitType) -> None:
         self.partition_function = {
- #            UnstructuredSplitType.PDF: partition_pdf,
+            #            UnstructuredSplitType.PDF: partition_pdf,
             UnstructuredSplitType.HTML: partition_html,
             UnstructuredSplitType.EPUB: partition_epub,
         }[document_type]
