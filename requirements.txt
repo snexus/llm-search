@@ -3,7 +3,7 @@ chromadb~=0.4
 langchain~=0.1
 pydantic~=2.5
 transformers~=4.36
-sentence-transformers~=2.2
+sentence-transformers==2.2.2
 pypdf2~=3.0.1
 ebooklib==0.18
 sentencepiece==0.1.99

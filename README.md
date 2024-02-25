@@ -7,10 +7,12 @@ The purpose of this package is to offer a convenient question-answering system w
 ## Features
 
 * Supported formats
-    * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features like cleaning image links, adding custom metadata, and more.
-    * `.pdf` - MuPDF-based parser.
-    * `.html`, `.epub` - supported through the `Unstructured` pre-processor - https://unstructured-io.github.io/unstructured/
-    * `.docx` - custom parser, supports nested tables.
+    * Build-in parsers:
+        * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features like cleaning image links, adding custom metadata, and more.
+        * `.pdf` - MuPDF-based parser.
+        * `.docx` - custom parser, supports nested tables.
+    * Other common formats are supported by `Unstructured` pre-processor:
+        * List of formats https://unstructured-io.github.io/unstructured/core/partition.html
 
 * Supports multiple collection of documents, and filtering the results by a collection.
 
