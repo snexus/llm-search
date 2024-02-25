@@ -4,25 +4,13 @@ from typing import List, Union
 
 from loguru import logger
 from unstructured.documents.elements import NarrativeText, Text, Title
-from unstructured.partition.html import partition_html
 
-# from unstructured.partition.pdf import partition_pdf
-from unstructured.partition.epub import partition_epub
-
-
-class UnstructuredSplitType(Enum):
-    PDF = auto()
-    HTML = auto()
-    EPUB = auto()
+from unstructured.partition.auto import partition
 
 
 class UnstructuredSplitter:
-    def __init__(self, document_type: UnstructuredSplitType) -> None:
-        self.partition_function = {
-            #            UnstructuredSplitType.PDF: partition_pdf,
-            UnstructuredSplitType.HTML: partition_html,
-            UnstructuredSplitType.EPUB: partition_epub,
-        }[document_type]
+    def __init__(self ) -> None:
+        self.partition_function = partition
         self.supported_elements = (NarrativeText, Text, Title)
 
     def split_document(
@@ -77,7 +65,10 @@ class UnstructuredSplitter:
             # Otherwise, add element's text to current chunk, without re-assigning the page number
             else:
                 current_chunk += text
-                current_page = min(current_page, el.metadata.page_number)
+                # If page number is None, assign it to 1
+                current_page = current_page or 1e8
+                metadata_page_number = el.metadata.page_number or current_page
+                current_page = min(current_page, metadata_page_number)
 
         return all_chunks
 

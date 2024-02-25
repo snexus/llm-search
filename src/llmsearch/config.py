@@ -37,11 +37,9 @@ class Document(BaseModel):
     metadata: dict = Field(default_factory=dict)
 
 
-class DocumentExtension(str, Enum):
+class CustomDocumentExtension(str, Enum):
     md = "md"
     pdf = "pdf"
-    html = "html"
-    epub = "epub"
     docx = "docx"
     doc = "doc"
 
@@ -69,7 +67,7 @@ class EmbeddingModel(BaseModel):
 class DocumentPathSettings(BaseModel):
     doc_path: Union[DirectoryPath, str]
     exclude_paths: List[Union[DirectoryPath, str]] = Field(default_factory=list)
-    scan_extensions: List[DocumentExtension]
+    scan_extensions: List[str]
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
     passage_prefix: str = ""
     label: str = ""  # Optional label, will be included in the metadata
@@ -77,9 +75,9 @@ class DocumentPathSettings(BaseModel):
     @field_validator("additional_parser_settings")
     def validate_extension(cls, value):
         for ext in value.keys():
-            if ext not in DocumentExtension.__members__:
+            if ext not in CustomDocumentExtension.__members__:
                 raise TypeError(
-                    f"Unknown document extension {value}. Supported: {DocumentExtension.__members__}"
+                    f"Custom parser settings aren't supported for document extension {value}. Supported: {CustomDocumentExtension.__members__}"
                 )
         return value
 

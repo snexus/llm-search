@@ -11,7 +11,7 @@ from llmsearch.config import Config, Document
 from llmsearch.parsers.doc import docx_splitter
 from llmsearch.parsers.markdown import markdown_splitter
 from llmsearch.parsers.pdf import PDFSplitter
-from llmsearch.parsers.unstructured import UnstructuredSplitter, UnstructuredSplitType
+from llmsearch.parsers.unstructured import UnstructuredSplitter
 
 
 HASH_BLOCKSIZE = 65536
@@ -19,18 +19,18 @@ HASH_BLOCKSIZE = 65536
 
 class DocumentSplitter:
     def __init__(self, config: Config) -> None:
+        
+        # Custom splitters are configured here
         self._splitter_conf = {
             "md": markdown_splitter,
             "docx": docx_splitter,
             "doc": docx_splitter,
             "pdf": PDFSplitter(chunk_overlap=200).split_document,
-            "html": UnstructuredSplitter(
-                document_type=UnstructuredSplitType.HTML
-            ).split_document,
-            "epub": UnstructuredSplitter(
-                document_type=UnstructuredSplitType.EPUB
-            ).split_document,
         }
+
+        # Fallback splitter unless custom splitter is specified
+        self._fallback_splitter = UnstructuredSplitter().split_document
+
         self.document_path_settings = config.embeddings.document_settings
         self.chunk_sizes = config.embeddings.chunk_sizes
 
@@ -43,7 +43,7 @@ class DocumentSplitter:
             exclusion_paths = [str(e) for e in setting.exclude_paths]
 
             for scan_extension in setting.scan_extensions:
-                extension = scan_extension.value
+                extension = scan_extension
 
                 # Create a list of document paths to process. Filter out paths in the exclusion list
                 paths = [
@@ -81,7 +81,7 @@ class DocumentSplitter:
             exclusion_paths = [str(e) for e in setting.exclude_paths]
 
             for scan_extension in setting.scan_extensions:
-                extension = scan_extension.value
+                extension = scan_extension
                 for chunk_size in self.chunk_sizes:  # type: ignore
                     logger.info(f"Scanning path for extension: {extension}")
 
@@ -99,7 +99,8 @@ class DocumentSplitter:
                         )
                         paths = [p for p in paths if str(p) in set(restrict_filenames)]
 
-                    splitter = self._splitter_conf[extension]
+                    # Get splitter unless fallback is specified
+                    splitter = self._splitter_conf.get(extension, self._fallback_splitter)
 
                     # Get additional parser setting for a given extension, if present
                     additional_parser_settings = setting.additional_parser_settings.get(
