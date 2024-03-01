@@ -129,7 +129,10 @@ class RerankerSettings(BaseModel):
 class MultiQuerySettings(BaseModel):
     enabled: bool = False
     multiquery_prompt: str = """You are a helpful assistant that generates multiple questions based on the source question.
-    Generate {n_versions} other questions related to: ```{question}```
+    Generate {n_versions} additional related questions related to: ```{question}```.
+    
+    Suggest only short questions without compound sentences. Suggest a variety of questions that cover different aspects of the topic.
+    Make sure they are complete questions, and that they are related to the original question.
 
     Generated questions should be separated by newlines, but shouldn't be enumerated.
     """
@@ -137,7 +140,7 @@ class MultiQuerySettings(BaseModel):
     # to generate {n_versions} different versions of the given user
     # question. The questions can be generated using domain specific language to clarify the intent. Provide these alternative
     # questions separated by newlines. Don't enumerate the alternative questions. Original question: {question}"""
-    n_versions: int = 3
+    n_versions: int = 5
 
 
 class SemanticSearchConfig(BaseModel):
