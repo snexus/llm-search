@@ -9,7 +9,7 @@ from unstructured.partition.auto import partition
 
 
 class UnstructuredSplitter:
-    def __init__(self ) -> None:
+    def __init__(self) -> None:
         self.partition_function = partition
         self.supported_elements = (NarrativeText, Text, Title)
 

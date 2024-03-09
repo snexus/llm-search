@@ -111,7 +111,12 @@ def launch_streamlit(doc_config_path: str, model_config_file: str):
 
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, "webapp.py")
-    args = ["--doc_config_path", doc_config_path, "--model_config_path", model_config_file]
+    args = [
+        "--doc_config_path",
+        doc_config_path,
+        "--model_config_path",
+        model_config_file,
+    ]
     streamlit.web.cli._main_run(filename, args)
 
 

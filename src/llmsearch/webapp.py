@@ -33,8 +33,12 @@ langchain.debug = True
 @st.cache_data
 def parse_cli_arguments():
     parser = argparse.ArgumentParser(description="Web application for LLMSearch")
-    parser.add_argument("--doc_config_path", dest="cli_doc_config_path", type=str, default="")
-    parser.add_argument("--model_config_path", dest="cli_model_config_path", type=str, default="")
+    parser.add_argument(
+        "--doc_config_path", dest="cli_doc_config_path", type=str, default=""
+    )
+    parser.add_argument(
+        "--model_config_path", dest="cli_model_config_path", type=str, default=""
+    )
     try:
         args = parser.parse_args()
     except SystemExit as e:
@@ -102,7 +106,9 @@ def udpate_index(doc_config_path: str, model_config_file):
             with torch.no_grad():
                 torch.cuda.empty_cache()
 
-            reload_model(doc_config_path=doc_config_path, model_config_file=model_config_file)
+            reload_model(
+                doc_config_path=doc_config_path, model_config_file=model_config_file
+            )
     st.success("Done updating.")
 
 
@@ -115,6 +121,7 @@ def load_config(doc_config, model_config) -> Config:
 
     config_dict = {**doc_config_dict, **model_config_dict}
     return Config(**config_dict)
+
 
 @st.cache_data
 def load_yaml_file(config) -> dict:
@@ -191,7 +198,11 @@ def reload_model(doc_config_path: str, model_config_file: str):
         config = load_config(doc_config_path, model_config_file)
         if config.check_embeddings_exist():
             st.session_state["llm_bundle"] = get_llm_bundle(config)
-            st.session_state["llm_config"] = {"config": config, "doc_config_path": doc_config_path, "model_config_file": model_config_file}
+            st.session_state["llm_config"] = {
+                "config": config,
+                "doc_config_path": doc_config_path,
+                "model_config_file": model_config_file,
+            }
         else:
             st.error(
                 "Couldn't find embeddings in {}. Please generate first.".format(
@@ -233,7 +244,10 @@ if Path(args.cli_doc_config_path).is_dir():
 
     # Every form must have a submit button.
     load_button = st.sidebar.button(
-        "Load", on_click=reload_model, args=(doc_config_path, model_config_file), type="primary"
+        "Load",
+        on_click=reload_model,
+        args=(doc_config_path, model_config_file),
+        type="primary",
     )
 
     # Since in the event loop on_click will be called first, we need to re-enable the flag in case of multiple clicks
@@ -246,7 +260,9 @@ if st.session_state["llm_bundle"] is not None:
 
     doc_config_path = st.session_state["llm_config"]["doc_config_path"]
     model_config_file = st.session_state["llm_config"]["model_config_file"]
-    config_file_name = doc_config_path if isinstance(doc_config_path, str) else doc_config_path.name
+    config_file_name = (
+        doc_config_path if isinstance(doc_config_path, str) else doc_config_path.name
+    )
     st.sidebar.subheader("Loaded Parameters:")
     with st.sidebar.expander(config_file_name):
         st.json(config.model_dump_json())

@@ -19,7 +19,7 @@ HASH_BLOCKSIZE = 65536
 
 class DocumentSplitter:
     def __init__(self, config: Config) -> None:
-        
+
         # Custom splitters are configured here
         self._splitter_conf = {
             "md": markdown_splitter,
@@ -100,7 +100,9 @@ class DocumentSplitter:
                         paths = [p for p in paths if str(p) in set(restrict_filenames)]
 
                     # Get splitter unless fallback is specified
-                    splitter = self._splitter_conf.get(extension, self._fallback_splitter)
+                    splitter = self._splitter_conf.get(
+                        extension, self._fallback_splitter
+                    )
 
                     # Get additional parser setting for a given extension, if present
                     additional_parser_settings = setting.additional_parser_settings.get(
