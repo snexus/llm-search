@@ -5,7 +5,14 @@ from typing import Any, Dict, List, Optional, Union, Literal
 
 import yaml
 from loguru import logger
-from pydantic import BaseModel, DirectoryPath, Field, field_validator, ConfigDict, ValidationInfo
+from pydantic import (
+    BaseModel,
+    DirectoryPath,
+    Field,
+    field_validator,
+    ConfigDict,
+    ValidationInfo,
+)
 from uuid import UUID, uuid4
 
 # from pydantic.typing import Literal  # type: ignore
@@ -220,6 +227,7 @@ def get_config(path: Union[str, Path]) -> Config:
         conf_dict = yaml.safe_load(f)
     return Config(**conf_dict)
 
+
 def get_doc_with_model_config(doc_config, model_config) -> Config:
     """Loads doc and model configurations, combines, and returns an instance of Config"""
 
@@ -228,6 +236,7 @@ def get_doc_with_model_config(doc_config, model_config) -> Config:
 
     config_dict = {**doc_config_dict, **model_config_dict}
     return Config(**config_dict)
+
 
 def load_yaml_file(config) -> dict:
     if isinstance(config, str):

@@ -3,7 +3,7 @@
 llm:
   type: huggingface
   params:
-    model_name: tiiuae/falcon-7b-instruct
+    model_name: microsoft/phi-2 # tiiuae/falcon-7b-instruct
     cache_folder: /storage/llm/cache
     prompt_template: |
           ### Instruction:
@@ -15,13 +15,13 @@ llm:
           ---------------
 
           ### Question: {question}
-    load_8bit: True
-    trust_remote_code: True
+    load_8bit: False
+    trust_remote_code: False
     device: auto
     pipeline_kwargs:
       do_sample: True
       max_new_tokens: 512
-      device_map: auto
       num_return_sequences: 1
     model_kwargs:
+      do_sample: True
       temperature: 0.01

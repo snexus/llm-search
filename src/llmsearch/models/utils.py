@@ -19,7 +19,7 @@ model_mappings = {
     LlamaModelConfig: LlamaModel,
     HuggingFaceModelConfig: HuggingFaceModel,
     OpenAIModelConfig: OpenAIModel,
-    AzureOpenAIModelConfig: AzureOpenAIModel
+    AzureOpenAIModelConfig: AzureOpenAIModel,
     #  AutoGPTQModelConfig: AutoGPTQModel,
 }
 
