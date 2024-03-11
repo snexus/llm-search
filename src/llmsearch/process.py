@@ -13,6 +13,8 @@ from llmsearch.ranking import get_relevant_documents
 from llmsearch.utils import LLMBundle
 from llmsearch.database.crud import create_response
 
+from llmsearch.config import Document
+
 
 def get_and_parse_response(
     llm_bundle: LLMBundle,
@@ -31,9 +33,16 @@ def get_and_parse_response(
         OutputModel
     """
 
+    if (
+        llm_bundle.conversation_history_settings.enabled
+        and llm_bundle.conversation_history_settings.rewrite_query
+    ):
+        query = contextualize_query_with_history_chat(llm_bundle, user_question=query)
+
     original_query = query
 
     queries = []
+
     hyde_response = ""
     # Add HYDE queries, if required
     if llm_bundle.hyde_enabled:
@@ -47,15 +56,33 @@ def get_and_parse_response(
     else:
         queries = [query]
 
+    # Reduce max_chars avaiable for context window by length of chat history
+    if llm_bundle.conversation_history_settings.enabled:
+        offset_max_chars = len(llm_bundle.conversation_history_settings.chat_history)
+    else:
+        offset_max_chars = 0
+        
     semantic_search_config = config.semantic_search
     most_relevant_docs, score = get_relevant_documents(
-        original_query, queries, llm_bundle, semantic_search_config, label=label
+        original_query, queries, llm_bundle, semantic_search_config, label=label, 
+        offset_max_chars = offset_max_chars
     )
+
+    # Append chat history to the documments, if enabled
+    if llm_bundle.conversation_history_settings.enabled:
+        most_relevant_docs.append(
+            Document(
+                page_content=llm_bundle.conversation_history_settings.chat_history,
+                metadata={"source": "history", "score": -1},
+            )
+        )
 
     res = llm_bundle.chain(
         {"input_documents": most_relevant_docs, "question": original_query},
         return_only_outputs=False,
     )
+
+    save_chat_history(llm_bundle, question=original_query, answer=res["output_text"])
 
     out = ResponseModel(
         response=res["output_text"],
@@ -189,3 +216,42 @@ def get_multiquery_response(
             )
         )
     return queries
+
+
+#def expand_query_with_history(llm_bundle: LLMBundle, original_query: str) -> str:
+    #"""If enabled, adds chat history to the original question."""
+
+    #if llm_bundle.conversation_history_settings is None:
+        #return original_query
+
+    #expanded_query = (
+        #original_query + llm_bundle.conversation_history_settings.chat_history
+    #)
+    #logger.info(f"Expanded query by chat history: {expanded_query}")
+    #return expanded_query
+
+
+def save_chat_history(llm_bundle: LLMBundle, question: str, answer: str) -> None:
+    if llm_bundle.conversation_history_settings is None:
+        return
+
+    llm_bundle.conversation_history_settings.add_qa_pair(question, answer)
+    logger.info("Save QA pair to conversation history...")
+
+
+def contextualize_query_with_history_chat(
+    llm_bundle: LLMBundle, user_question: str
+) -> str:
+    if llm_bundle.history_contextualization_chain is None:
+        raise TypeError("HistoryContextualization chain is not initialised. exiting.")
+
+    # If no history yet, return the original question
+    if not llm_bundle.conversation_history_settings.history:
+        return user_question
+
+    res = llm_bundle.history_contextualization_chain.run(
+        chat_history=llm_bundle.conversation_history_settings.chat_history,
+        user_question=user_question,
+    )
+    logger.info("Got history contextualized query: %s", res)
+    return res

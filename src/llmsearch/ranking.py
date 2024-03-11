@@ -85,7 +85,8 @@ def get_relevant_documents(
     llm_bundle,
     config: SemanticSearchConfig,
     label: str,
-) -> Tuple[List[str], float]:
+    offset_max_chars: int = 0
+) -> Tuple[List[Document], float]:
     most_relevant_docs = []
     docs = []
 
@@ -176,7 +177,7 @@ def get_relevant_documents(
 
     for doc in docs:
         doc_length = len(doc.page_content)
-        if len_ + doc_length < config.max_char_size:
+        if len_ + doc_length < config.max_char_size - offset_max_chars:
             most_relevant_docs.append(doc)
             len_ += doc_length
 

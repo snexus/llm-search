@@ -292,18 +292,48 @@ if st.session_state["llm_bundle"] is not None:
 
     text = st.chat_input("Enter text", disabled=False)
     is_hyde = st.sidebar.checkbox(
-        label="Use HyDE (cost: 2 api calls)",
+        label="Use HyDE (LLM calls: 2)",
         value=st.session_state["llm_bundle"].hyde_enabled,
     )
     is_multiquery = st.sidebar.checkbox(
-        label="Use MultiQuery (cost: 2 api calls)",
+        label="Use MultiQuery (LLM calls: 2)",
         value=st.session_state["llm_bundle"].multiquery_enabled,
     )
+    conv_history_enabled = st.sidebar.checkbox(
+        label="Enable follow-up questions",
+        value=st.session_state["llm_bundle"].conversation_history_settings.enabled,
+    )
+
+    if conv_history_enabled:
+        conv_history_max_length = st.sidebar.number_input(
+            "Maximum history length (QA pairs)",
+            min_value=1,
+            value=st.session_state[
+                "llm_bundle"
+            ].conversation_history_settings.max_history_length,
+        )
+        conv_history_rewrite_query =  st.sidebar.checkbox(
+            label = "Contextualize user question (LLM calls: 2)", 
+            value=True        )
 
     if text:
         # Dynamically switch hyde
         st.session_state["llm_bundle"].hyde_enabled = is_hyde
         st.session_state["llm_bundle"].multiquery_enabled = is_multiquery
+
+        # Set conversation history settings
+        if conv_history_enabled:
+            st.session_state["llm_bundle"].conversation_history_settings.enabled = (
+                conv_history_enabled
+            )
+
+            st.session_state["llm_bundle"].conversation_history_settings.max_history_length = (
+                conv_history_max_length
+            )
+            st.session_state["llm_bundle"].conversation_history_settings.rewrite_query = (
+                conv_history_rewrite_query
+            )
+
         output = generate_response(
             question=text,
             use_hyde=st.session_state["llm_bundle"].hyde_enabled,
