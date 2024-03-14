@@ -206,6 +206,11 @@ class DocumentSplitter:
                 )
                 for d in docs_data
             ]
+
+            for d in docs: # 2024/03/14 - unstructured fills page as None for some formats like csv
+                if 'page' in d.metadata and d.metadata['page'] is None:
+                    d.metadata['page'] = -1
+            
             all_docs.extend(docs)
 
             # Add hash to filename mapping and hash to doc ids mapping
