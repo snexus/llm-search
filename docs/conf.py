@@ -9,9 +9,9 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("."))
-sys.path.insert(0, os.path.abspath("../"))
-sys.path.insert(1, os.path.dirname(os.path.abspath("../")) + os.sep + "src")
+for x in os.walk('../../src'):
+    print(x)
+    sys.path.insert(0, x[0])
 
 project = 'LLM Search'
 copyright = '2024, Denis L.'
