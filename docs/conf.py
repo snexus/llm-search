@@ -13,7 +13,7 @@ author = 'Denis L.'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.duration", "sphinx.ext.autodoc", "sphinxcontrib.autodoc_pydantic", "sphinx_markdown_builder"]
+extensions = ["sphinx.ext.duration", "sphinx.ext.autodoc", "sphinxcontrib.autodoc_pydantic" ]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
