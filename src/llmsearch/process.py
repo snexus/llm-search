@@ -3,7 +3,7 @@ from typing import List
 
 from loguru import logger
 from llmsearch.config import (
-    AppendSuffix,
+    SuffixAppend,
     ObsidianAdvancedURI,
     ResponseModel,
     SemanticSearchOutput,
@@ -123,7 +123,7 @@ def process_obsidian_uri(
     return doc_name + append_str
 
 
-def process_append_suffix(doc_name, suffix: AppendSuffix, metadata: dict):
+def process_append_suffix(doc_name, suffix: SuffixAppend, metadata: dict):
     fmt = PartialFormatter(missing="")
     return doc_name + fmt.format(suffix.append_template, **metadata)
 

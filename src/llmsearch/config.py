@@ -73,11 +73,22 @@ class EmbeddingModel(BaseModel):
 
 class DocumentPathSettings(BaseModel):
     doc_path: Union[DirectoryPath, str]
+    """Defines document folder for a given document set."""
+
     exclude_paths: List[Union[DirectoryPath, str]] = Field(default_factory=list)
+    """List of folders to exclude from scanning."""
+
     scan_extensions: List[str]
+    """List of extensions to scan."""
+
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
+    """Optional parser settings (parser dependent)"""
+
     passage_prefix: str = ""
+
+
     label: str = ""  # Optional label, will be included in the metadata
+    """Optional label for the document set, will be included in the metadata."""
 
     @field_validator("additional_parser_settings")
     def validate_extension(cls, value):
@@ -99,10 +110,19 @@ class EmbeddingsConfig(BaseModel):
     embedding_model: EmbeddingModel = EmbeddingModel(
         type=EmbeddingModelType.instruct, model_name="hkunlp/instructor-large"
     )
+    """Specifies embedding model to use for dense embeddings."""
+
     embeddings_path: Union[DirectoryPath, str]
+    """Specifies output folder for embeddings."""
+
     document_settings: List[DocumentPathSettings]
+    """Defines settings for one or more document sets."""
+
     chunk_sizes: List[int] = [1024]
+    """List of chunk sizes for text chunking, supports multiples sizes."""
+
     splade_config: EmbedddingsSpladeConfig = EmbedddingsSpladeConfig(n_batch=5)
+    """Specifies settings for sparse embeddings (SPLADE)."""
 
     @property
     def labels(self) -> List[str]:
@@ -114,7 +134,7 @@ class ObsidianAdvancedURI(BaseModel):
     append_heading_template: str
 
 
-class AppendSuffix(BaseModel):
+class SuffixAppend(BaseModel):
     append_template: str
 
 
@@ -154,15 +174,32 @@ class SemanticSearchConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, extra="forbid")
 
     search_type: Literal["mmr", "similarity"]
+    """Configure search type, currently only similarity can be used."""
+
     replace_output_path: List[ReplaceOutputPath] = Field(default_factory=list)
+
     obsidian_advanced_uri: Optional[ObsidianAdvancedURI] = None
-    append_suffix: Optional[AppendSuffix] = None
+    
+    append_suffix: Optional[SuffixAppend] = None
+    """Allows to append suffix to document URL. Useful for deep linking to allow opening with external application, e.g. Obsidian."""
+    
     reranker: RerankerSettings = RerankerSettings()
+    """Configures re-ranker settings."""
+    
     max_k: int = 15
+    """Maximum number of documents to retrieve for dense OR sparse embedding (if using both, number of documents will be k*2)"""
+    
     max_char_size: int = 2048
+    """Maximum character size for query + documents to fit into context window of LLM."""
+    
     query_prefix: str = ""
+    """Prefix query with string BEFORE retrieval using embedding model."""
+    
     hyde: HydeSettings = HydeSettings()
+    """Optional configuration for HyDE."""
+    
     multiquery: MultiQuerySettings = MultiQuerySettings()
+    """Optional configuration for Multi-query."""
 
 
 class LLMConfig(BaseModel):
@@ -206,10 +243,19 @@ class ResponseModel(BaseModel):
 
 class Config(BaseModel):
     cache_folder: Path
+    """Configures path to cache LLM and embedding models."""
+
     embeddings: EmbeddingsConfig
+    """Configures document paths and embedding settings."""
+
     semantic_search: SemanticSearchConfig
+    """Confgures semantic search settings."""
+
     llm: Optional[LLMConfig] = None
+    "Don't use directly."
+
     persist_response_db_path: Optional[str] = None
+    """Optional path for SQLite database for results storage."""
 
     def check_embeddings_exist(self) -> bool:
         """Checks if embedings exist in the specified folder"""

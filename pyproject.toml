@@ -13,7 +13,11 @@ dev = [
     "black",
     "pytest",
     "pytest-cov",
-    "ruff"
+    "ruff",
+    "autodoc_pydantic",
+    "sphinx",
+    "sphinx-markdown-builder",
+    "sphinx_rtd_theme"
 ]
 
 [tool.setuptools_scm]
