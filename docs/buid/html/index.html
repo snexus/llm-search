@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to llmsearch’s documentation! &mdash; LLM Search  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Prerequisites" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            LLM Search
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#virtualenv-based-installation">Virtualenv based installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="configure_doc.html">   Documents and Embeddings Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configure_model.html">   LLM model configuration</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Create embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#update-embeddings-optional">Update embeddings (optional)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#interact-with-documents">Interact with documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#api-experimental">API (Experimental)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">LLM Search</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to llmsearch’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-llmsearch-s-documentation">
+<h1>Welcome to llmsearch’s documentation!<a class="headerlink" href="#welcome-to-llmsearch-s-documentation" title="Link to this heading"></a></h1>
+<p>The purpose of this package is to offer a convenient question-answering system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system <strong>in addition to LLMs</strong> - better document parsing, hybrid search, HyDE enabled search, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.</p>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Supported formats</dt><dd><ul>
+<li><dl class="simple">
+<dt>Build-in parsers:</dt><dd><ul>
+<li><p><cite>.md</cite> - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features like cleaning image links, adding custom metadata, and more.</p></li>
+<li><p><cite>.pdf</cite> - MuPDF-based parser.</p></li>
+<li><p><cite>.docx</cite> - custom parser, supports nested tables.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Other common formats are supported by <cite>Unstructured</cite> pre-processor:</dt><dd><ul>
+<li><p>List of formats <a class="reference external" href="https://unstructured-io.github.io/unstructured/core/partition.html">https://unstructured-io.github.io/unstructured/core/partition.html</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Supports multiple collection of documents, and filtering the results by a collection.</p></li>
+<li><p>An ability to update the embeddings incrementally, without a need to re-index the entire document base.</p></li>
+<li><p>Generates dense embeddings from a folder of documents and stores them in a vector database (ChromaDB).</p>
+<ul>
+<li><p>The following embedding models are supported:</p>
+<ul>
+<li><p>Huggingface embeddings.</p></li>
+<li><p>Sentence-transformers-based models, e.g., <cite>multilingual-e5-base</cite>.</p></li>
+<li><p>Instructor-based models, e.g., <cite>instructor-large</cite>.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Generates sparse embeddings using SPLADE (<a class="reference external" href="https://github.com/naver/splade">https://github.com/naver/splade</a>) to enable hybrid search (sparse + dense).</p></li>
+<li><dl class="simple">
+<dt>Supports the “Retrieve and Re-rank” strategy for semantic search, see - <a class="reference external" href="https://www.sbert.net/examples/applications/retrieve_rerank/README.html">https://www.sbert.net/examples/applications/retrieve_rerank/README.html</a>.</dt><dd><ul>
+<li><p>Besides the originally <cite>ms-marco-MiniLM</cite> cross-encoder, more modern <cite>bge-reranker</cite> is supported.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Supports HyDE (Hypothetical Document Embeddings) - <a class="reference external" href="https://arxiv.org/pdf/2212.10496.pdf">https://arxiv.org/pdf/2212.10496.pdf</a></dt><dd><ul>
+<li><p>WARNING: Enabling HyDE (via config OR webapp) can significantly alter the quality of the results. Please make sure to read the paper before enabling.</p></li>
+<li><p>Based on empirical observations, enabling HyDE significantly boosts quality of the output on a topics where user can’t formulate the quesiton using domain specific language of the topic - e.g. when learning new topics.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Support for multi-querying, inspired by <cite>RAG Fusion</cite> - <a class="reference external" href="https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1">https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1</a></dt><dd><ul>
+<li><p>When multi-querying is turned on (either config or webapp), the original query will be replaced by 3 variants of the same query, allowing to bridge the gap in the terminology and “offer different angles or perspectives” according to the article.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Allows interaction with embedded documents, internally supporting the following models and methods (including locally hosted):</dt><dd><ul>
+<li><p>OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).</p></li>
+<li><p>HuggingFace models.</p></li>
+<li><p>Llama cpp supported models - for full list see <a class="reference external" href="https://github.com/ggerganov/llama.cpp#description">https://github.com/ggerganov/llama.cpp#description</a></p></li>
+<li><p>AutoGPTQ models (temporarily disabled due to broken dependencies).</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Interoperability with LiteLLM + Ollama via OpenAI API, supporting hundreds of different models (see [Model configuration for LiteLLM](sample_templates/llm/litellm.yaml))</p></li>
+<li><dl class="simple">
+<dt>Other features</dt><dd><ul>
+<li><p>Simple web interface.</p></li>
+<li><p>Deep linking into document sections - jump to an individual PDF page or a header in a markdown file.</p></li>
+<li><p>Ability to save responses to an offline database for future analysis.</p></li>
+<li><p>Experimental API</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+</section>
+<section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#virtualenv-based-installation">Virtualenv based installation</a></li>
+</ul>
+</div>
+</section>
+<section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt>llmsearch requires two YAML configuration files:</dt><dd><ul class="simple">
+<li><p>Documents and embeddings configuration</p></li>
+<li><p>LLM model configuration</p></li>
+</ul>
+</dd>
+</dl>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="configure_doc.html">   Documents and Embeddings Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configure_doc.html#configuration-example">Configuration example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configure_doc.html#document-config-reference">Document Config Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.Document"><code class="docutils literal notranslate"><span class="pre">Document</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.DocumentPathSettings"><code class="docutils literal notranslate"><span class="pre">DocumentPathSettings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.EmbedddingsSpladeConfig"><code class="docutils literal notranslate"><span class="pre">EmbedddingsSpladeConfig</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.EmbeddingModel"><code class="docutils literal notranslate"><span class="pre">EmbeddingModel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.EmbeddingModelType"><code class="docutils literal notranslate"><span class="pre">EmbeddingModelType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.EmbeddingsConfig"><code class="docutils literal notranslate"><span class="pre">EmbeddingsConfig</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.HydeSettings"><code class="docutils literal notranslate"><span class="pre">HydeSettings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.MultiQuerySettings"><code class="docutils literal notranslate"><span class="pre">MultiQuerySettings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.ObsidianAdvancedURI"><code class="docutils literal notranslate"><span class="pre">ObsidianAdvancedURI</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.ReplaceOutputPath"><code class="docutils literal notranslate"><span class="pre">ReplaceOutputPath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.RerankerModel"><code class="docutils literal notranslate"><span class="pre">RerankerModel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.RerankerSettings"><code class="docutils literal notranslate"><span class="pre">RerankerSettings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.ResponseModel"><code class="docutils literal notranslate"><span class="pre">ResponseModel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.SemanticSearchConfig"><code class="docutils literal notranslate"><span class="pre">SemanticSearchConfig</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_doc.html#llmsearch.config.SemanticSearchOutput"><code class="docutils literal notranslate"><span class="pre">SemanticSearchOutput</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configure_model.html">   LLM model configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configure_model.html#configuration-examples">Configuration examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configure_model.html#openai">OpenAI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_model.html#llamacpp">llamacpp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_model.html#ollama-litellm">Ollama + Litellm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_model.html#huggingface">Huggingface</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="configure_model.html#module-llmsearch.models.config">Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configure_model.html#llmsearch.models.config.AzureOpenAIModelConfig"><code class="docutils literal notranslate"><span class="pre">AzureOpenAIModelConfig</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_model.html#llmsearch.models.config.HuggingFaceModelConfig"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_model.html#llmsearch.models.config.LlamaModelConfig"><code class="docutils literal notranslate"><span class="pre">LlamaModelConfig</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configure_model.html#llmsearch.models.config.OpenAIModelConfig"><code class="docutils literal notranslate"><span class="pre">OpenAIModelConfig</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Create embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#update-embeddings-optional">Update embeddings (optional)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#interact-with-documents">Interact with documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#api-experimental">API (Experimental)</a></li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Prerequisites" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Denis L..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM Model Config &mdash; LLM Search  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Create embeddings" href="usage.html" />
+    <link rel="prev" title="Documents and Embedding Config" href="configure_doc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            LLM Search
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#virtualenv-based-installation">Virtualenv based installation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="configure_doc.html">   Documents and Embeddings Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">   LLM model configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-examples">Configuration examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#openai">OpenAI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#llamacpp">llamacpp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ollama-litellm">Ollama + Litellm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#huggingface">Huggingface</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-llmsearch.models.config">Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig"><code class="docutils literal notranslate"><span class="pre">AzureOpenAIModelConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.deployment_name"><code class="docutils literal notranslate"><span class="pre">AzureOpenAIModelConfig.deployment_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.model_kwargs"><code class="docutils literal notranslate"><span class="pre">AzureOpenAIModelConfig.model_kwargs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.model_name"><code class="docutils literal notranslate"><span class="pre">AzureOpenAIModelConfig.model_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.openai_api_base"><code class="docutils literal notranslate"><span class="pre">AzureOpenAIModelConfig.openai_api_base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.openai_api_type"><code class="docutils literal notranslate"><span class="pre">AzureOpenAIModelConfig.openai_api_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.openai_api_version"><code class="docutils literal notranslate"><span class="pre">AzureOpenAIModelConfig.openai_api_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.prompt_template"><code class="docutils literal notranslate"><span class="pre">AzureOpenAIModelConfig.prompt_template</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.cache_folder"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig.cache_folder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.load_8bit"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig.load_8bit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.model_kwargs"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig.model_kwargs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.model_name"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig.model_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.pipeline_kwargs"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig.pipeline_kwargs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.prompt_template"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig.prompt_template</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.tokenizer_name"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig.tokenizer_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.tokenzier_kwargs"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig.tokenzier_kwargs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.trust_remote_code"><code class="docutils literal notranslate"><span class="pre">HuggingFaceModelConfig.trust_remote_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#llmsearch.models.config.LlamaModelConfig"><code class="docutils literal notranslate"><span class="pre">LlamaModelConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.LlamaModelConfig.model_init_params"><code class="docutils literal notranslate"><span class="pre">LlamaModelConfig.model_init_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.LlamaModelConfig.model_kwargs"><code class="docutils literal notranslate"><span class="pre">LlamaModelConfig.model_kwargs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.LlamaModelConfig.model_path"><code class="docutils literal notranslate"><span class="pre">LlamaModelConfig.model_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.LlamaModelConfig.prompt_template"><code class="docutils literal notranslate"><span class="pre">LlamaModelConfig.prompt_template</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#llmsearch.models.config.OpenAIModelConfig"><code class="docutils literal notranslate"><span class="pre">OpenAIModelConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.OpenAIModelConfig.model_kwargs"><code class="docutils literal notranslate"><span class="pre">OpenAIModelConfig.model_kwargs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#llmsearch.models.config.OpenAIModelConfig.prompt_template"><code class="docutils literal notranslate"><span class="pre">OpenAIModelConfig.prompt_template</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Create embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#update-embeddings-optional">Update embeddings (optional)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#interact-with-documents">Interact with documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html#api-experimental">API (Experimental)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LLM Search</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">LLM Model Config</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/configure_model.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="llm-model-config">
+<h1>LLM Model Config<a class="headerlink" href="#llm-model-config" title="Link to this heading"></a></h1>
+<section id="configuration-examples">
+<h2>Configuration examples<a class="headerlink" href="#configuration-examples" title="Link to this heading"></a></h2>
+<section id="openai">
+<h3>OpenAI<a class="headerlink" href="#openai" title="Link to this heading"></a></h3>
+<p>For OpenAI configuration, create .env files containing the API key</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># This file contains a configuration section relevant to LLM, not the entire config</span>
+
+<span class="nt">llm</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai</span>
+<span class="w">  </span><span class="nt">params</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">prompt_template</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">       </span><span class="no">Contex information is provided below. Given only the context and not prior knowledge, provide detailed answer to the question and references to the provided context. If answer isn&#39;t in the context, say you don&#39;t know.</span>
+<span class="w">       </span><span class="no"> </span>
+<span class="w">         </span><span class="no">### Context:</span>
+<span class="w">         </span><span class="no">---------------------</span>
+<span class="w">         </span><span class="no">{context}</span>
+<span class="w">         </span><span class="no">---------------------</span>
+
+<span class="w">         </span><span class="no">### Question: {question}</span>
+<span class="w">    </span><span class="nt">model_kwargs</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">      </span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gpt-3.5-turbo</span>
+</pre></div>
+</div>
+</section>
+<section id="llamacpp">
+<h3>llamacpp<a class="headerlink" href="#llamacpp" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># This file contains a configuration section relevant to LLM, not the entire config</span>
+
+<span class="nt">llm</span><span class="p">:</span>
+<span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">llamacpp</span>
+<span class="w"> </span><span class="nt">params</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">model_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/storage/llm/cache/airoboros/airoboros-l2-13b-gpt4-1.4.1.Q4_K_M.gguf</span>
+<span class="w">   </span><span class="nt">prompt_template</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">         </span><span class="no">### Instruction:</span>
+<span class="w">         </span><span class="no">Use the following pieces of context to provide detailed answer the question at the end. If answer isn&#39;t in the context, say that you don&#39;t know, don&#39;t try to make up an answer.</span>
+
+<span class="w">         </span><span class="no">### Context:</span>
+<span class="w">         </span><span class="no">---------------</span>
+<span class="w">         </span><span class="no">{context}</span>
+<span class="w">         </span><span class="no">---------------</span>
+
+<span class="w">         </span><span class="no">### Question: {question}</span>
+<span class="w">         </span><span class="no">### Response:</span>
+<span class="w">   </span><span class="nt">model_init_params</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">n_ctx</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1512</span>
+<span class="w">     </span><span class="nt">n_batch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="w">     </span><span class="nt">n_gpu_layers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span>
+
+<span class="w">   </span><span class="nt">model_kwargs</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">max_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="w">     </span><span class="nt">top_p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">     </span><span class="nt">top_k</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40</span>
+<span class="w">     </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+</pre></div>
+</div>
+</section>
+<section id="ollama-litellm">
+<h3>Ollama + Litellm<a class="headerlink" href="#ollama-litellm" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># This file contains a configuration section relevant to LLM, not the entire config</span>
+
+<span class="nt">llm</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openai</span>
+<span class="w">   </span><span class="nt">params</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">prompt_template</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">       </span><span class="no">Contex information is provided below. Given only the context and not prior knowledge, provide detailed answer to the question and references to the provided context. If answer isn&#39;t in the context, say you don&#39;t know.</span>
+<span class="w">       </span><span class="no"> </span>
+<span class="w">         </span><span class="no">### Context:</span>
+<span class="w">         </span><span class="no">---------------------</span>
+<span class="w">         </span><span class="no">{context}</span>
+<span class="w">         </span><span class="no">---------------------</span>
+
+<span class="w">         </span><span class="no">### Question: {question}</span>
+<span class="w">     </span><span class="nt">model_kwargs</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span>
+<span class="w">       </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;any&quot;</span>
+<span class="w">       </span><span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;any&quot;</span>
+<span class="w">       </span><span class="nt">base_url</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;http://0.0.0.0:8000&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="huggingface">
+<h3>Huggingface<a class="headerlink" href="#huggingface" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># This file contains a configuration section relevant to LLM, not the entire config</span>
+
+<span class="nt">llm</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">huggingface</span>
+<span class="w">  </span><span class="nt">params</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">microsoft/phi-2</span><span class="w"> </span><span class="c1"># tiiuae/falcon-7b-instruct</span>
+<span class="w">    </span><span class="nt">cache_folder</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/storage/llm/cache</span>
+<span class="w">    </span><span class="nt">prompt_template</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">### Instruction:</span>
+<span class="w">          </span><span class="no">Use the following pieces of context to answer the question at the end. If answer isn&#39;t in the context, say that you don&#39;t know, don&#39;t try to make up an answer.</span>
+
+<span class="w">          </span><span class="no">### Context: </span>
+<span class="w">          </span><span class="no">---------------</span>
+<span class="w">          </span><span class="no">{context}</span>
+<span class="w">          </span><span class="no">---------------</span>
+
+<span class="w">          </span><span class="no">### Question: {question}</span>
+<span class="w">    </span><span class="nt">load_8bit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+<span class="w">    </span><span class="nt">trust_remote_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+<span class="w">    </span><span class="nt">device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span>
+<span class="w">    </span><span class="nt">pipeline_kwargs</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">do_sample</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">      </span><span class="nt">max_new_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+<span class="w">      </span><span class="nt">num_return_sequences</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">model_kwargs</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">do_sample</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">      </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.01</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="module-llmsearch.models.config">
+<span id="reference"></span><h2>Reference<a class="headerlink" href="#module-llmsearch.models.config" title="Link to this heading"></a></h2>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="llmsearch.models.config.AzureOpenAIModelConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">llmsearch.models.config.</span></span><span class="sig-name descname"><span class="pre">AzureOpenAIModelConfig</span></span><a class="headerlink" href="#llmsearch.models.config.AzureOpenAIModelConfig" title="Link to this definition"></a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AzureOpenAIModelConfig&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;prompt_template&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Prompt Template&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;deployment_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deployment Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;model_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;model_kwargs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model Kwargs&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;openai_api_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;azure&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Openai Api Type&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;openai_api_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-05-15&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Openai Api Version&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;openai_api_base&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Openai Api Base&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;prompt_template&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;deployment_name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;model_name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;openai_api_base&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.deployment_name" title="llmsearch.models.config.AzureOpenAIModelConfig.deployment_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deployment_name</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.model_kwargs" title="llmsearch.models.config.AzureOpenAIModelConfig.model_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_kwargs</span> <span class="pre">(dict)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.model_name" title="llmsearch.models.config.AzureOpenAIModelConfig.model_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_name</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.openai_api_base" title="llmsearch.models.config.AzureOpenAIModelConfig.openai_api_base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">openai_api_base</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.openai_api_type" title="llmsearch.models.config.AzureOpenAIModelConfig.openai_api_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">openai_api_type</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.openai_api_version" title="llmsearch.models.config.AzureOpenAIModelConfig.openai_api_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">openai_api_version</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.AzureOpenAIModelConfig.prompt_template" title="llmsearch.models.config.AzureOpenAIModelConfig.prompt_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prompt_template</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.AzureOpenAIModelConfig.deployment_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deployment_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#llmsearch.models.config.AzureOpenAIModelConfig.deployment_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.AzureOpenAIModelConfig.model_kwargs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#llmsearch.models.config.AzureOpenAIModelConfig.model_kwargs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.AzureOpenAIModelConfig.model_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#llmsearch.models.config.AzureOpenAIModelConfig.model_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.AzureOpenAIModelConfig.openai_api_base">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">openai_api_base</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#llmsearch.models.config.AzureOpenAIModelConfig.openai_api_base" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.AzureOpenAIModelConfig.openai_api_type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">openai_api_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'azure'</span></em><a class="headerlink" href="#llmsearch.models.config.AzureOpenAIModelConfig.openai_api_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.AzureOpenAIModelConfig.openai_api_version">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">openai_api_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2023-05-15'</span></em><a class="headerlink" href="#llmsearch.models.config.AzureOpenAIModelConfig.openai_api_version" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.AzureOpenAIModelConfig.prompt_template">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prompt_template</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#llmsearch.models.config.AzureOpenAIModelConfig.prompt_template" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">llmsearch.models.config.</span></span><span class="sig-name descname"><span class="pre">HuggingFaceModelConfig</span></span><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig" title="Link to this definition"></a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HuggingFaceModelConfig&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;cache_folder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cache Folder&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;tokenizer_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tokenizer Name&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;model_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model Name&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;prompt_template&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Prompt Template&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;load_8bit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Load 8Bit&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;trust_remote_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Trust Remote Code&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;tokenzier_kwargs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tokenzier Kwargs&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;model_kwargs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model Kwargs&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;pipeline_kwargs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pipeline Kwargs&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;model_name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;prompt_template&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.cache_folder" title="llmsearch.models.config.HuggingFaceModelConfig.cache_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cache_folder</span> <span class="pre">(pathlib.Path</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.load_8bit" title="llmsearch.models.config.HuggingFaceModelConfig.load_8bit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_8bit</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.model_kwargs" title="llmsearch.models.config.HuggingFaceModelConfig.model_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_kwargs</span> <span class="pre">(dict)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.model_name" title="llmsearch.models.config.HuggingFaceModelConfig.model_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_name</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.pipeline_kwargs" title="llmsearch.models.config.HuggingFaceModelConfig.pipeline_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pipeline_kwargs</span> <span class="pre">(dict)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.prompt_template" title="llmsearch.models.config.HuggingFaceModelConfig.prompt_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prompt_template</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.tokenizer_name" title="llmsearch.models.config.HuggingFaceModelConfig.tokenizer_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tokenizer_name</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.tokenzier_kwargs" title="llmsearch.models.config.HuggingFaceModelConfig.tokenzier_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tokenzier_kwargs</span> <span class="pre">(dict)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.HuggingFaceModelConfig.trust_remote_code" title="llmsearch.models.config.HuggingFaceModelConfig.trust_remote_code"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trust_remote_code</span> <span class="pre">(bool)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig.cache_folder">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache_folder</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig.cache_folder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig.load_8bit">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_8bit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig.load_8bit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig.model_kwargs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig.model_kwargs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig.model_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig.model_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig.pipeline_kwargs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pipeline_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig.pipeline_kwargs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig.prompt_template">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prompt_template</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig.prompt_template" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig.tokenizer_name">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tokenizer_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig.tokenizer_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig.tokenzier_kwargs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tokenzier_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig.tokenzier_kwargs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.HuggingFaceModelConfig.trust_remote_code">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trust_remote_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#llmsearch.models.config.HuggingFaceModelConfig.trust_remote_code" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="llmsearch.models.config.LlamaModelConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">llmsearch.models.config.</span></span><span class="sig-name descname"><span class="pre">LlamaModelConfig</span></span><a class="headerlink" href="#llmsearch.models.config.LlamaModelConfig" title="Link to this definition"></a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LlamaModelConfig&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;model_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model Path&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;prompt_template&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Prompt Template&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;model_init_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model Init Params&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;model_kwargs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model Kwargs&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;model_path&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;prompt_template&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#llmsearch.models.config.LlamaModelConfig.model_init_params" title="llmsearch.models.config.LlamaModelConfig.model_init_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_init_params</span> <span class="pre">(dict)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.LlamaModelConfig.model_kwargs" title="llmsearch.models.config.LlamaModelConfig.model_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_kwargs</span> <span class="pre">(dict)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.LlamaModelConfig.model_path" title="llmsearch.models.config.LlamaModelConfig.model_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_path</span> <span class="pre">(pathlib.Path</span> <span class="pre">|</span> <span class="pre">str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.LlamaModelConfig.prompt_template" title="llmsearch.models.config.LlamaModelConfig.prompt_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prompt_template</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.LlamaModelConfig.model_init_params">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_init_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#llmsearch.models.config.LlamaModelConfig.model_init_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.LlamaModelConfig.model_kwargs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#llmsearch.models.config.LlamaModelConfig.model_kwargs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.LlamaModelConfig.model_path">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#llmsearch.models.config.LlamaModelConfig.model_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.LlamaModelConfig.prompt_template">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prompt_template</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#llmsearch.models.config.LlamaModelConfig.prompt_template" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="llmsearch.models.config.OpenAIModelConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">llmsearch.models.config.</span></span><span class="sig-name descname"><span class="pre">OpenAIModelConfig</span></span><a class="headerlink" href="#llmsearch.models.config.OpenAIModelConfig" title="Link to this definition"></a></dt>
+<dd><p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OpenAIModelConfig&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;prompt_template&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Prompt Template&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;model_kwargs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model Kwargs&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;prompt_template&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#llmsearch.models.config.OpenAIModelConfig.model_kwargs" title="llmsearch.models.config.OpenAIModelConfig.model_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_kwargs</span> <span class="pre">(dict)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#llmsearch.models.config.OpenAIModelConfig.prompt_template" title="llmsearch.models.config.OpenAIModelConfig.prompt_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prompt_template</span> <span class="pre">(str)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.OpenAIModelConfig.model_kwargs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_kwargs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#llmsearch.models.config.OpenAIModelConfig.model_kwargs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="llmsearch.models.config.OpenAIModelConfig.prompt_template">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prompt_template</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#llmsearch.models.config.OpenAIModelConfig.prompt_template" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="configure_doc.html" class="btn btn-neutral float-left" title="Documents and Embedding Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Create embeddings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Denis L..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
