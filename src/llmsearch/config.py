@@ -170,6 +170,62 @@ class MultiQuerySettings(BaseModel):
     n_versions: int = 5
 
 
+class ConversationHistoryQAPair(BaseModel):
+    question: str
+    answer: str
+
+
+class ConversrationHistorySettings(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = False
+
+    max_history_length: int
+    """Maximum length of conversational history paris to remember (single pair = query + response)"""
+
+    rewrite_query: bool
+    """Rewrite query for better context understanding"""
+
+    history: List[ConversationHistoryQAPair] = Field(default_factory=list)
+    """Keeps history of conversation pair, up to max_history_length"""
+
+    template_instruction: str = (
+        """When answering questions, take into consideration the history of the chat converastion, which is listed below under Chat History. The chat history is in reverse chronological order, so the most recent exhange is at the top."""
+    )
+    template_contextualize: str = """
+    Given a chat history and the latest user question \
+which might reference to context in the chat history, formulate a standalone question \
+which can be understood without the chat history. Do NOT answer the question, \
+return only reformulated question. Do NOT mention it is 'reformulated question', return only body of the question and nothing else.
+
+    {chat_history}
+
+    User question: {user_question}
+    """
+    
+    template_header: str = "\nChat History:\n=============\n"
+    template_qa_pairs: str = "User: {question}\nAssistant: {answer}\n\n"
+
+    def add_qa_pair(self, question: str, answer: str):
+        if len(self.history) == self.max_history_length:
+            self.history.pop(0)
+
+        self.history.append(ConversationHistoryQAPair(question=question, answer=answer))
+
+    @property
+    def chat_history(self) -> str:
+        if not self.history:
+            return ""
+
+        out_str = self.template_header
+        for qa_pair in self.history[::-1]:
+            out_str += self.template_qa_pairs.format(
+                question=qa_pair.question, answer=qa_pair.answer
+            )
+
+        return out_str
+
+
 class SemanticSearchConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, extra="forbid")
 
@@ -199,7 +255,14 @@ class SemanticSearchConfig(BaseModel):
     """Optional configuration for HyDE."""
     
     multiquery: MultiQuerySettings = MultiQuerySettings()
-    """Optional configuration for Multi-query."""
+    """Optional configuration for multi-query"""
+
+    conversation_history_settings: ConversrationHistorySettings = (
+        ConversrationHistorySettings(
+            enabled=False, max_history_length=2, rewrite_query=True
+        )
+    )
+    """Conversation history"""
 
 
 class LLMConfig(BaseModel):
@@ -295,3 +358,4 @@ def load_yaml_file(config) -> dict:
 
     config_dict = yaml.safe_load(string_data)
     return config_dict
+

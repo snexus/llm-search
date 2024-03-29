@@ -43,6 +43,8 @@ Features
 * Support for multi-querying, inspired by `RAG Fusion` - https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1
     * When multi-querying is turned on (either config or webapp), the original query will be replaced by 3 variants of the same query, allowing to bridge the gap in the terminology and "offer different angles or perspectives" according to the article.
 
+* Supprts optional chat history with question contextualization
+
 * Allows interaction with embedded documents, internally supporting the following models and methods (including locally hosted):
     * OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).
     * HuggingFace models.

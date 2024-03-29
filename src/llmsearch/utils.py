@@ -8,7 +8,7 @@ from loguru import logger
 
 from llmsearch.chroma import VectorStoreChroma
 from llmsearch.splade import SparseEmbeddingsSplade
-from llmsearch.config import Config, RerankerModel
+from llmsearch.config import Config, RerankerModel, ConversrationHistorySettings
 from llmsearch.models.utils import get_llm
 from llmsearch.ranking import BGEReranker, MarcoReranker
 from llmsearch.embeddings import VectorStore
@@ -25,12 +25,14 @@ class LLMBundle:
     store: VectorStore
     reranker: Optional[Union[BGEReranker, MarcoReranker]]
     sparse_search: SparseEmbeddingsSplade
+    conversation_history_settings: ConversrationHistorySettings
     chunk_sizes: List[int]
     response_persist_db_settings: Optional[DBSettings] = None
     hyde_chain: Optional[LLMChain] = None
     hyde_enabled: bool = False
     multiquery_chain: Optional[LLMChain] = None
     multiquery_enabled: bool = False
+    history_contextualization_chain: Optional[LLMChain] = None
 
 
 def set_cache_folder(cache_folder_root: str):
@@ -97,6 +99,7 @@ def get_llm_bundle(config: Config) -> LLMBundle:
 
     hyde_chain = get_hyde_chain(config, llm.model)
     multiquery_chain = get_multiquery_chain(config, llm.model)
+    history_contextualization_chain = get_history_contextualize_chain(config, llm.model)
 
     return LLMBundle(
         chain=chain,
@@ -109,6 +112,8 @@ def get_llm_bundle(config: Config) -> LLMBundle:
         hyde_enabled=config.semantic_search.hyde.enabled,
         multiquery_chain=multiquery_chain,
         multiquery_enabled=config.semantic_search.multiquery.enabled,
+        conversation_history_settings=config.semantic_search.conversation_history_settings, 
+        history_contextualization_chain = history_contextualization_chain
     )
 
 
@@ -130,5 +135,17 @@ def get_multiquery_chain(config, llm_model) -> LLMChain:
         prompt=PromptTemplate(
             template=config.semantic_search.multiquery.multiquery_prompt,
             input_variables=["question", "n_versions"],
+        ),
+    )
+
+def get_history_contextualize_chain(config: Config, llm_model) -> LLMChain:
+    """LLM chain for history contextualization queries"""
+
+    logger.info("Creating chat history contextualization chain...")
+    return LLMChain(
+        llm=llm_model,
+        prompt=PromptTemplate(
+            template=config.semantic_search.conversation_history_settings.template_contextualize,
+            input_variables=["chat_history", "user_question"],
         ),
     )

@@ -56,6 +56,11 @@ semantic_search:
   query_prefix: "query: "
   multiquery:
     enabled: False
+  conversation_history_settings:
+    enabled: True
+    rewrite_query: True
+    max_history_length: 2
+
 
 persist_response_db_path: responses_test.db
 

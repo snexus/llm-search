@@ -2,7 +2,7 @@
 
 # pyLLMSeach - Advanced RAG, ready to use
 
-The purpose of this package is to offer a convenient question-answering (RAG) system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system **in addition to basic LLN based RAGs** - better document parsing, hybrid search, HyDE enabled search, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
+The purpose of this package is to offer a convenient question-answering (RAG) system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system **in addition to basic LLN based RAGs** - better document parsing, hybrid search, HyDE enabled search, chat history, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
 
 ## Features
 
@@ -35,6 +35,8 @@ The purpose of this package is to offer a convenient question-answering (RAG) sy
 
 * Support for multi-querying, inspired by `RAG Fusion` - https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1
     * When multi-querying is turned on (either config or webapp), the original query will be replaced by 3 variants of the same query, allowing to bridge the gap in the terminology and "offer different angles or perspectives" according to the article.
+
+* Supprts optional chat history with question contextualization
 
 * Allows interaction with embedded documents, internally supporting the following models and methods (including locally hosted):
     * OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).
