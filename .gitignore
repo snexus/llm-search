@@ -36,6 +36,7 @@ share/python-wheels/
 MANIFEST
 .env.back
 templates-test-local
+src/llmsearch/_version.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
