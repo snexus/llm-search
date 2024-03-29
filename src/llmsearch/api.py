@@ -103,7 +103,7 @@ async def llmsearch(
 @app.get("/semantic")
 async def semanticsearch(question: str):
     docs = get_relevant_documents(
-        query=question, llm_bundle=llm_bundle, config=config.semantic_search, label=""
+        original_query=question, queries = [question], llm_bundle=llm_bundle, config=config.semantic_search, label=""
     )
     return {"sources": docs}
 

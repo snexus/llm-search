@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pyllmsearch"
 description = "LLM Powered Advanced RAG Application"
 dynamic = ["dependencies", "version"]
-keywords = ["llm", "rag", "retrieval-augemented-generation","local-llm"]
+keywords = ["llm", "rag", "retrieval-augemented-generation","large-language-models",  "local", "splade", "hyde", "reranking", "chroma", "openai"]
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [

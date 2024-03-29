@@ -11,13 +11,11 @@ Prerequisites
 
 
 
-Virtualenv based installation
-=============================
+Install Latest Version
+======================
 
 .. code-block:: bash
     
-    git clone https://github.com/snexus/llm-search.git
-    cd llm-search
 
     # Create a new environment
     python3 -m venv .venv 
@@ -25,14 +23,29 @@ Virtualenv based installation
     # Activate new environment
     source .venv/bin/activate
 
-    # Set variables for llama-cpp to compile with CUDA.
+    # Install packages
+    pip install pyllmsearch
 
+
+
+Install from source
+===================
+
+.. code-block:: bash
+
+    # Clone the repository
+
+    git clone https://github.com/snexus/llm-search.git
+    cd llm-search
+
+    # Optional - Set variables for llama-cpp to compile with CUDA.
     # Assuming Nvidia CUDA Toolkit is installed and pointing to `usr/local/cuda` on Ubuntu
 
-    source ./setvars.sh 
+    # source ./setvars.sh 
 
-    # Install newest stable torch for CUDA 11.x
-    pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+    # Optional - Install newest stable torch for CUDA 11.x
+    # pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+
     # or for CUDA 12.x version
     # pip3 install torch torchvision
 
