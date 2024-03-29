@@ -1,0 +1,5 @@
+autodoc_pydantic==2.1.0
+sphinx_rtd_theme
+pydantic~=2.6.0
+PyYAML
+loguru

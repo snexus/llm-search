@@ -19,7 +19,6 @@ from llmsearch.utils import LLMBundle, get_llm_bundle
 load_dotenv()
 langchain.debug = True
 
-
 # Load the configuration
 def read_config() -> Config:
     config_file = os.environ["FASTAPI_LLM_CONFIG"]
@@ -104,7 +103,7 @@ async def llmsearch(
 @app.get("/semantic")
 async def semanticsearch(question: str):
     docs = get_relevant_documents(
-        query=question, llm_bundle=llm_bundle, config=config.semantic_search, label=""
+        original_query=question, queries = [question], llm_bundle=llm_bundle, config=config.semantic_search, label=""
     )
     return {"sources": docs}
 

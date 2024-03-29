@@ -12,6 +12,7 @@ temp_data/
 *.npz
 *.db
 sample_templates/obsidian_conf_test.yaml
+.venv2
 
 # Distribution / packaging
 .Python
@@ -35,6 +36,7 @@ share/python-wheels/
 MANIFEST
 .env.back
 templates-test-local
+src/llmsearch/_version.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -45,6 +47,7 @@ templates-test-local
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+_version.py
 
 # Unit test / coverage reports
 htmlcov/
