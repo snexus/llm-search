@@ -32,6 +32,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/snexus/llm-search"
+Documentation = "https://llm-search.readthedocs.io/en/latest/"
 
 [tool.setuptools_scm]
 write_to = "src/llmsearch/_version.py"

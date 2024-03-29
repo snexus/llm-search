@@ -53,7 +53,7 @@ The purpose of this package is to offer a convenient question-answering (RAG) sy
 
 ## Demo
 
-![Demo](media/llmsearch-demo-v2.gif)
+![Demo](https://github.com/snexus/llm-search/blob/5b76a8968fcdec9a23ad0836c5f18d6e269d08f9/media/llmsearch-demo-v2.gif)
 
 
 ## Documentation
