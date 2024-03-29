@@ -19,7 +19,6 @@ from llmsearch.utils import LLMBundle, get_llm_bundle
 load_dotenv()
 langchain.debug = True
 
-
 # Load the configuration
 def read_config() -> Config:
     config_file = os.environ["FASTAPI_LLM_CONFIG"]

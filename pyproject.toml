@@ -3,12 +3,22 @@ requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2", "setuptools_scm_azure
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "llmsearch"
-description = "LLM Powered Search Tool"
-# version = "0.1.0"
+name = "pyllmsearch"
+description = "LLM Powered Advanced RAG Application"
 dynamic = ["dependencies", "version"]
+keywords = ["llm", "rag", "retrieval-augemented-generation","local-llm"]
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
 
 [project.optional-dependencies]
+
 dev = [
     "black",
     "pytest",
@@ -20,8 +30,12 @@ dev = [
     "sphinx_rtd_theme"
 ]
 
+[project.urls]
+Homepage = "https://github.com/snexus/llm-search"
+
 [tool.setuptools_scm]
 write_to = "src/llmsearch/_version.py"
+local_scheme = "no-local-version"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -38,3 +52,4 @@ src = ["src"]
 [project.scripts]
 llmsearch = 'llmsearch.cli:main_cli'
 llmsearchapi = 'llmsearch.api:main'
+

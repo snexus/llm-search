@@ -1,8 +1,8 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://githubtocolab.com/snexus/llm-search/blob/main/notebooks/llmsearch_google_colab_demo.ipynb)
 
-# LLM Search
+# pyLLMSeach - ready to use advanced RAG
 
-The purpose of this package is to offer a convenient question-answering system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system **in addition to LLMs** - better document parsing, hybrid search, HyDE enabled search, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
+The purpose of this package is to offer a convenient question-answering (RAG) system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system **in addition to basic LLN based RAGs** - better document parsing, hybrid search, HyDE enabled search, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
 
 ## Features
 
@@ -57,4 +57,7 @@ The purpose of this package is to offer a convenient question-answering system w
 
 
 ## Documentation
+
+[Browse Documentation](https://llm-search.readthedocs.io/en/latest/)
+
 

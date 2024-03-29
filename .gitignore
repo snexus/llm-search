@@ -45,6 +45,7 @@ templates-test-local
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+_version.py
 
 # Unit test / coverage reports
 htmlcov/
