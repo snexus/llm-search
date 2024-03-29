@@ -255,11 +255,14 @@ class SemanticSearchConfig(BaseModel):
     """Optional configuration for HyDE."""
     
     multiquery: MultiQuerySettings = MultiQuerySettings()
+    """Optional configuration for multi-query"""
+
     conversation_history_settings: ConversrationHistorySettings = (
         ConversrationHistorySettings(
             enabled=False, max_history_length=2, rewrite_query=True
         )
     )
+    """Conversation history"""
 
 
 class LLMConfig(BaseModel):
