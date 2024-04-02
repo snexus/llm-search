@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to llmsearch's documentation!
+Welcome to pyLLMSearch's documentation!
 =====================================
 
 The purpose of this package is to offer a convenient question-answering system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system **in addition to LLMs** - better document parsing, hybrid search, HyDE enabled search, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
