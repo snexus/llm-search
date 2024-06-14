@@ -3,7 +3,7 @@
 llm:
  type: llamacpp
  params:
-   model_path: /storage/llm/cache/airoboros/airoboros-l2-13b-gpt4-1.4.1.Q4_K_M.gguf
+   model_path: /storage/llm/cache/phi3/Phi-3-mini-4k-instruct-q4.gguf
    prompt_template: |
          ### Instruction:
          Use the following pieces of context to provide detailed answer the question at the end. If answer isn't in the context, say that you don't know, don't try to make up an answer.
@@ -16,12 +16,12 @@ llm:
          ### Question: {question}
          ### Response:
    model_init_params:
-     n_ctx: 1512
-     n_batch: 512
-     n_gpu_layers: 25
+     n_ctx: 4196
+     n_batch: 4196
+     n_gpu_layers: 40
 
    model_kwargs:
-     max_tokens: 512
+     max_tokens: 4196
      top_p: 0.1
      top_k: 40
-     temperature: 0.2
+     temperature: 0

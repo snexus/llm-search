@@ -2,8 +2,8 @@ from pathlib import Path
 from typing import List, Union
 
 import fitz
-from langchain.text_splitter import CharacterTextSplitter
 from loguru import logger
+from langchain_text_splitters import CharacterTextSplitter
 
 
 class PDFSplitter:

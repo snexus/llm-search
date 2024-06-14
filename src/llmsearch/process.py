@@ -195,7 +195,7 @@ def get_hyde_response(llm_bundle: LLMBundle, query: str) -> str:
 
     if llm_bundle.hyde_chain is None:
         raise TypeError("HyDE chain is not initialised. exiting.")
-    res = llm_bundle.hyde_chain.run(query)
+    res = llm_bundle.hyde_chain.invoke(query)
     logger.info(f"HYDE: got response: {res}")
     return res
 
@@ -205,7 +205,7 @@ def get_multiquery_response(
 ) -> List[str]:
     if llm_bundle.multiquery_chain is None:
         raise TypeError("MultiQuery chain is not initialised. exiting.")
-    res = llm_bundle.multiquery_chain.run(question=query, n_versions=n_versions)
+    res = llm_bundle.multiquery_chain.invoke(dict(question=query, n_versions=n_versions))
 
     logger.info(f"MultiQuery: got response: {res}")
     queries = [q.strip() for q in res.strip().split("\n") if q.strip()]
@@ -249,9 +249,9 @@ def contextualize_query_with_history_chat(
     if not llm_bundle.conversation_history_settings.history:
         return user_question
 
-    res = llm_bundle.history_contextualization_chain.run(
-        chat_history=llm_bundle.conversation_history_settings.chat_history,
-        user_question=user_question,
+    res = llm_bundle.history_contextualization_chain.invoke(
+        {'chat_history': llm_bundle.conversation_history_settings.chat_history,
+        'user_question':user_question}
     )
     logger.info("Got history contextualized query: %s", res)
     return res

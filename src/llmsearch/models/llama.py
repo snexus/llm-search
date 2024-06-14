@@ -1,15 +1,12 @@
 from typing import Dict, Generator, Optional
-from langchain.callbacks.manager import CallbackManager
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import LlamaModelConfig
 from typing import Any, List
-
-from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.llms.base import LLM
 from llama_cpp import Llama
 from loguru import logger
+from langchain_core.callbacks import CallbackManager, CallbackManagerForLLMRun, StreamingStdOutCallbackHandler
+from langchain_core.language_models import LLM
 
 # class LlamaModel(AbstractLLMModel):
 #     def __init__(self, config: LlamaModelConfig):

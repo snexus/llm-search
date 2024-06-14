@@ -13,8 +13,10 @@ from llmsearch.models.utils import get_llm
 from llmsearch.ranking import BGEReranker, MarcoReranker
 from llmsearch.embeddings import VectorStore
 from llmsearch.database.config import DBSettings, get_local_session, Base
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
+# from langchain.chains import LLMChain
+from langchain_core.runnables.base import RunnableSequence
+from langchain_core.output_parsers.string import StrOutputParser
+from langchain_core.prompts import PromptTemplate
 
 CHAIN_TYPE = "stuff"
 
@@ -28,11 +30,11 @@ class LLMBundle:
     conversation_history_settings: ConversrationHistorySettings
     chunk_sizes: List[int]
     response_persist_db_settings: Optional[DBSettings] = None
-    hyde_chain: Optional[LLMChain] = None
+    hyde_chain: Optional[RunnableSequence] = None
     hyde_enabled: bool = False
-    multiquery_chain: Optional[LLMChain] = None
+    multiquery_chain: Optional[RunnableSequence] = None
     multiquery_enabled: bool = False
-    history_contextualization_chain: Optional[LLMChain] = None
+    history_contextualization_chain: Optional[RunnableSequence] = None
 
 
 def set_cache_folder(cache_folder_root: str):
@@ -117,35 +119,51 @@ def get_llm_bundle(config: Config) -> LLMBundle:
     )
 
 
-def get_hyde_chain(config, llm_model) -> LLMChain:
+def get_hyde_chain(config, llm_model) -> RunnableSequence:
     logger.info("Creating HyDE chain...")
-    return LLMChain(
-        llm=llm_model,
-        prompt=PromptTemplate(
+    prompt=PromptTemplate(
             template=config.semantic_search.hyde.hyde_prompt,
             input_variables=["question"],
-        ),
-    )
+        )
+    return RunnableSequence(prompt, llm_model, StrOutputParser() )
+    # return RunnableSequence(
+        # llm=llm_model,
+        # prompt=PromptTemplate(
+            # template=config.semantic_search.hyde.hyde_prompt,
+            # input_variables=["question"],
+        # ),
+    # )
 
 
-def get_multiquery_chain(config, llm_model) -> LLMChain:
+def get_multiquery_chain(config, llm_model) -> RunnableSequence:
     logger.info("Creating MultiQUery chain...")
-    return LLMChain(
-        llm=llm_model,
-        prompt=PromptTemplate(
+    prompt=PromptTemplate(
             template=config.semantic_search.multiquery.multiquery_prompt,
             input_variables=["question", "n_versions"],
-        ),
-    )
+        )
+    return RunnableSequence(prompt, llm_model, StrOutputParser() )
+    # return RunnableSequence(
+        # llm=llm_model,
+        # prompt=PromptTemplate(
+            # template=config.semantic_search.multiquery.multiquery_prompt,
+            # input_variables=["question", "n_versions"],
+        # ),
+    # )
 
-def get_history_contextualize_chain(config: Config, llm_model) -> LLMChain:
+def get_history_contextualize_chain(config: Config, llm_model) -> RunnableSequence:
     """LLM chain for history contextualization queries"""
 
     logger.info("Creating chat history contextualization chain...")
-    return LLMChain(
-        llm=llm_model,
-        prompt=PromptTemplate(
+    prompt=PromptTemplate(
             template=config.semantic_search.conversation_history_settings.template_contextualize,
             input_variables=["chat_history", "user_question"],
-        ),
-    )
+        )
+
+    return RunnableSequence(prompt, llm_model, StrOutputParser() )
+    # return RunnableSequence(
+        # llm=llm_model,
+        # prompt=PromptTemplate(
+            # template=config.semantic_search.conversation_history_settings.template_contextualize,
+            # input_variables=["chat_history", "user_question"],
+        # ),
+    # )
