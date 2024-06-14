@@ -1,9 +1,8 @@
 import os
 
-from langchain_community.chat_models import AzureChatOpenAI
-
 from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import AzureOpenAIModelConfig
+from langchain_openai import AzureChatOpenAI
 
 
 class AzureOpenAIModel(AbstractLLMModel):

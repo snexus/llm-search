@@ -3,8 +3,10 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import pandas as pd
+
+from langchain_huggingface import HuggingFaceEmbeddings
+
 from langchain_community.embeddings import (
-    HuggingFaceEmbeddings,
     HuggingFaceInstructEmbeddings,
     SentenceTransformerEmbeddings,
 )
@@ -127,6 +129,8 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
 
     # Delete chunks belonging to changed documents that exist in both new and old index
     if len(changed_df) > 0:
+        # print("Changed filename:")
+        # print(changed_df['filename'].tolist())
         changed_doc_ids = existing_docid_hash_mappings.loc[
             existing_docid_hash_mappings["filehash"].isin(changed_df["filehash"]),
             "docid",
@@ -135,14 +139,17 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
         logger.info(
             "Removing chunks from vectorstore belonging to changed documents..."
         )
-        vs.delete_by_id(ids=changed_doc_ids)
+        # print("CHANGED ids", changed_doc_ids)
+        if changed_doc_ids:
+            vs.delete_by_id(ids=changed_doc_ids)
         logger.info("Removing mappings belonging to changed documents...")
         existing_fn_hash_mappings, existing_docid_hash_mappings = delete_mappings(
             existing_fn_hash_mappings, existing_docid_hash_mappings, changed_df
         )
 
         # Delete splade embeddings
-        splade.delete_by_ids(delete_ids=changed_doc_ids)
+        if changed_doc_ids:
+            splade.delete_by_ids(delete_ids=changed_doc_ids)
         stats["changed_files"] = len(changed_df)
         stats["changed_chunks"] = len(changed_doc_ids)
 
@@ -155,7 +162,9 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
             existing_docid_hash_mappings["filehash"].isin(deleted_df["filehash"]),
             "docid",
         ].tolist()
-        vs.delete_by_id(ids=deleted_doc_ids)
+
+        if deleted_doc_ids:
+            vs.delete_by_id(ids=deleted_doc_ids)
 
         logger.info("Removing mappings belonging to deleted documents...")
         existing_fn_hash_mappings, existing_docid_hash_mappings = delete_mappings(
@@ -163,7 +172,8 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
         )
 
         # Delete splade embeddings
-        splade.delete_by_ids(delete_ids=deleted_doc_ids)
+        if deleted_doc_ids:
+            splade.delete_by_ids(delete_ids=deleted_doc_ids)
         stats["deleted_files"] = len(deleted_df)
         stats["deleted_chunks"] = len(deleted_doc_ids)
 
