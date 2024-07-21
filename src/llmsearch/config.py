@@ -124,6 +124,7 @@ class EmbeddingsConfig(BaseModel):
     splade_config: EmbedddingsSpladeConfig = EmbedddingsSpladeConfig(n_batch=5)
     """Specifies settings for sparse embeddings (SPLADE)."""
 
+
     @property
     def labels(self) -> List[str]:
         """Returns list of labels in document settings"""

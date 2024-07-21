@@ -4,7 +4,11 @@ embeddings:
   embeddings_path: /storage/llm/embeddings_obsidian
   embedding_model:
     type: sentence_transformer
-    model_name: "intfloat/e5-large-v2"
+    model_name: 'Alibaba-NLP/gte-large-en-v1.5'
+    additional_kwargs:
+      trust_remote_code: true
+
+    # model_name: "intfloat/e5-large-v2"
   splade_config:
     n_batch: 2
 

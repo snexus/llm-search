@@ -2,6 +2,8 @@
 
 # pyLLMSearch - Advanced RAG
 
+[Documentation](https://llm-search.readthedocs.io/en/latest/)
+
 The purpose of this package is to offer a convenient question-answering (RAG) system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system **in addition to basic LLM-based RAGs** - better document parsing, hybrid search, HyDE enabled search, chat history, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
 
 ## Features

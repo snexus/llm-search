@@ -157,6 +157,9 @@ def unload_model():
     with torch.no_grad():
         torch.cuda.empty_cache()
 
+def clear_chat_history():
+    if st.session_state["llm_bundle"] is not None:
+        st.session_state["llm_bundle"].conversation_history_settings.history = []
 
 @st.cache_data
 def generate_response(
@@ -315,17 +318,19 @@ if st.session_state["llm_bundle"] is not None:
         conv_history_rewrite_query =  st.sidebar.checkbox(
             label = "Contextualize user question (LLM calls: 2)", 
             value=True        )
+        
+        clear_conv_history = st.sidebar.button("Clear history", on_click=clear_chat_history, type = "secondary")
 
     if text:
         # Dynamically switch hyde
         st.session_state["llm_bundle"].hyde_enabled = is_hyde
         st.session_state["llm_bundle"].multiquery_enabled = is_multiquery
+        st.session_state["llm_bundle"].conversation_history_settings.enabled = (
+                conv_history_enabled
+            )
 
         # Set conversation history settings
         if conv_history_enabled:
-            st.session_state["llm_bundle"].conversation_history_settings.enabled = (
-                conv_history_enabled
-            )
 
             st.session_state["llm_bundle"].conversation_history_settings.max_history_length = (
                 conv_history_max_length
