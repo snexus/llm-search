@@ -14,7 +14,8 @@ For OpenAI configuration, create .env files containing the API key
 .. literalinclude:: ../sample_templates/llm/openai.yaml
    :language: yaml
 
-An example of OpenAI gpt4o-mini is shown below: 
+An example of OpenAI gpt4o-mini is shown below:
+
 .. literalinclude:: ../sample_templates/llm/openai_gpt4omini.yaml
    :language: yaml
 
