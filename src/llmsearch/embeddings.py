@@ -72,7 +72,8 @@ def get_embedding_model(config: EmbeddingModel):
     if model_type is None:
         raise TypeError(f"Unknown model type. Got {config.type}")
 
-    return model_type(model_name=config.model_name, **config.additional_kwargs)
+    return model_type(model_name=config.model_name, model_kwargs = config.additional_kwargs)
+    # return model_type(model_name=config.model_name, **config.additional_kwargs)
 
 
 def create_embeddings(config: Config, vs: VectorStore):

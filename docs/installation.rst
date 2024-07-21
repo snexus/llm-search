@@ -41,7 +41,7 @@ Install from source
     # Optional - Set variables for llama-cpp to compile with CUDA.
     # Assuming Nvidia CUDA Toolkit is installed and pointing to `usr/local/cuda` on Ubuntu
 
-    # source ./setvars.sh 
+    source ./setvars.sh 
 
     # Optional - Install newest stable torch for CUDA 11.x
     # pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118

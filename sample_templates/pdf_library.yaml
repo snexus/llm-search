@@ -3,7 +3,9 @@ cache_folder: /storage/llm/cache
 embeddings:
   embedding_model:
     type: sentence_transformer
-    model_name: "intfloat/e5-large-v2"
+    model_name: 'Alibaba-NLP/gte-large-en-v1.5'
+    additional_kwargs:
+      trust_remote_code: true
 
   chunk_sizes:
     - 1024
