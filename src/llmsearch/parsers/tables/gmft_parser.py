@@ -12,7 +12,7 @@ from pathlib import Path
 from loguru import logger
 from dataclasses import dataclass
 
-from llmsearch.parsers.tables.generic import pandas_df_to_xml, GenericParsedTable
+from llmsearch.parsers.tables.generic import pandas_df_to_xml, GenericParsedTable, pdf_table_splitter
 
 
 class GMFTParsedTable(GenericParsedTable):
@@ -57,9 +57,9 @@ class GMFTParsedTable(GenericParsedTable):
         return df
 
     @property
-    def xml(self) -> str:
+    def xml(self) -> List[str]:
         if self.df is None:
-            return ""
+            return list()
         return pandas_df_to_xml(self.df)
 
 
@@ -123,6 +123,12 @@ if __name__ == "__main__":
         print("-------------")
         print(p.page_num)
         print(p.caption)
-        print(p.xml)
+        print('\n'.join(p.xml))
+    
+    chunks = pdf_table_splitter(parsed_table=parser.parsed_tables[7], max_size = 1024)
+    for chunk in chunks:
+        print("\n=========== CHUNK START =============\n")
+        print(chunk['text'])
+    # print(chunks)
     del parser
 
