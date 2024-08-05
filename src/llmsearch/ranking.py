@@ -85,6 +85,7 @@ def get_relevant_documents(
     llm_bundle,
     config: SemanticSearchConfig,
     label: str,
+    source_chunk_type: str, 
     offset_max_chars: int = 0
 ) -> Tuple[List[Document], float]:
     most_relevant_docs = []
@@ -122,6 +123,9 @@ def get_relevant_documents(
             # Add label to filter, if present
             if label:
                 filter.update({"label": label})
+            
+            if source_chunk_type:
+                filter.update({"source_chunk_type": source_chunk_type})
 
             if (
                 not filter

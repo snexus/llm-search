@@ -56,6 +56,10 @@ class RerankerModel(Enum):
     BGE_RERANKER = "bge"
 
 
+class PDFTableParser(str, Enum):
+    GMFT = "gmft"
+
+
 class EmbeddingModelType(str, Enum):
     huggingface = "huggingface"
     instruct = "instruct"
@@ -80,6 +84,9 @@ class DocumentPathSettings(BaseModel):
 
     scan_extensions: List[str]
     """List of extensions to scan."""
+
+    pdf_table_parser:  Optional[PDFTableParser] = None
+    """If enabled, will parse tables in pdf files using this choice of a parser."""
 
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
     """Optional parser settings (parser dependent)"""

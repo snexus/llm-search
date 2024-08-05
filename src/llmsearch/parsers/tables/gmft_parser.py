@@ -84,7 +84,7 @@ class GMFTParser:
         """Detects tables in a document and returns list of page tables"""
 
         logger.info("Detecting tables...")
-        doc = PyPDFium2Document(fn)
+        doc = PyPDFium2Document(self.fn)
         detector = TableDetector()
         pt = []
 

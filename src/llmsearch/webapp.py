@@ -169,11 +169,12 @@ def generate_response(
     _config: Config,
     _bundle,
     label_filter: str = "",
+    source_chunk_type_filter: str = ""
 ):
     # _config and _bundle are under scored so paratemeters aren't hashed
 
     output = get_and_parse_response(
-        query=question, config=_config, llm_bundle=_bundle, label=label_filter
+        query=question, config=_config, llm_bundle=_bundle, label=label_filter, source_chunk_type=source_chunk_type_filter
     )
     return output
 
@@ -292,6 +293,12 @@ if st.session_state["llm_bundle"] is not None:
         )
         if label_filter is None or label_filter == "-":
             label_filter = ""
+    
+    tables_only_filter = st.sidebar.checkbox(label="Prioritize tables")
+    if tables_only_filter:
+        source_chunk_type_filter="table"
+    else:
+        source_chunk_type_filter=""
 
     text = st.chat_input("Enter text", disabled=False)
     is_hyde = st.sidebar.checkbox(
@@ -346,6 +353,7 @@ if st.session_state["llm_bundle"] is not None:
             _bundle=st.session_state["llm_bundle"],
             _config=config,
             label_filter=label_filter,
+            source_chunk_type_filter = source_chunk_type_filter
         )
 
         # Add assistant response to chat history

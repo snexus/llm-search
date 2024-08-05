@@ -60,7 +60,7 @@ def pdf_table_splitter(
 
     xml_elements = parsed_table.xml
     caption = parsed_table.caption
-    metadata = {"page": parsed_table.page_num}
+    metadata = {"page": parsed_table.page_num, "source_chunk_type": "table"}
 
     all_chunks = []
 

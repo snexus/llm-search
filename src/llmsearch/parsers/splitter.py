@@ -8,10 +8,14 @@ from loguru import logger
 import pandas as pd
 
 from llmsearch.config import Config, Document
+from llmsearch.config import PDFTableParser
 from llmsearch.parsers.doc import docx_splitter
 from llmsearch.parsers.markdown import markdown_splitter
 from llmsearch.parsers.pdf import PDFSplitter
 from llmsearch.parsers.unstructured import UnstructuredSplitter
+
+from llmsearch.parsers.tables.gmft_parser import GMFTParser
+from llmsearch.parsers.tables.generic import pdf_table_splitter
 
 
 HASH_BLOCKSIZE = 65536
@@ -119,6 +123,7 @@ class DocumentSplitter:
                         max_size=chunk_size,
                         passage_prefix=passage_prefix,
                         label=documents_label,
+                        table_splitter=setting.pdf_table_parser,
                         **additional_parser_settings,
                     )
 
@@ -159,6 +164,7 @@ class DocumentSplitter:
         max_size,
         passage_prefix: str,
         label: str,
+        table_splitter,
         **additional_kwargs,
     ) -> Tuple[List[Document], List[dict], List[pd.DataFrame]]:
         """Gets list of nodes from a collection of documents
@@ -185,7 +191,14 @@ class DocumentSplitter:
             # docs_data = splitter_func(text, max_size)
             filename = str(path)
             additional_kwargs.update({"filename": filename})
+
             docs_data = splitter_func(path, max_size, **additional_kwargs)
+
+            # If table parsing specific, get back the chunks and add to docs data
+            if table_splitter is not None:
+                table_data = get_table_chunks(path, max_size, table_splitter)
+                docs_data += table_data
+
             file_hash = get_md5_hash(path)
 
             path = urllib.parse.quote(str(path))  # type: ignore
@@ -199,6 +212,7 @@ class DocumentSplitter:
                         **{
                             "source": str(path),
                             "chunk_size": max_size,
+                            "source_chunk_type": d['metadata'].get("source_chunk_type", "text"),
                             "document_id": str(uuid.uuid1()),
                             "label": label,
                         },
@@ -207,10 +221,14 @@ class DocumentSplitter:
                 for d in docs_data
             ]
 
-            for d in docs: # 2024/03/14 - unstructured fills page as None for some formats like csv
-                if 'page' in d.metadata and d.metadata['page'] is None:
-                    d.metadata['page'] = -1
-            
+            for (
+                d
+            ) in (
+                docs
+            ):  # 2024/03/14 - unstructured fills page as None for some formats like csv
+                if "page" in d.metadata and d.metadata["page"] is None:
+                    d.metadata["page"] = -1
+
             all_docs.extend(docs)
 
             # Add hash to filename mapping and hash to doc ids mapping
@@ -238,3 +256,37 @@ def get_md5_hash(file_path: Path) -> str:
             buf = file.read(HASH_BLOCKSIZE)
 
     return hasher.hexdigest()
+
+
+def get_table_chunks(
+    path: Path, max_size: int, table_parser: PDFTableParser, format_extensions = ("pdf",)
+) -> List[dict]:
+    """Parses tables from the document using specified table_splitter
+
+    Args:
+        path (Path): document path
+        max_size (int): Maximum chunk size to split by
+        table_splitter (PDFTableParser): name of the table splitter
+    """
+
+    table_chunks = []
+    extension = str(path).strip("/")[-3:]
+    if extension not in  format_extensions:
+        logger.info(f"Format {extension} doesn't support table parsing..Skipping..")
+        return list()
+
+    if table_parser is PDFTableParser.GMFT:
+        parser = GMFTParser(fn=path)
+        splitter = pdf_table_splitter
+    else:
+        raise TypeError(f"Unknown table parser: {table_parser}")
+
+    logger.info("Parsing tables..")
+
+    parsed_tables = parser.parsed_tables
+
+    logger.info(f"Parsed {len(parsed_tables)} tables. Chunking...")
+    for parsed_table in parsed_tables:
+        table_chunks += splitter(parsed_table, max_size=max_size)
+
+    return table_chunks

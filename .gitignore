@@ -12,6 +12,7 @@ temp_data/
 *.npz
 *.db
 sample_templates/obsidian_conf_test.yaml
+sample_templates/test-templates/*
 .venv2
 
 # Distribution / packaging
