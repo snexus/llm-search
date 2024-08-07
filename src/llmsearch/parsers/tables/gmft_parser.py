@@ -21,6 +21,7 @@ class GMFTParsedTable(GenericParsedTable):
             page_number=page_num
         )  # Initialize the field from the abstract class
         self._table = table
+        self.bbox = table.bbox
         self.page_num = page_num
         self.formatter = AutoTableFormatter()
         self.failed = False
@@ -116,7 +117,8 @@ class GMFTParser:
 
 if __name__ == "__main__":
     # fn = Path("/home/snexus/Downloads/ws90.pdf")
-    fn = Path("/home/snexus/Downloads/SSRN-id2741701.pdf")
+    # fn = Path("/home/snexus/Downloads/SSRN-id2741701.pdf")
+    fn = Path("/home/snexus/Downloads/Table_Example5.pdf")
 
     parser = GMFTParser(fn=fn)
     for p in parser.parsed_tables:

@@ -127,6 +127,7 @@ def get_relevant_documents(
             if source_chunk_type:
                 filter.update({"source_chunk_type": source_chunk_type})
 
+
             if (
                 not filter
             ):  # if filter is empty (doesn't contain chunk_size or label), set it to None to speed up.
@@ -138,6 +139,11 @@ def get_relevant_documents(
                 query, k=config.max_k, filter=filter
             )
             dense_search_doc_ids = [r[0].metadata["document_id"] for r in res]
+
+
+            # 2024/08/05 Sparse can't filter out table chunks yet, thus restrict to dense search
+            # if source_chunk_type == 'table':
+            #     sparse_search_docs_ids = set()
 
             # Create union of documents fetched using sprase and dense embeddings
             all_doc_ids = (
