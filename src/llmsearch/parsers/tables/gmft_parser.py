@@ -18,11 +18,9 @@ from llmsearch.parsers.tables.generic import pandas_df_to_xml, GenericParsedTabl
 class GMFTParsedTable(GenericParsedTable):
     def __init__(self, table: CroppedTable, page_num: int) -> None:
         super().__init__(
-            page_number=page_num
+            page_number=page_num, bbox=table.bbox
         )  # Initialize the field from the abstract class
         self._table = table
-        self.bbox = table.bbox
-        self.page_num = page_num
         self.formatter = AutoTableFormatter()
         self.failed = False
 
@@ -118,19 +116,20 @@ class GMFTParser:
 if __name__ == "__main__":
     # fn = Path("/home/snexus/Downloads/ws90.pdf")
     # fn = Path("/home/snexus/Downloads/SSRN-id2741701.pdf")
-    fn = Path("/home/snexus/Downloads/Table_Example5.pdf")
+    fn = Path("/home/snexus/Downloads/Table_Example2.pdf")
 
     parser = GMFTParser(fn=fn)
     for p in parser.parsed_tables:
         print("-------------")
         print(p.page_num)
         print(p.caption)
+        print(p.bbox)
         print('\n'.join(p.xml))
     
-    chunks = pdf_table_splitter(parsed_table=parser.parsed_tables[7], max_size = 1024)
-    for chunk in chunks:
-        print("\n=========== CHUNK START =============\n")
-        print(chunk['text'])
-    # print(chunks)
+    # chunks = pdf_table_splitter(parsed_table=parser.parsed_tables[7], max_size = 1024)
+    # for chunk in chunks:
+        # print("\n=========== CHUNK START =============\n")
+        # print(chunk['text'])
+    # # print(chunks)
     del parser
 

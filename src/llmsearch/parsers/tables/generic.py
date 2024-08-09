@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import pandas as pd
 from loguru import logger
 
@@ -6,8 +6,9 @@ from abc import ABC, abstractmethod
 
 
 class GenericParsedTable(ABC):
-    def __init__(self, page_number: int):
+    def __init__(self, page_number: int, bbox: Tuple[float, float, float, float]):
         self.page_num = page_number  # Common field
+        self.bbox = bbox
 
     @property
     @abstractmethod
@@ -56,7 +57,6 @@ def pdf_table_splitter(
     include_caption: bool = True,
     max_caption_size_ratio: int = 4,
 ):
-    
 
     xml_elements = parsed_table.xml
     caption = parsed_table.caption
@@ -66,37 +66,63 @@ def pdf_table_splitter(
 
     # If caption is too long, trim it down, so there is some space for actual data
     if len(caption) > max_size / max_caption_size_ratio:
-        logger.warning("Caption is too large compared to max char size, trimming down...")
-        caption = caption[:int(max_size / max_caption_size_ratio)]
-    
-    header = f"```xml:\n"
+        logger.warning(
+            "Caption is too large compared to max char size, trimming down..."
+        )
+        caption = caption[: int(max_size / max_caption_size_ratio)]
+
+    header = "```xml table:\n"
     if include_caption and caption:
-        header = header + f"<caption>{caption}</caption>\n"
+        header = f"Table below contains information about: {caption}\n" + header
 
     footer = f"```"
 
     current_text = header
     for el in xml_elements:
 
-        # If new element is too big, trim it (shouldn't happen) 
+        # If new element is too big, trim it (shouldn't happen)
         if len(el) > max_size:
-            logger.warning("xml element is larger than allowed max char size. Flushing..")
+            logger.warning(
+                "xml element is larger than allowed max char size. Flushing.."
+            )
             # el = el[:max_size-len(header)-3]
-            all_chunks.append({"text": current_text+el+footer, "metadata": metadata})
+            all_chunks.append(
+                {"text": current_text + el + footer, "metadata": metadata}
+            )
             current_text = header
-        
+
         # if current text is already large and doesn't fit the new element, flush it
         elif len(current_text + el) >= max_size:
             all_chunks.append({"text": current_text + footer, "metadata": metadata})
             current_text = header + el + "\n"
         else:
-            current_text += el +"\n"
+            current_text += el + "\n"
 
     # Flush the last chunk
     all_chunks.append({"text": current_text + footer, "metadata": metadata})
     return all_chunks
-        
 
+def boxes_intersect(box1: Tuple[float, float, float, float], box2: Tuple[float, float, float, float]) -> bool:
+    """
+    Check if two bounding boxes intersect.
 
-    
+    Parameters:
+    box1: Tuple (x1_min, y1_min, x1_max, y1_max)
+    box2: Tuple (x2_min, y2_min, x2_max, y2_max)
 
+    Returns:
+    True if the boxes intersect, False otherwise.
+    """
+
+    # Unpack the box coordinates
+    x1_min, y1_min, x1_max, y1_max = box1
+    x2_min, y2_min, x2_max, y2_max = box2
+
+    # Check for non-intersection
+    if x1_max < x2_min or x2_max < x1_min:
+        return False
+    if y1_max < y2_min or y2_max < y1_min:
+        return False
+
+    # If none of the non-intersection conditions are met, they must intersect
+    return True

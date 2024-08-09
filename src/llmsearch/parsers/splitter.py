@@ -1,8 +1,9 @@
+from collections import defaultdict
 import hashlib
 import urllib
 import uuid
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from loguru import logger
 import pandas as pd
@@ -192,12 +193,17 @@ class DocumentSplitter:
             filename = str(path)
             additional_kwargs.update({"filename": filename})
 
-            docs_data = splitter_func(path, max_size, **additional_kwargs)
-
             # If table parsing specific, get back the chunks and add to docs data
+            table_data, table_bboxes = list(), dict()
             if table_splitter is not None:
-                table_data = get_table_chunks(path, max_size, table_splitter)
-                docs_data += table_data
+                table_data, table_bboxes = get_table_chunks(path, max_size, table_splitter)
+            
+            # Push table bounding boxes to avoid embedding the same text as in the tables.
+            additional_kwargs.update({"table_bboxes": table_bboxes})
+
+            docs_data = splitter_func(path, max_size, **additional_kwargs)
+            docs_data += table_data
+
 
             file_hash = get_md5_hash(path)
 
@@ -260,7 +266,7 @@ def get_md5_hash(file_path: Path) -> str:
 
 def get_table_chunks(
     path: Path, max_size: int, table_parser: PDFTableParser, format_extensions = ("pdf",)
-) -> List[dict]:
+) -> Tuple[List[dict], Dict[int, List[Tuple[float]]]]:
     """Parses tables from the document using specified table_splitter
 
     Args:
@@ -273,7 +279,7 @@ def get_table_chunks(
     extension = str(path).strip("/")[-3:]
     if extension not in  format_extensions:
         logger.info(f"Format {extension} doesn't support table parsing..Skipping..")
-        return list()
+        return list(), dict()
 
     if table_parser is PDFTableParser.GMFT:
         parser = GMFTParser(fn=path)
@@ -289,4 +295,9 @@ def get_table_chunks(
     for parsed_table in parsed_tables:
         table_chunks += splitter(parsed_table, max_size=max_size)
 
-    return table_chunks
+    # Extract tables bounding boxes and store in a convenient data structure.
+    table_bboxes = defaultdict(list)
+    for table in parsed_tables:
+        table_bboxes[table.page_num].append(table.bbox)
+
+    return table_chunks, table_bboxes
