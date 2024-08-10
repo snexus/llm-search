@@ -15,17 +15,37 @@ from dataclasses import dataclass
 from llmsearch.parsers.tables.generic import pandas_df_to_xml, GenericParsedTable, pdf_table_splitter
 
 
+# logger.info("Creating AutoTableFormatter")
+# formatter = AutoTableFormatter() # Create singleton
+
+class TableFormatterSingleton:
+    """Singleton for table formatter"""
+
+    _instance = None
+    formatter = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            logger.info("Initializing AutoTableFormatter...")
+            cls._instance = super(TableFormatterSingleton, cls).__new__(cls)
+            cls._instance.formatter = AutoTableFormatter() 
+        return cls._instance
+
 class GMFTParsedTable(GenericParsedTable):
     def __init__(self, table: CroppedTable, page_num: int) -> None:
         super().__init__(
             page_number=page_num, bbox=table.bbox
         )  # Initialize the field from the abstract class
         self._table = table
-        self.formatter = AutoTableFormatter()
         self.failed = False
+        self.formatter = TableFormatterSingleton().formatter
+
+        # Formatter is passed externally
+        # self.formatter = formatter
 
     @cached_property
     def _captions(self) -> List[str]:
+        # return ""
         return [c for c in self._table.captions() if c.strip()]
 
     @cached_property
@@ -75,9 +95,11 @@ class PageTables:
 class GMFTParser:
     def __init__(self, fn: Path) -> None:
         self.fn = fn
-        logger.info("Loading document.")
         self._doc = None
         self._parsed_tables = None
+        
+        # logger.info("Initializing Table Formatter.")
+        # self.formatter = AutoTableFormatter()
 
     def detect_page_tables(self) -> Tuple[List[PageTables], Any]:
         """Detects tables in a document and returns list of page tables"""
@@ -116,7 +138,7 @@ class GMFTParser:
 if __name__ == "__main__":
     # fn = Path("/home/snexus/Downloads/ws90.pdf")
     # fn = Path("/home/snexus/Downloads/SSRN-id2741701.pdf")
-    fn = Path("/home/snexus/Downloads/Table_Example2.pdf")
+    fn = Path("/home/snexus/Downloads/Table_Example1.pdf")
 
     parser = GMFTParser(fn=fn)
     for p in parser.parsed_tables:

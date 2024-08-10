@@ -143,7 +143,7 @@ def filter_blocks(blocks: List[Tuple[float, float, float, float, str]],
             if boxes_intersect(table_bbox, block_bbox):
                 # We found an intersection, set the flag and break the inner loop
                 skip_block = True
-                print(f"SKipping block: {block}")
+                # print(f"SKipping block: {block}")
                 break  # Exit the inner loop
 
         if skip_block:
