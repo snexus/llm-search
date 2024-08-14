@@ -14,9 +14,9 @@ from llmsearch.parsers.doc import docx_splitter
 from llmsearch.parsers.markdown import markdown_splitter
 from llmsearch.parsers.pdf import PDFSplitter
 from llmsearch.parsers.unstructured import UnstructuredSplitter
+from llmsearch.parsers.tables.generic import get_table_chunks
 
-from llmsearch.parsers.tables.gmft_parser import GMFTParser
-from llmsearch.parsers.tables.generic import pdf_table_splitter
+
 
 
 HASH_BLOCKSIZE = 65536
@@ -264,40 +264,4 @@ def get_md5_hash(file_path: Path) -> str:
     return hasher.hexdigest()
 
 
-def get_table_chunks(
-    path: Path, max_size: int, table_parser: PDFTableParser, format_extensions = ("pdf",)
-) -> Tuple[List[dict], Dict[int, List[Tuple[float]]]]:
-    """Parses tables from the document using specified table_splitter
 
-    Args:
-        path (Path): document path
-        max_size (int): Maximum chunk size to split by
-        table_splitter (PDFTableParser): name of the table splitter
-    """
-
-    table_chunks = []
-    extension = str(path).strip("/")[-3:]
-    if extension not in  format_extensions:
-        logger.info(f"Format {extension} doesn't support table parsing..Skipping..")
-        return list(), dict()
-
-    if table_parser is PDFTableParser.GMFT:
-        parser = GMFTParser(fn=path)
-        splitter = pdf_table_splitter
-    else:
-        raise TypeError(f"Unknown table parser: {table_parser}")
-
-    logger.info("Parsing tables..")
-
-    parsed_tables = parser.parsed_tables
-
-    logger.info(f"Parsed {len(parsed_tables)} tables. Chunking...")
-    for parsed_table in parsed_tables:
-        table_chunks += splitter(parsed_table, max_size=max_size)
-
-    # Extract tables bounding boxes and store in a convenient data structure.
-    table_bboxes = defaultdict(list)
-    for table in parsed_tables:
-        table_bboxes[table.page_num].append(table.bbox)
-
-    return table_chunks, table_bboxes

@@ -12,11 +12,12 @@ from pathlib import Path
 from loguru import logger
 from dataclasses import dataclass
 
-from llmsearch.parsers.tables.generic import pandas_df_to_xml, GenericParsedTable, pdf_table_splitter
+from llmsearch.parsers.tables.generic import (
+    pandas_df_to_xml,
+    GenericParsedTable,
+    pdf_table_splitter,
+)
 
-
-# logger.info("Creating AutoTableFormatter")
-# formatter = AutoTableFormatter() # Create singleton
 
 class TableFormatterSingleton:
     """Singleton for table formatter"""
@@ -28,8 +29,9 @@ class TableFormatterSingleton:
         if not cls._instance:
             logger.info("Initializing AutoTableFormatter...")
             cls._instance = super(TableFormatterSingleton, cls).__new__(cls)
-            cls._instance.formatter = AutoTableFormatter() 
+            cls._instance.formatter = AutoTableFormatter()
         return cls._instance
+
 
 class GMFTParsedTable(GenericParsedTable):
     def __init__(self, table: CroppedTable, page_num: int) -> None:
@@ -38,7 +40,7 @@ class GMFTParsedTable(GenericParsedTable):
         )  # Initialize the field from the abstract class
         self._table = table
         self.failed = False
-        self.formatter = TableFormatterSingleton().formatter
+        self.formatter: AutoTableFormatter = TableFormatterSingleton().formatter
 
         # Formatter is passed externally
         # self.formatter = formatter
@@ -97,7 +99,7 @@ class GMFTParser:
         self.fn = fn
         self._doc = None
         self._parsed_tables = None
-        
+
         # logger.info("Initializing Table Formatter.")
         # self.formatter = AutoTableFormatter()
 
@@ -146,12 +148,11 @@ if __name__ == "__main__":
         print(p.page_num)
         print(p.caption)
         print(p.bbox)
-        print('\n'.join(p.xml))
-    
+        print("\n".join(p.xml))
+
     # chunks = pdf_table_splitter(parsed_table=parser.parsed_tables[7], max_size = 1024)
     # for chunk in chunks:
-        # print("\n=========== CHUNK START =============\n")
-        # print(chunk['text'])
+    # print("\n=========== CHUNK START =============\n")
+    # print(chunk['text'])
     # # print(chunks)
     del parser
-
