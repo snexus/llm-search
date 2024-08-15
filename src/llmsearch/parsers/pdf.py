@@ -36,7 +36,11 @@ class PDFSplitter:
         # Get table bounding boxes if present
         table_bboxes = kwargs.get("table_bboxes", None)
 
+        # Get image bounding boxes if present
+        image_bboxes = kwargs.get("image_bboxes", None)
+
         logger.info(f"Got table bboxes {table_bboxes}")
+        logger.info(f"Got image bboxes {image_bboxes}")
 
         all_chunks = []
         splitter = CharacterTextSplitter(
@@ -51,7 +55,12 @@ class PDFSplitter:
         for page in doc:
             # text = page.get_text("block")
             blocks = page.get_text_blocks()
-            text = filter_blocks(blocks, table_bboxes, page_num=page.number)
+
+            filter_bboxes = table_bboxes.get(page.number, list()) + image_bboxes.get(page.number, list())
+            if filter_bboxes:
+                text = filter_blocks(blocks, filter_bboxes=filter_bboxes, page_num=page.number)
+            else:
+                text = "".join([b[4] for b in blocks])
 
             if len(text) > max_size:
                 all_chunks.append(
@@ -91,7 +100,7 @@ class PDFSplitter:
 
 
 def filter_blocks(blocks: List[Tuple[float, float, float, float, str]], 
-                  table_bboxes: Dict[int, List[Tuple[float, float, float, float]]], 
+                  filter_bboxes:  List[Tuple[float, float, float, float]], 
                   page_num: int) -> str:
     """
     Filter text blocks based on their spatial relation to table bounding boxes.
@@ -118,14 +127,14 @@ def filter_blocks(blocks: List[Tuple[float, float, float, float, str]],
     Example:
     >>> blocks = [(100, 100, 200, 200, "Block 1"),
                   (150, 150, 250, 250, "Block 2")]
-    >>> table_bboxes = {1: [(120, 120, 180, 180)]}
-    >>> print(filter_blocks(blocks, table_bboxes, 1))
+    >>> filter_bboxes = [(120, 120, 180, 180)]
+    >>> print(filter_blocks(blocks, filter_bboxes, 1))
     "Block 1" (only Block 1 is not intersecting with the table)
     """
     
     # Extract tables belonging to a specific page
     logger.info(f"Page: {page_num}")
-    page_table_bboxes = table_bboxes.get(page_num, list())
+    page_table_bboxes = filter_bboxes
     logger.info(f"Got page table bboxes: {page_table_bboxes}")
 
     if not page_table_bboxes:
@@ -139,8 +148,8 @@ def filter_blocks(blocks: List[Tuple[float, float, float, float, str]],
         # Flag to determine if we should skip the current block
         skip_block = False
         
-        for table_bbox in page_table_bboxes:
-            if boxes_intersect(table_bbox, block_bbox):
+        for filter_bbox in page_table_bboxes:
+            if boxes_intersect(filter_bbox, block_bbox):
                 # We found an intersection, set the flag and break the inner loop
                 skip_block = True
                 # print(f"SKipping block: {block}")

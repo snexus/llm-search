@@ -60,6 +60,10 @@ class PDFTableParser(str, Enum):
     GMFT = "gmft"
 
 
+class PDFImageParser(str, Enum):
+    GEMINI_15_FLASH = "gemini-1.5-flash"
+
+
 class EmbeddingModelType(str, Enum):
     huggingface = "huggingface"
     instruct = "instruct"
@@ -86,7 +90,10 @@ class DocumentPathSettings(BaseModel):
     """List of extensions to scan."""
 
     pdf_table_parser:  Optional[PDFTableParser] = None
-    """If enabled, will parse tables in pdf files using this choice of a parser."""
+    """If enabled, will parse tables in pdf files using a specific of a parser."""
+
+    pdf_image_parser: Optional[PDFImageParser] = None
+    """If enabled, will parse images in pdf files using a specific of a parser."""
 
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
     """Optional parser settings (parser dependent)"""

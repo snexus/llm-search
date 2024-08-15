@@ -11,6 +11,7 @@ import pandas as pd
 from llmsearch.config import Config, Document
 from llmsearch.config import PDFTableParser
 from llmsearch.parsers.doc import docx_splitter
+from llmsearch.parsers.images.generic import get_image_chunks
 from llmsearch.parsers.markdown import markdown_splitter
 from llmsearch.parsers.pdf import PDFSplitter
 from llmsearch.parsers.unstructured import UnstructuredSplitter
@@ -38,6 +39,7 @@ class DocumentSplitter:
 
         self.document_path_settings = config.embeddings.document_settings
         self.chunk_sizes = config.embeddings.chunk_sizes
+        self.cache_folder = config.cache_folder
 
     def get_hashes(self) -> pd.DataFrame:
         hash_filename_mappings = []
@@ -125,6 +127,7 @@ class DocumentSplitter:
                         passage_prefix=passage_prefix,
                         label=documents_label,
                         table_splitter=setting.pdf_table_parser,
+                        image_parser = setting.pdf_image_parser,
                         **additional_parser_settings,
                     )
 
@@ -166,6 +169,7 @@ class DocumentSplitter:
         passage_prefix: str,
         label: str,
         table_splitter,
+        image_parser,
         **additional_kwargs,
     ) -> Tuple[List[Document], List[dict], List[pd.DataFrame]]:
         """Gets list of nodes from a collection of documents
@@ -193,16 +197,24 @@ class DocumentSplitter:
             filename = str(path)
             additional_kwargs.update({"filename": filename})
 
+            # Placeholders for table and imag chunks, if present
+            table_chunks, table_bboxes = list(), dict()
+            image_chunks, image_bboxes = list(), dict()
+
             # If table parsing specific, get back the chunks and add to docs data
-            table_data, table_bboxes = list(), dict()
             if table_splitter is not None:
-                table_data, table_bboxes = get_table_chunks(path, max_size, table_splitter)
+                table_chunks, table_bboxes = get_table_chunks(path, max_size, table_splitter)
+
+            if image_parser is not None:
+                image_chunks, image_bboxes = get_image_chunks(path, max_size, image_parser, cache_folder=self.cache_folder)
             
             # Push table bounding boxes to avoid embedding the same text as in the tables.
             additional_kwargs.update({"table_bboxes": table_bboxes})
+            additional_kwargs.update({"image_bboxes": image_bboxes})
 
             docs_data = splitter_func(path, max_size, **additional_kwargs)
-            docs_data += table_data
+            docs_data += table_chunks
+            docs_data += image_chunks
 
 
             file_hash = get_md5_hash(path)
