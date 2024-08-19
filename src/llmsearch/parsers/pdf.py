@@ -6,7 +6,7 @@ import pymupdf
 from loguru import logger
 from langchain_text_splitters import CharacterTextSplitter
 
-from llmsearch.parsers.tables.generic import boxes_intersect
+from llmsearch.parsers.tables.generic import do_boxes_intersect
 
 
 class PDFSplitter:
@@ -149,7 +149,7 @@ def filter_blocks(blocks: List[Tuple[float, float, float, float, str]],
         skip_block = False
         
         for filter_bbox in page_table_bboxes:
-            if boxes_intersect(filter_bbox, block_bbox):
+            if do_boxes_intersect(filter_bbox, block_bbox):
                 # We found an intersection, set the flag and break the inner loop
                 skip_block = True
                 # print(f"SKipping block: {block}")

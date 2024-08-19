@@ -62,7 +62,16 @@ class PDFTableParser(str, Enum):
 
 class PDFImageParser(str, Enum):
     GEMINI_15_FLASH = "gemini-1.5-flash"
+    GEMINI_15_PRO= "gemini-1.5-pro"
 
+class PDFImageParseSettings(BaseModel):
+    image_parser: PDFImageParser
+    system_instruction: str = """You are an research assistant. You analyze the image to extract detailed information. Response must be a Markdown string in the follwing format:
+- First line is a heading with image caption, starting with '# '
+- Second line is empty
+- From the third line on - detailed data points and related metadata, extracted from the image, in Markdown format. Don't use Markdown tables. 
+"""
+    user_instruction: str = """From the image, extract detailed quantitative and qualitative data points."""
 
 class EmbeddingModelType(str, Enum):
     huggingface = "huggingface"
@@ -92,7 +101,7 @@ class DocumentPathSettings(BaseModel):
     pdf_table_parser:  Optional[PDFTableParser] = None
     """If enabled, will parse tables in pdf files using a specific of a parser."""
 
-    pdf_image_parser: Optional[PDFImageParser] = None
+    pdf_image_parser: Optional[PDFImageParseSettings] = None
     """If enabled, will parse images in pdf files using a specific of a parser."""
 
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
