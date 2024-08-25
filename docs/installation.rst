@@ -23,8 +23,12 @@ Install Latest Version
     # Activate new environment
     source .venv/bin/activate
 
-    # Install packages
+    # Install packages using pip
     pip install pyllmsearch
+
+    # Optional - install packages using uv
+    pip install uv
+    uv pip install pyllmsearch
 
 
 

@@ -1,8 +1,8 @@
-llama-cpp-python==0.2.78
-chromadb~=0.5
-langchain~=0.2.4
-langchain-community~=0.2.4
-langchain-openai~=0.1.8
+llama-cpp-python==0.2.88
+chromadb~=0.5.5
+langchain~=0.2.14
+langchain-community~=0.2.12
+langchain-openai~=0.1.22
 langchain-huggingface~=0.0.3
 pydantic~=2.7
 transformers~=4.41
@@ -13,17 +13,17 @@ ebooklib==0.18
 setuptools==67.7.2
 loguru
 python-dotenv
-accelerate~=0.22.0
+accelerate~=0.33
 protobuf==3.20.2
 termcolor
-openai~=1.34.0
+openai~=1.41
 einops # required for Mosaic models
 click 
 bitsandbytes==0.43.1
 # auto-gptq==0.2.0
 InstructorEmbedding==1.0.1
 unstructured~=0.14.5
-pymupdf==1.22.5
+pymupdf==1.24.9
 streamlit~=1.28
 python-docx~=1.1
 six==1.16.0 ; python_version >= "3.10" and python_version < "4.0"
@@ -36,4 +36,3 @@ threadpoolctl==3.1.0 ; python_version >= "3.10" and python_version < "4.0"
 tiktoken==0.7.0 ; python_version >= "3.10" and python_version < "4.0"
 tokenizers==0.19.1; python_version >= "3.10" and python_version < "4.0"
 tqdm==4.65.0 ; python_version >= "3.10" and python_version < "4.0"
-# transformers==4.29.2 ; python_version >= "3.10" and python_version < "4.0"
