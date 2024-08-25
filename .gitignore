@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 .env
+dev/*
+output_images/
 
 # C extensions
 *.so
