@@ -17,6 +17,7 @@ from llmsearch.database.config import DBSettings, get_local_session, Base
 from langchain_core.runnables.base import RunnableSequence
 from langchain_core.output_parsers.string import StrOutputParser
 from langchain_core.prompts import PromptTemplate
+from langchain_core.caches import BaseCache, InMemoryCache
 
 CHAIN_TYPE = "stuff"
 
@@ -35,6 +36,7 @@ class LLMBundle:
     multiquery_chain: Optional[RunnableSequence] = None
     multiquery_enabled: bool = False
     history_contextualization_chain: Optional[RunnableSequence] = None
+    llm_cache: Optional[BaseCache] = None
 
 
 def set_cache_folder(cache_folder_root: str):
@@ -115,7 +117,8 @@ def get_llm_bundle(config: Config) -> LLMBundle:
         multiquery_chain=multiquery_chain,
         multiquery_enabled=config.semantic_search.multiquery.enabled,
         conversation_history_settings=config.semantic_search.conversation_history_settings, 
-        history_contextualization_chain = history_contextualization_chain
+        history_contextualization_chain = history_contextualization_chain,
+        llm_cache=InMemoryCache()
     )
 
 

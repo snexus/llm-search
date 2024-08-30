@@ -1,4 +1,4 @@
-llama-cpp-python==0.2.88
+llama-cpp-python==0.2.76
 chromadb~=0.5.5
 langchain~=0.2.14
 langchain-community~=0.2.12
