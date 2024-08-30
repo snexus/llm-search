@@ -1,4 +1,4 @@
-llama-cpp-python==0.2.88
+llama-cpp-python==0.2.76
 chromadb~=0.5.5
 langchain~=0.2.14
 langchain-community~=0.2.12
@@ -35,7 +35,11 @@ tenacity==8.2.3 ; python_version >= "3.10" and python_version < "4.0"
 threadpoolctl==3.1.0 ; python_version >= "3.10" and python_version < "4.0"
 tiktoken==0.7.0 ; python_version >= "3.10" and python_version < "4.0"
 tokenizers==0.19.1; python_version >= "3.10" and python_version < "4.0"
+<<<<<<< HEAD
 tqdm==4.65.0 ; python_version >= "3.10" and python_version < "4.0"
 # transformers==4.29.2 ; python_version >= "3.10" and python_version < "4.0"
 gmft==0.2.1
 google-generativeai~=0.7
+=======
+tqdm==4.65.0 ; python_version >= "3.10" and python_version < "4.0"
+>>>>>>> fix-conversation-history

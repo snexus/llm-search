@@ -65,6 +65,13 @@ semantic_search:
     enabled: True
     model: "bge" # for `BAAI/bge-reranker-base` or "marco" for cross-encoder/ms-marco-MiniLM-L-6-v2
   
+  # Optionally enable conversation history settings (default False)
+  conversation_history_settings:
+    enabled: True
+    max_history_length: 3
+    rewrite_query: True
+
+  
 
 persist_response_db_path:  "/path/to/responses.db" # optional sqlite database filename. Allows to save responses offlien to sqlite, for future analysis.
 
