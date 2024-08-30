@@ -12,6 +12,7 @@ import yaml
 from dotenv import load_dotenv
 from loguru import logger
 from streamlit import chat_message
+from langchain.globals import set_llm_cache
 
 from llmsearch.config import Config
 from llmsearch.chroma import VectorStoreChroma
@@ -160,6 +161,12 @@ def unload_model():
 def clear_chat_history():
     if st.session_state["llm_bundle"] is not None:
         st.session_state["llm_bundle"].conversation_history_settings.history = []
+        
+        # Clear LLM Cache
+        st.session_state["llm_bundle"].llm_cache.clear()
+        
+        # Clear Streamlit Cache
+        st.cache_data.clear()
 
 @st.cache_data
 def generate_response(
@@ -215,7 +222,10 @@ def reload_model(doc_config_path: str, model_config_file: str):
             update_embeddings_button = st.button(
                 "Generate", on_click=generate_index, args=(config,), type="secondary"
             )
+    
 
+    logger.debug("Setting LLM Cache")
+    set_llm_cache(st.session_state["llm_bundle"].llm_cache)
     st.session_state["disable_load"] = False
 
 
