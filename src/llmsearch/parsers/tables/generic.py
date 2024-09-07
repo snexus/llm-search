@@ -53,9 +53,24 @@ class GenericParsedTable(ABC):
     @property
     @abstractmethod
     def xml(self) -> List[str]:
-        """Returns XML representation of the table."""
+        """Returns xml representaiton of the table"""
         pass
+    
 
+class XMLConverter:
+    """Converts Pandas DataFrames to XML format."""
+    
+    @staticmethod
+    def convert(df: pd.DataFrame) -> List[str]:
+        """Converts a DataFrame to a list of XML strings.
+
+        Args:
+            df (pd.DataFrame): The DataFrame to convert.
+
+        Returns:
+            List[str]: A list of XML strings representing the DataFrame.
+        """
+        return pandas_df_to_xml(df)
 
 def pandas_df_to_xml(df: pd.DataFrame) -> List[str]:
     """Converts a Pandas DataFrame to a simplified XML representation.
@@ -193,3 +208,13 @@ def get_table_chunks(
         table_bboxes[table.page_num].append(table.bbox)
 
     return table_chunks, table_bboxes
+
+def prepare_and_clean_folder(temp_folder: Path):
+    if not temp_folder.exists():
+        temp_folder.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Created folder: {temp_folder}")
+    else:
+        for file in temp_folder.iterdir():
+            if file.is_file():
+                file.unlink()
+                logger.debug(f"Deleted file: {file}")

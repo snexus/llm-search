@@ -12,35 +12,22 @@ from loguru import logger
 from dataclasses import dataclass
 
 from llmsearch.parsers.tables.generic import (
+    XMLConverter,
     pandas_df_to_xml,
     GenericParsedTable,
 )
 
 
-class XMLConverter:
-    """Converts Pandas DataFrames to XML format."""
-    
-    @staticmethod
-    def convert(df: pd.DataFrame) -> List[str]:
-        """Converts a DataFrame to a list of XML strings.
-
-        Args:
-            df (pd.DataFrame): The DataFrame to convert.
-
-        Returns:
-            List[str]: A list of XML strings representing the DataFrame.
-        """
-        return pandas_df_to_xml(df)
-
-
 class ExtractionError(Exception):
     """Custom exception for extraction failures."""
+
     pass
 
 
 @dataclass
 class PageTables:
     """Holds cropped tables extracted from a specific page of a document."""
+
     page_num: int
     cropped_tables: List[CroppedTable]
 
@@ -52,8 +39,8 @@ class PageTables:
 
 class TableFormatterSingleton:
     """Singleton class for managing a single instance of AutoTableFormatter."""
-    
-    _instance: Optional['TableFormatterSingleton'] = None
+
+    _instance: Optional["TableFormatterSingleton"] = None
     formatter = None
 
     def __new__(cls, *args, **kwargs):
@@ -68,7 +55,9 @@ class TableFormatterSingleton:
 class GMFTParsedTable(GenericParsedTable):
     """Represents a parsed table with its metadata and data extraction logic."""
 
-    def __init__(self, table: CroppedTable, page_num: int, formatter: AutoTableFormatter) -> None:
+    def __init__(
+        self, table: CroppedTable, page_num: int, formatter: AutoTableFormatter
+    ) -> None:
         """Initializes the parsed table with a cropped table, page number, and formatter.
 
         Args:
@@ -101,7 +90,9 @@ class GMFTParsedTable(GenericParsedTable):
         Raises:
             ExtractionError: If extraction fails, this error will be raised.
         """
-        ft = self.formatter.extract(self._table)  # Use the formatter to extract the table
+        ft = self.formatter.extract(
+            self._table
+        )  # Use the formatter to extract the table
         try:
             return ft.df()  # Return the DataFrame
         except ValueError as ex:
@@ -120,7 +111,6 @@ class GMFTParsedTable(GenericParsedTable):
         if self.df is None:
             return []
         return XMLConverter.convert(self.df)
-
 
 class DocumentHandler:
     """Handles loading a PDF document and providing access to its pages."""
@@ -195,7 +185,9 @@ class GMFTParser:
         self.formatter = TableFormatterSingleton().formatter  # Get the formatter
         self.table_detector = TableDetectorHelper()  # Initialize table detector
         self.table_parser = TableParser(self.formatter)  # Initialize table parser
-        self._parsed_tables: Optional[List[GMFTParsedTable]] = None  # Cache for parsed tables
+        self._parsed_tables: Optional[List[GMFTParsedTable]] = (
+            None  # Cache for parsed tables
+        )
 
     def detect_and_parse_tables(self) -> List[GMFTParsedTable]:
         """Detects and parses tables from the PDF document.
@@ -208,7 +200,9 @@ class GMFTParser:
 
         # Iterate through the pages in the document
         for page in self.document_handler.get_pages():
-            cropped_tables = self.table_detector.detect_tables(page)  # Detect tables on the page
+            cropped_tables = self.table_detector.detect_tables(
+                page
+            )  # Detect tables on the page
             # Parse each cropped table found on the page
             for cropped_table in cropped_tables:
                 parsed_table = self.table_parser.parse(cropped_table, page.page_number)
@@ -224,14 +218,17 @@ class GMFTParser:
             List[GMFTParsedTable]: A list of parsed tables from the document.
         """
         if self._parsed_tables is None:
-            self._parsed_tables = self.detect_and_parse_tables()  # Detect and parse tables if not done already
+            self._parsed_tables = (
+                self.detect_and_parse_tables()
+            )  # Detect and parse tables if not done already
         return self._parsed_tables
 
 
 if __name__ == "__main__":
     # fn = Path("/home/snexus/Downloads/ws90.pdf")
     # fn = Path("/home/snexus/Downloads/SSRN-id2741701.pdf")
-    fn = Path("/home/snexus/Downloads/ws90.pdf")
+    # fn = Path("/home/snexus/Downloads/ws90.pdf")
+    fn = Path("/home/snexus/projects/azure-doc-int/notebooks/data/Table_Example1-1.pdf")
 
     parser = GMFTParser(fn=fn)
     for p in parser.parsed_tables:

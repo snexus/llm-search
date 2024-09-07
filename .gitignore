@@ -5,6 +5,7 @@ __pycache__/
 .env
 dev/*
 output_images/
+azuredoc_temp/
 
 # C extensions
 *.so
