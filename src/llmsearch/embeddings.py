@@ -3,16 +3,13 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 
 import pandas as pd
-
+from langchain_community.embeddings import (HuggingFaceInstructEmbeddings,
+                                            SentenceTransformerEmbeddings)
 from langchain_huggingface import HuggingFaceEmbeddings
-
-from langchain_community.embeddings import (
-    HuggingFaceInstructEmbeddings,
-    SentenceTransformerEmbeddings,
-)
 from loguru import logger
 
-from llmsearch.config import Config, Document, EmbeddingModel, EmbeddingModelType
+from llmsearch.config import (Config, Document, EmbeddingModel,
+                              EmbeddingModelType)
 from llmsearch.parsers.splitter import DocumentSplitter
 from llmsearch.splade import SparseEmbeddingsSplade
 

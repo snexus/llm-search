@@ -4,20 +4,21 @@ from typing import List, Optional, Union
 
 from langchain.chains.base import Chain
 from langchain.chains.question_answering import load_qa_chain
+from langchain_core.caches import BaseCache, InMemoryCache
+from langchain_core.output_parsers.string import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+# from langchain.chains import LLMChain
+from langchain_core.runnables.base import RunnableSequence
 from loguru import logger
 
 from llmsearch.chroma import VectorStoreChroma
-from llmsearch.splade import SparseEmbeddingsSplade
-from llmsearch.config import Config, RerankerModel, ConversrationHistorySettings
+from llmsearch.config import (Config, ConversrationHistorySettings,
+                              RerankerModel)
+from llmsearch.database.config import Base, DBSettings, get_local_session
+from llmsearch.embeddings import VectorStore
 from llmsearch.models.utils import get_llm
 from llmsearch.ranking import BGEReranker, MarcoReranker
-from llmsearch.embeddings import VectorStore
-from llmsearch.database.config import DBSettings, get_local_session, Base
-# from langchain.chains import LLMChain
-from langchain_core.runnables.base import RunnableSequence
-from langchain_core.output_parsers.string import StrOutputParser
-from langchain_core.prompts import PromptTemplate
-from langchain_core.caches import BaseCache, InMemoryCache
+from llmsearch.splade import SparseEmbeddingsSplade
 
 CHAIN_TYPE = "stuff"
 

@@ -1,6 +1,5 @@
-from unstructured.partition.pdf import partition_pdf
-
 import fitz
+from unstructured.partition.pdf import partition_pdf
 
 if __name__ == "__main__":
     n_output_elements = 2000

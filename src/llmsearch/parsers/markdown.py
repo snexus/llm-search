@@ -1,10 +1,11 @@
 import re
+import urllib
 from collections import namedtuple
 from enum import Enum
 from pathlib import Path
-from typing import Generator, List, Union, Tuple
+from typing import Generator, List, Tuple, Union
+
 from loguru import logger
-import urllib
 
 FORMATTING_SEQUENCES = {"*", "**", "***", "_", "__", "~~", "||"}
 CODE_BLOCK_SEQUENCES = {"`", "``", "```"}

@@ -1,16 +1,13 @@
-import torch
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
-from typing import List
-from llmsearch.config import SemanticSearchConfig
-
-# from llmsearch.utils import LLMBundle
-from typing import Tuple
 import statistics
+# from llmsearch.utils import LLMBundle
+from typing import List, Tuple
 
+import torch
 from loguru import logger
 from sentence_transformers.cross_encoder import CrossEncoder
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-from llmsearch.config import Document
+from llmsearch.config import Document, SemanticSearchConfig
 
 
 class MarcoReranker:

@@ -1,6 +1,10 @@
-import pytest
 from unittest.mock import MagicMock
-from llmsearch.parsers.tables.generic import pdf_table_splitter  # Replace with the actual module name
+
+import pytest
+
+from llmsearch.parsers.tables.generic import \
+    pdf_table_splitter  # Replace with the actual module name
+
 
 @pytest.fixture
 def setup_parsed_table():

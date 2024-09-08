@@ -1,24 +1,20 @@
-from collections import defaultdict
 import hashlib
 import urllib
 import uuid
+from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from loguru import logger
 import pandas as pd
+from loguru import logger
 
-from llmsearch.config import Config, Document
-from llmsearch.config import PDFTableParser
+from llmsearch.config import Config, Document, PDFTableParser
 from llmsearch.parsers.doc import docx_splitter
 from llmsearch.parsers.images.generic import get_image_chunks
 from llmsearch.parsers.markdown import markdown_splitter
 from llmsearch.parsers.pdf import PDFSplitter
-from llmsearch.parsers.unstructured import UnstructuredSplitter
 from llmsearch.parsers.tables.generic import get_table_chunks
-
-
-
+from llmsearch.parsers.unstructured import UnstructuredSplitter
 
 HASH_BLOCKSIZE = 65536
 
@@ -203,7 +199,7 @@ class DocumentSplitter:
 
             # If table parsing specific, get back the chunks and add to docs data
             if table_splitter is not None:
-                table_chunks, table_bboxes = get_table_chunks(path, max_size, table_splitter)
+                table_chunks, table_bboxes = get_table_chunks(path, max_size, table_splitter, cache_folder = self.cache_folder)
 
             if image_parser is not None:
                 image_chunks, image_bboxes = get_image_chunks(path, max_size, image_parser, cache_folder=self.cache_folder)

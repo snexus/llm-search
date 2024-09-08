@@ -2,18 +2,13 @@ import string
 from typing import List
 
 from loguru import logger
-from llmsearch.config import (
-    SuffixAppend,
-    ObsidianAdvancedURI,
-    ResponseModel,
-    SemanticSearchOutput,
-    Config,
-)
+
+from llmsearch.config import (Config, Document, ObsidianAdvancedURI,
+                              ResponseModel, SemanticSearchOutput,
+                              SuffixAppend)
+from llmsearch.database.crud import create_response
 from llmsearch.ranking import get_relevant_documents
 from llmsearch.utils import LLMBundle
-from llmsearch.database.crud import create_response
-
-from llmsearch.config import Document
 
 
 def get_and_parse_response(

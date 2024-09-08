@@ -3,8 +3,8 @@ from typing import Dict, List, Tuple, Union
 
 # import fitz
 import pymupdf
-from loguru import logger
 from langchain_text_splitters import CharacterTextSplitter
+from loguru import logger
 
 from llmsearch.parsers.tables.generic import do_boxes_intersect
 

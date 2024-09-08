@@ -10,7 +10,7 @@ from loguru import logger
 from sqlalchemy.orm import Session
 
 import llmsearch.database.crud as crud
-from llmsearch.config import Config, get_config, ResponseModel
+from llmsearch.config import Config, ResponseModel, get_config
 from llmsearch.database.config import get_local_session
 from llmsearch.process import get_and_parse_response
 from llmsearch.ranking import get_relevant_documents

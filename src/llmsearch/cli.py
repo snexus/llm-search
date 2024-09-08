@@ -1,13 +1,14 @@
-import click
-from loguru import logger
 import os
+
+import click
 import streamlit.web.cli
+from loguru import logger
 
 from llmsearch.chroma import VectorStoreChroma
 from llmsearch.config import get_config, get_doc_with_model_config
+from llmsearch.embeddings import create_embeddings, update_embeddings
 from llmsearch.interact import qa_with_llm
 from llmsearch.utils import get_llm_bundle, set_cache_folder
-from llmsearch.embeddings import create_embeddings, update_embeddings
 
 
 @click.group(name="index")

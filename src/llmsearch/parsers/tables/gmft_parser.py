@@ -1,21 +1,15 @@
-from functools import cached_property
-import pandas as pd
-from typing import Any, List, Optional, Tuple
-from gmft.pdf_bindings import PyPDFium2Document
-from gmft import (
-    CroppedTable,
-    TableDetector,
-    AutoTableFormatter,
-)
-from pathlib import Path
-from loguru import logger
 from dataclasses import dataclass
+from functools import cached_property
+from pathlib import Path
+from typing import Any, List, Optional, Tuple
 
-from llmsearch.parsers.tables.generic import (
-    XMLConverter,
-    pandas_df_to_xml,
-    GenericParsedTable,
-)
+import pandas as pd
+from gmft import AutoTableFormatter, CroppedTable, TableDetector
+from gmft.pdf_bindings import PyPDFium2Document
+from loguru import logger
+
+from llmsearch.parsers.tables.generic import (GenericParsedTable, XMLConverter,
+                                              pandas_df_to_xml)
 
 
 class ExtractionError(Exception):
@@ -174,7 +168,7 @@ class TableParser:
 class GMFTParser:
     """Main class for handling the parsing of tables from a PDF document."""
 
-    def __init__(self, fn: Path) -> None:
+    def __init__(self, fn: Path, **kwargs) -> None:
         """Initializes the parser with a PDF file path and prepares components.
 
         Args:
@@ -228,15 +222,16 @@ if __name__ == "__main__":
     # fn = Path("/home/snexus/Downloads/ws90.pdf")
     # fn = Path("/home/snexus/Downloads/SSRN-id2741701.pdf")
     # fn = Path("/home/snexus/Downloads/ws90.pdf")
-    fn = Path("/home/snexus/projects/azure-doc-int/notebooks/data/Table_Example1-1.pdf")
+    # fn = Path("/home/snexus/projects/azure-doc-int/notebooks/data/Table_Example1-1.pdf")
 
+    fn = Path("/home/snexus/Downloads/Table_Example1-1.pdf")
     parser = GMFTParser(fn=fn)
     for p in parser.parsed_tables:
         print("-------------")
         print(p.page_num)
         print(p.caption)
         print(p.bbox)
-        print("\n".join(p.xml))
+        # print("\n".join(p.xml))
 
     # chunks = pdf_table_splitter(parsed_table=parser.parsed_tables[7], max_size = 1024)
     # for chunk in chunks:

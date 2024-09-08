@@ -1,10 +1,12 @@
-from collections import defaultdict
 import importlib
+from abc import ABC, abstractmethod
+from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Any, Dict, List, Tuple
+
 import pandas as pd
 from loguru import logger
-from abc import ABC, abstractmethod
+
 from llmsearch.config import PDFTableParser
 
 # Define a mapping of PDFImageParser to corresponding analyzer classes and config
@@ -14,12 +16,18 @@ PARSER_MAPPING: Dict[PDFTableParser, Any] = {
         "class_name": "GMFTParser",
         "params": {},
     },
+    
+    PDFTableParser.AZUREDOC: {
+        "import_path": "llmsearch.parsers.tables.azuredocint_parser",  # Import path for lazy loading
+        "class_name": "AzureDocIntelligenceTableParser",
+        "params": {},
+    },
     # Add more analyzers here as needed
     # PDFImageParser.ANOTHER_TYPE: {'import_path': 'another.module.path', 'class_name': 'AnotherAnalyzer', 'params': {'param1': value1, 'param2': value2}},
 }
 
 
-def create_table_parser(table_parser: PDFTableParser, filename: Path):
+def create_table_parser(table_parser: PDFTableParser, filename: Path, cache_folder: Path):
     parser_info = PARSER_MAPPING.get(table_parser)
 
     if parser_info is None:
@@ -30,7 +38,7 @@ def create_table_parser(table_parser: PDFTableParser, filename: Path):
     parser_class = getattr(module, parser_info["class_name"])
     additional_parser_params = parser_info["params"]
 
-    return parser_class(fn = filename, **additional_parser_params)
+    return parser_class(fn = filename, cache_folder = cache_folder, **additional_parser_params)
 
 
 class GenericParsedTable(ABC):
@@ -173,6 +181,7 @@ def get_table_chunks(
     path: Path,
     max_size: int,
     table_parser: PDFTableParser,
+    cache_folder, 
     format_extensions: Tuple[str, ...] = (".pdf",),
 ) -> Tuple[List[Dict[str, Any]], Dict[int, List[Tuple[float, float, float, float]]]]:
     """Parses tables from a document and splits them into chunks.
@@ -193,7 +202,7 @@ def get_table_chunks(
         logger.info(f"Format {extension} doesn't support table parsing..Skipping..")
         return [], {}
 
-    parser = create_table_parser(table_parser, filename=path)
+    parser = create_table_parser(table_parser, filename=path, cache_folder = cache_folder)
 
     logger.info("Parsing tables..")
     parsed_tables = parser.parsed_tables

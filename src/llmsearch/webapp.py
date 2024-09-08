@@ -10,19 +10,16 @@ import streamlit as st
 import torch
 import yaml
 from dotenv import load_dotenv
+from langchain.globals import set_llm_cache
 from loguru import logger
 from streamlit import chat_message
-from langchain.globals import set_llm_cache
 
-from llmsearch.config import Config
 from llmsearch.chroma import VectorStoreChroma
+from llmsearch.config import Config
+from llmsearch.embeddings import (EmbeddingsHashNotExistError,
+                                  create_embeddings, update_embeddings)
 from llmsearch.process import get_and_parse_response
 from llmsearch.utils import get_llm_bundle, set_cache_folder
-from llmsearch.embeddings import (
-    update_embeddings,
-    create_embeddings,
-    EmbeddingsHashNotExistError,
-)
 
 st.set_page_config(page_title="LLMSearch", page_icon=":robot:", layout="wide")
 

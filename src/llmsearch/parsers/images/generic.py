@@ -1,9 +1,9 @@
-from collections import defaultdict
 import importlib
 import io
+from collections import defaultdict
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Callable
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import PIL.Image
 import pymupdf
@@ -11,7 +11,7 @@ from loguru import logger
 from pydantic import BaseModel
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
-from llmsearch.config import PDFImageParseSettings, PDFImageParser
+from llmsearch.config import PDFImageParser, PDFImageParseSettings
 from llmsearch.parsers.markdown import markdown_splitter
 
 # Define a mapping of PDFImageParser to corresponding analyzer classes and config

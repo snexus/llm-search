@@ -1,28 +1,20 @@
 from enum import Enum
 from io import StringIO
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union, Literal
+from typing import Any, Dict, List, Literal, Optional, Union
+from uuid import UUID, uuid4
 
 import yaml
 from loguru import logger
-from pydantic import (
-    BaseModel,
-    DirectoryPath,
-    Field,
-    field_validator,
-    ConfigDict,
-    ValidationInfo,
-)
-from uuid import UUID, uuid4
+from pydantic import (BaseModel, ConfigDict, DirectoryPath, Field,
+                      ValidationInfo, field_validator)
+
+from llmsearch.models.config import (AzureOpenAIModelConfig,
+                                     HuggingFaceModelConfig, LlamaModelConfig,
+                                     OpenAIModelConfig)
 
 # from pydantic.typing import Literal  # type: ignore
 
-from llmsearch.models.config import (
-    HuggingFaceModelConfig,
-    LlamaModelConfig,
-    OpenAIModelConfig,
-    AzureOpenAIModelConfig,
-)
 
 models_config = {
     "llamacpp": LlamaModelConfig,
@@ -58,6 +50,7 @@ class RerankerModel(Enum):
 
 class PDFTableParser(str, Enum):
     GMFT = "gmft"
+    AZUREDOC = "azuredoc"
 
 
 class PDFImageParser(str, Enum):
@@ -303,7 +296,7 @@ class LLMConfig(BaseModel):
         if type_ not in models_config:
             raise TypeError(f"Uknown model type {value}. Allowed types: ")
 
-        config_type = models_config[type_]
+        config_type = models_config[type_] # type: ignore
         logger.info(
             f"Loading model paramaters in configuration class {config_type.__name__}"
         )

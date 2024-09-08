@@ -1,6 +1,7 @@
-from pydantic import BaseModel, ConfigDict
 from pathlib import Path
 from typing import Optional, Union
+
+from pydantic import BaseModel, ConfigDict
 
 
 class LlamaModelConfig(BaseModel):

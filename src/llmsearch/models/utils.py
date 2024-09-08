@@ -1,17 +1,12 @@
 from typing import Union
 
-from llmsearch.models.config import (
-    OpenAIModelConfig,
-    LlamaModelConfig,
-    #    AutoGPTQModelConfig,
-    HuggingFaceModelConfig,
-    AzureOpenAIModelConfig,
-)
-
-from llmsearch.models.llama import LlamaModel
-from llmsearch.models.hf import HuggingFaceModel
-from llmsearch.models.openai import OpenAIModel
 from llmsearch.models.azureopenai import AzureOpenAIModel
+from llmsearch.models.config import (  # AutoGPTQModelConfig,
+    AzureOpenAIModelConfig, HuggingFaceModelConfig, LlamaModelConfig,
+    OpenAIModelConfig)
+from llmsearch.models.hf import HuggingFaceModel
+from llmsearch.models.llama import LlamaModel
+from llmsearch.models.openai import OpenAIModel
 
 # from llmsearch.models.autogptq import AutoGPTQModel
 

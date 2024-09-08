@@ -1,23 +1,22 @@
-from functools import cached_property
 import os
+from functools import cached_property
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
+import pymupdf
+from azure.ai.documentintelligence import DocumentIntelligenceClient
+from azure.ai.documentintelligence.models import ContentFormat
+from azure.core.credentials import AzureKeyCredential
+from dotenv import load_dotenv
+from loguru import logger
+
 from llmsearch.parsers.tables.generic import (
     GenericParsedTable,
     XMLConverter,
     prepare_and_clean_folder,
 )
-
 from llmsearch.parsers.tables.gmft_parser import DocumentHandler, TableDetectorHelper
-import pymupdf
-from loguru import logger
-from dotenv import load_dotenv
-from azure.core.credentials import AzureKeyCredential
-from azure.ai.documentintelligence import DocumentIntelligenceClient
-from azure.ai.documentintelligence.models import ContentFormat
-
 
 load_dotenv()
 
@@ -35,16 +34,22 @@ if not doc_intelligence_key:
 
 
 class AzureParsedTable(GenericParsedTable):
-    def __init__(self, table, default_dpi: int = 72):
+    def __init__(self, table, page_mapping: dict, default_dpi: int = 72):
 
         page_number, bbox = self.extract_page_and_bbox(table, dpi=default_dpi)
+
+        page_number = page_mapping[page_number - 1]
         logger.info(f"Get bounding box for the table: {bbox}, page: {page_number}")
         super().__init__(page_number, bbox)
         self.table = table
 
     @cached_property
-    def caption(self):
-        return self.table.caption
+    def caption(self) -> str:
+        try:
+            return self.table.caption["content"]
+        except Exception as ex:
+            logger.warning("Couldn't extract caption, returning empty string...")
+            return ""
 
     @property
     def df(self) -> Optional[pd.DataFrame]:
@@ -61,9 +66,18 @@ class AzureParsedTable(GenericParsedTable):
         for cell in self.table["cells"]:
             row_index = cell["rowIndex"]
             col_index = cell["columnIndex"]
-            content = cell["content"]
+            content = self.clean_content(cell["content"])
             df_temp.at[row_index, col_index] = content
+
+        # Set first row as an index
+        df_temp.columns = df_temp.iloc[0]
+        df_temp = df_temp[1:]
+        df_temp = df_temp.reset_index(drop=True)
         return df_temp
+
+    def clean_content(self, content: str) -> str:
+        content = content.replace(":unselected:", "").replace(":selected:", "")
+        return content
 
     def extract_page_and_bbox(self, table, dpi: int):
         page_number = -1
@@ -104,7 +118,7 @@ class AzureParsedTable(GenericParsedTable):
 
 
 class AzureDocIntelligenceTableParser:
-    def __init__(self, fn: Path, temp_folder: Path):
+    def __init__(self, fn: Path, cache_folder: Path):
         self.fn = fn
 
         # Initialie document intelligence client
@@ -112,36 +126,60 @@ class AzureDocIntelligenceTableParser:
             endpoint=doc_intelligence_endpoint,
             credential=AzureKeyCredential(doc_intelligence_key),
         )
-        self.table_pages_extractor = PDFTablePagesExtractor(fn, temp_folder)
+
+        self.table_pages_extractor = PDFTablePagesExtractor(fn, cache_folder / "azuredoc_temp")
+        self._parsed_tables: Optional[List[AzureParsedTable]] = (
+            None  # Cache for parsed tables
+        )
 
     def detect_and_parse_tables(self) -> List[AzureParsedTable]:
-        fn, page_mappings = self.table_pages_extractor.extract_table_pages()
+        tables = self.table_pages_extractor.extract_table_pages()
 
-        with open(fn, "rb") as f:
-            poller = self.document_intelligence_client.begin_analyze_document(
-                "prebuilt-layout",
-                analyze_request=f,
-                content_type="application/octet-stream",
-                output_content_format=ContentFormat.MARKDOWN,
-            )
+        all_tables = []
 
-        logger.info(f"Calling AzureDocument Intelligence for {fn}")
-        result = poller.result()
+        for fn, page_mapping in tables:
+            with open(fn, "rb") as f:
+                poller = self.document_intelligence_client.begin_analyze_document(
+                    "prebuilt-layout",
+                    analyze_request=f,
+                    content_type="application/octet-stream",
+                    output_content_format=ContentFormat.MARKDOWN,
+                )
 
-        out = []
-        if result.tables:
-            logger.info(f"\tGot {len(result.tables)} table, extracting...")
-            out = [AzureParsedTable(table) for table in result.tables]
+            logger.info(f"Calling AzureDocument Intelligence for {fn}")
+            result = poller.result()
 
-        return out
+            out = []
+            if result.tables:
+                logger.info(f"\tGot {len(result.tables)} table, extracting...")
+                out = [AzureParsedTable(table, page_mapping) for table in result.tables]
+                all_tables += out
+
+        return all_tables
+
+    @property
+    def parsed_tables(self) -> List[AzureParsedTable]:
+        """Lazy-loads the parsed tables when requested.
+
+        Returns:
+            List[AzureParsedTable]: A list of parsed tables from the document.
+        """
+        if self._parsed_tables is None:
+            self._parsed_tables = (
+                self.detect_and_parse_tables()
+            )  # Detect and parse tables if not done already
+        return self._parsed_tables
 
 
 class PDFTablePagesExtractor:
-    def __init__(self, fn: Path, temp_folder: Path) -> None:
+    def __init__(self, fn: Path, temp_folder: Path, max_pages: int = 2) -> None:
         self.document_handler = DocumentHandler(fn)
         self.table_detector = TableDetectorHelper()
         self.temp_folder = temp_folder
         self.fn = fn
+
+        # Azure free tier limits maximum number of pages to two
+        self.max_pages = max_pages
 
     def _detect_table_pages(self) -> List[int]:
         """Detects pages that contain tables in a pdf file"""
@@ -153,12 +191,10 @@ class PDFTablePagesExtractor:
                 table_pages.append(page.page_number)
         return table_pages
 
-    def extract_table_pages(self) -> Tuple[Path, Dict[int, int]]:
+    def extract_table_pages(self) -> List[Tuple[Path, Dict[int, int]]]:
         # Form an output filename
         prepare_and_clean_folder(self.temp_folder)
         table_pages = self._detect_table_pages()
-
-        page_mappings = {m: p for p, m in zip(table_pages, range(len(table_pages)))}
 
         if not table_pages:
             logger.info(f"Couldn't find tables in the {self.fn}. Continuing...")
@@ -166,14 +202,27 @@ class PDFTablePagesExtractor:
         logger.info(
             f"Found {len(table_pages)} pages with tables in {self.fn}. Extracting..."
         )
+        outputs = []
+        for batch_n, table_page_batch in enumerate(
+            iterate_in_batches(table_pages, batch_size=self.max_pages)
+        ):
 
-        # Form an output filename
-        output_fn = self.temp_folder / f"{self.fn.stem}_reduced.pdf"
+            # Form an output filename
+            page_mappings = {
+                m: p for p, m in zip(table_page_batch, range(len(table_page_batch)))
+            }
+            output_fn = self.temp_folder / f"{self.fn.stem}_reduced_{batch_n}.pdf"
 
-        with PDFPageExtractor(self.fn) as extractor:
-            extractor.extract_save_pages(output_fn, table_pages)
+            with PDFPageExtractor(self.fn) as extractor:
+                extractor.extract_save_pages(output_fn, table_page_batch)
 
-        return output_fn, page_mappings
+            outputs.append((output_fn, page_mappings))
+        return outputs
+
+
+def iterate_in_batches(lst: List, batch_size: int):
+    for i in range(0, len(lst), batch_size):
+        yield lst[i : i + batch_size]
 
 
 class PDFPageExtractor:
@@ -207,9 +256,9 @@ class PDFPageExtractor:
             new_pdf = pymupdf.open()
 
             # Adjust page numbers to 0-index and sort them
-            pages = sorted(
-                page - 1 for page in pages if 1 <= page <= len(self.pdf_document)
-            )
+            # pages = sorted(
+            #     page - 1 for page in pages if 1 <= page <= len(self.pdf_document)
+            # )
 
             # Extract and add the specified pages
             for page_num in pages:
@@ -231,14 +280,17 @@ if __name__ == "__main__":
 
     path = Path("/home/snexus/Downloads/Table_Example1-1.pdf")
     parser = AzureDocIntelligenceTableParser(
-        fn=path, temp_folder=Path("./azuredoc_temp")
+        fn=path, cache_folder=Path(".")
     )
     # ex = PDFTablePagesExtractor(fn = path, temp_folder = Path("./azuredoc_temp"))
 
-    tables = parser.detect_and_parse_tables()
+    tables = parser.parsed_tables
     for table in tables:
-        print(table.df)
-        print(table.xml)
+        # print(table.df)
+        # print(table.xml)
+        print(table.bbox)
+        print(table.page_num)
+        print(table.caption)
 
     # out_fn, page_mappings = ex.extract_table_pages()
     # print(out_fn, page_mappings)

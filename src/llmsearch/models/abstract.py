@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
+
 from langchain_core.prompts import PromptTemplate
 
 
