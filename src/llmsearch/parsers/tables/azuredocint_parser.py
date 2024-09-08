@@ -1,3 +1,4 @@
+from collections import Counter
 import os
 from functools import cached_property
 from pathlib import Path
@@ -73,6 +74,9 @@ class AzureParsedTable(GenericParsedTable):
         df_temp.columns = df_temp.iloc[0]
         df_temp = df_temp[1:]
         df_temp = df_temp.reset_index(drop=True)
+
+        # Rename duplicate columns ,if present
+        df_temp = df_temp.rename(columns = ColumnRenamer(separator='_'))
         return df_temp
 
     def clean_content(self, content: str) -> str:
@@ -116,7 +120,17 @@ class AzureParsedTable(GenericParsedTable):
             return []
         return XMLConverter.convert(self.df)
 
+        
+class ColumnRenamer:
+    def __init__(self, separator=None):
+        self.counter = Counter()
+        self.sep = separator
 
+    def __call__(self, x):
+        index = self.counter[x]  # Counter returns 0 for missing elements
+        self.counter[x] = index + 1  # Uses something like `setdefault`
+        return f'{x}{self.sep if self.sep and index else ""}{index if index else ""}'
+        
 class AzureDocIntelligenceTableParser:
     def __init__(self, fn: Path, cache_folder: Path):
         self.fn = fn
@@ -278,7 +292,7 @@ class PDFPageExtractor:
 
 if __name__ == "__main__":
 
-    path = Path("/home/snexus/Downloads/Table_Example1-1.pdf")
+    path = Path("/home/snexus/Downloads/Table_Example2.pdf")
     parser = AzureDocIntelligenceTableParser(
         fn=path, cache_folder=Path(".")
     )
@@ -286,8 +300,8 @@ if __name__ == "__main__":
 
     tables = parser.parsed_tables
     for table in tables:
-        # print(table.df)
-        # print(table.xml)
+        print(table.df)
+        print(table.xml)
         print(table.bbox)
         print(table.page_num)
         print(table.caption)
