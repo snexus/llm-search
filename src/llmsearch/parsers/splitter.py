@@ -63,7 +63,7 @@ class DocumentSplitter:
 
     def split(
         self, restrict_filenames: Optional[List[str]] = None
-    ) -> Tuple[List[Document], pd.DataFrame, pd.DataFrame]:
+    ) -> Tuple[List[Document], pd.DataFrame, pd.DataFrame, List[str]]:
         """Splits documents based on document path settings
 
         Returns:
@@ -77,11 +77,15 @@ class DocumentSplitter:
         # Mapping between hash and document ids
         hash_docid_mappings = []
 
+        # Will collect all labels, for persisting later
+        all_labels = []
+
         for setting in self.document_path_settings:
             passage_prefix = setting.passage_prefix
             docs_path = Path(setting.doc_path)
             documents_label = setting.label
             exclusion_paths = [str(e) for e in setting.exclude_paths]
+
 
             for scan_extension in setting.scan_extensions:
                 extension = scan_extension
@@ -132,10 +136,12 @@ class DocumentSplitter:
                     hash_filename_mappings.extend(hf_mappings)
                     hash_docid_mappings.extend(hd_mappings)
 
+                    all_labels+=list(set([d.metadata['label'] for d in docs]))
+
         all_hash_filename_mappings = pd.DataFrame(hash_filename_mappings)
         all_hash_docid_mappings = pd.concat(hash_docid_mappings, axis=0)
 
-        return all_docs, all_hash_filename_mappings, all_hash_docid_mappings
+        return all_docs, all_hash_filename_mappings, all_hash_docid_mappings, all_labels
 
     def is_exclusion(self, path: Path, exclusions: List[str]) -> bool:
         """Checks if path has parent folders in list of exclusions
@@ -173,6 +179,7 @@ class DocumentSplitter:
         Examples: https://gpt-index.readthedocs.io/en/stable/guides/primer/usage_pattern.html
         """
 
+        original_label = label
         all_docs = []
 
         # Maps between file name and it's hash
@@ -217,6 +224,12 @@ class DocumentSplitter:
 
             path = urllib.parse.quote(str(path))  # type: ignore
             logger.info(path)
+
+            # If label for a set of documents doesn't exist, set it as document path
+            # Assign path to label
+
+            # if not original_label:
+            label = str(path)
 
             docs = [
                 Document(

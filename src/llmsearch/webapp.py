@@ -3,7 +3,7 @@ import gc
 import os
 from io import StringIO
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 import langchain
 import streamlit as st
@@ -17,7 +17,7 @@ from streamlit import chat_message
 from llmsearch.chroma import VectorStoreChroma
 from llmsearch.config import Config
 from llmsearch.embeddings import (EmbeddingsHashNotExistError,
-                                  create_embeddings, update_embeddings)
+                                  create_embeddings, update_embeddings, load_document_labels)
 from llmsearch.process import get_and_parse_response
 from llmsearch.utils import get_llm_bundle, set_cache_folder
 
@@ -120,6 +120,11 @@ def load_config(doc_config, model_config) -> Config:
     config_dict = {**doc_config_dict, **model_config_dict}
     return Config(**config_dict)
 
+@st.cache_data
+def load_labels(embedding_path: str) -> Dict[str, str]:
+    labels_fn = Path(os.path.join(embedding_path, "labels.txt"))
+    all_labels = {Path(label).name: label for label in load_document_labels(labels_fn)}
+    return all_labels
 
 @st.cache_data
 def load_yaml_file(config) -> dict:
@@ -184,10 +189,11 @@ def generate_response(
 
 
 @st.cache_data
-def get_config_paths(config_dir: str) -> List[str]:
+def get_config_paths(config_dir: str) -> Dict[str, str]:
     root = Path(config_dir)
-    config_paths = sorted([str(p) for p in root.glob("*.yaml")])
-    return config_paths
+    config_paths = sorted([p for p in root.glob("*.yaml")])
+    config_path_names = {p.name: str(p) for p in root.glob("*.yaml")}
+    return config_path_names
 
 
 def reload_model(doc_config_path: str, model_config_file: str):
@@ -247,9 +253,10 @@ if "disable_load" not in st.session_state:
 
 if Path(args.cli_doc_config_path).is_dir():
     config_paths = get_config_paths(args.cli_doc_config_path)
-    doc_config_path = st.sidebar.selectbox(
-        label="Choose config", options=config_paths, index=0
+    doc_config_name = st.sidebar.selectbox(
+        label="Choose config", options=sorted(list(config_paths.keys())), index=0
     )
+    doc_config_path = config_paths[doc_config_name] # type: ignore
     model_config_file = args.cli_model_config_path
     logger.debug(f"CONFIG FILE: {doc_config_path}")
 
@@ -294,18 +301,23 @@ if st.session_state["llm_bundle"] is not None:
         f"**Max char size (semantic search):** {config.semantic_search.max_char_size}"
     )
     label_filter = ""
-    if config.embeddings.labels:
+    document_labels = load_labels(config.embeddings.embeddings_path)
+
+    if document_labels:
         label_filter = st.sidebar.selectbox(
-            label="Filter by label", options=["-"] + config.embeddings.labels
+            label="Restrict search to:", options=["-"] + sorted(list(document_labels.keys()))
         )
         if label_filter is None or label_filter == "-":
             label_filter = ""
+        
     
-    tables_only_filter = st.sidebar.checkbox(label="Prioritize tables")
-    if tables_only_filter:
-        source_chunk_type_filter="table"
-    else:
-        source_chunk_type_filter=""
+    # tables_only_filter = st.sidebar.checkbox(label="Prioritize tables")
+    # if tables_only_filter:
+        # source_chunk_type_filter="table"
+    # else:
+        # source_chunk_type_filter=""
+    
+    source_chunk_type_filter=""
 
     text = st.chat_input("Enter text", disabled=False)
     is_hyde = st.sidebar.checkbox(
@@ -359,7 +371,7 @@ if st.session_state["llm_bundle"] is not None:
             use_multiquery=st.session_state["llm_bundle"].multiquery_enabled,
             _bundle=st.session_state["llm_bundle"],
             _config=config,
-            label_filter=label_filter,
+            label_filter=document_labels.get(label_filter,""),
             source_chunk_type_filter = source_chunk_type_filter
         )
 
