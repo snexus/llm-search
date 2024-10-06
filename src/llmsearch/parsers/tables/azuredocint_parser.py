@@ -63,6 +63,7 @@ class AzureParsedTable(GenericParsedTable):
             logger.warning("Couldn't extract caption, returning empty string...")
             return ""
 
+
     @property
     def df(self) -> Optional[pd.DataFrame]:
         """Attempts to extract a DataFrame from the cropped table.
@@ -229,7 +230,65 @@ class AzureDocIntelligenceTableParser:
         if result.tables:
             logger.info(f"\tGot {len(result.tables)} table, extracting...")
             out = [AzureParsedTable(table, page_mapping) for table in result.tables]
+
+        for table in out:
+            if not table.caption:
+                logger.info("Couldn't detect caption, trying with custom algorithm...")
+                table.caption = self._detect_vertical_caption(table, fn)
         return out
+
+    def _detect_vertical_caption(self, table: AzureParsedTable, fn: Path, n_max: int = 200) -> str:
+        
+        # Open the document being parsed
+        doc = pymupdf.open(fn)
+        
+        page_number  = table.table.bounding_regions[0]['pageNumber']
+        page = doc[page_number-1]
+        
+        blocks = page.get_text_blocks()
+
+        top_captions, bottom_captions = [], []
+        for block in blocks:
+            top_cap, bottom_cap = self._detect_caption(table_bbox=table.bbox, block = block)
+            top_captions.append(top_cap)
+            bottom_captions.append(bottom_cap)
+
+
+        top_captions = [c for c in top_captions if c.strip()] # clear out empty captions
+        bottom_captions = [c for c in bottom_captions if c.strip()]
+
+        all_captions = "\n".join(top_captions)[:n_max] + "\n".join(bottom_captions)[:n_max]
+        caption =  all_captions
+
+        logger.debug(f"Custom algo caption: {caption}")
+        return caption
+
+
+    def _detect_caption(self, table_bbox: Tuple[float, float, float, float], block: Tuple[float, float, float, float, str], max_abs_dist: float = 3.5) -> Tuple[str,str]:
+        x1, y1, x2, y2 = block[:4]
+        text = block[4]
+
+        # Block in PyMupdf can consist of multiple lines of text
+        n_lines = text.count('\n') + 1
+
+
+        normalized_dist = 1000
+        top_caption, bottom_caption = "", ""
+
+        # Take care of captions above the table
+        if y2 < table_bbox[1]: # block in question is above the table
+            # Normalized distance = how many word "lines" this current sentence is from the table
+            normalized_dist =  (y2-table_bbox[1])/((y2-y1) / n_lines)
+            if abs(normalized_dist) < max_abs_dist:
+                top_caption = block[4]
+        
+        # Take care of captions below the table
+        elif y1 > table_bbox[3]: # block in question is below the table
+            normalized_dist =  (y1-table_bbox[3])/((y2-y1)/n_lines)
+            if abs(normalized_dist) < max_abs_dist:
+                bottom_caption = block[4]
+        return top_caption, bottom_caption
+
 
     @property
     def parsed_tables(self) -> List[AzureParsedTable]:
