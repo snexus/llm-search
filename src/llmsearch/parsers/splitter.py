@@ -1,18 +1,20 @@
 import hashlib
 import urllib
 import uuid
+from collections import defaultdict
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from loguru import logger
 import pandas as pd
+from loguru import logger
 
-from llmsearch.config import Config, Document
+from llmsearch.config import Config, Document, PDFTableParser
 from llmsearch.parsers.doc import docx_splitter
+from llmsearch.parsers.images.generic import get_image_chunks
 from llmsearch.parsers.markdown import markdown_splitter
 from llmsearch.parsers.pdf import PDFSplitter
+from llmsearch.parsers.tables.generic import get_table_chunks
 from llmsearch.parsers.unstructured import UnstructuredSplitter
-
 
 HASH_BLOCKSIZE = 65536
 
@@ -33,6 +35,7 @@ class DocumentSplitter:
 
         self.document_path_settings = config.embeddings.document_settings
         self.chunk_sizes = config.embeddings.chunk_sizes
+        self.cache_folder = config.cache_folder
 
     def get_hashes(self) -> pd.DataFrame:
         hash_filename_mappings = []
@@ -60,7 +63,7 @@ class DocumentSplitter:
 
     def split(
         self, restrict_filenames: Optional[List[str]] = None
-    ) -> Tuple[List[Document], pd.DataFrame, pd.DataFrame]:
+    ) -> Tuple[List[Document], pd.DataFrame, pd.DataFrame, List[str]]:
         """Splits documents based on document path settings
 
         Returns:
@@ -74,11 +77,15 @@ class DocumentSplitter:
         # Mapping between hash and document ids
         hash_docid_mappings = []
 
+        # Will collect all labels, for persisting later
+        all_labels = []
+
         for setting in self.document_path_settings:
             passage_prefix = setting.passage_prefix
             docs_path = Path(setting.doc_path)
             documents_label = setting.label
             exclusion_paths = [str(e) for e in setting.exclude_paths]
+
 
             for scan_extension in setting.scan_extensions:
                 extension = scan_extension
@@ -119,6 +126,8 @@ class DocumentSplitter:
                         max_size=chunk_size,
                         passage_prefix=passage_prefix,
                         label=documents_label,
+                        table_splitter=setting.pdf_table_parser,
+                        image_parser = setting.pdf_image_parser,
                         **additional_parser_settings,
                     )
 
@@ -127,10 +136,12 @@ class DocumentSplitter:
                     hash_filename_mappings.extend(hf_mappings)
                     hash_docid_mappings.extend(hd_mappings)
 
+                    all_labels+=list(set([d.metadata['label'] for d in docs]))
+
         all_hash_filename_mappings = pd.DataFrame(hash_filename_mappings)
         all_hash_docid_mappings = pd.concat(hash_docid_mappings, axis=0)
 
-        return all_docs, all_hash_filename_mappings, all_hash_docid_mappings
+        return all_docs, all_hash_filename_mappings, all_hash_docid_mappings, all_labels
 
     def is_exclusion(self, path: Path, exclusions: List[str]) -> bool:
         """Checks if path has parent folders in list of exclusions
@@ -159,6 +170,8 @@ class DocumentSplitter:
         max_size,
         passage_prefix: str,
         label: str,
+        table_splitter,
+        image_parser,
         **additional_kwargs,
     ) -> Tuple[List[Document], List[dict], List[pd.DataFrame]]:
         """Gets list of nodes from a collection of documents
@@ -166,6 +179,7 @@ class DocumentSplitter:
         Examples: https://gpt-index.readthedocs.io/en/stable/guides/primer/usage_pattern.html
         """
 
+        original_label = label
         all_docs = []
 
         # Maps between file name and it's hash
@@ -185,11 +199,37 @@ class DocumentSplitter:
             # docs_data = splitter_func(text, max_size)
             filename = str(path)
             additional_kwargs.update({"filename": filename})
+
+            # Placeholders for table and imag chunks, if present
+            table_chunks, table_bboxes = list(), dict()
+            image_chunks, image_bboxes = list(), dict()
+
+            # If table parsing specific, get back the chunks and add to docs data
+            if table_splitter is not None:
+                table_chunks, table_bboxes = get_table_chunks(path, max_size, table_splitter, cache_folder = self.cache_folder)
+
+            if image_parser is not None:
+                image_chunks, image_bboxes = get_image_chunks(path, max_size, image_parser, cache_folder=self.cache_folder)
+            
+            # Push table bounding boxes to avoid embedding the same text as in the tables.
+            additional_kwargs.update({"table_bboxes": table_bboxes})
+            additional_kwargs.update({"image_bboxes": image_bboxes})
+
             docs_data = splitter_func(path, max_size, **additional_kwargs)
+            docs_data += table_chunks
+            docs_data += image_chunks
+
+
             file_hash = get_md5_hash(path)
 
             path = urllib.parse.quote(str(path))  # type: ignore
             logger.info(path)
+
+            # If label for a set of documents doesn't exist, set it as document path
+            # Assign path to label
+
+            # if not original_label:
+            label = str(path)
 
             docs = [
                 Document(
@@ -199,6 +239,7 @@ class DocumentSplitter:
                         **{
                             "source": str(path),
                             "chunk_size": max_size,
+                            "source_chunk_type": d['metadata'].get("source_chunk_type", "text"),
                             "document_id": str(uuid.uuid1()),
                             "label": label,
                         },
@@ -207,10 +248,14 @@ class DocumentSplitter:
                 for d in docs_data
             ]
 
-            for d in docs: # 2024/03/14 - unstructured fills page as None for some formats like csv
-                if 'page' in d.metadata and d.metadata['page'] is None:
-                    d.metadata['page'] = -1
-            
+            for (
+                d
+            ) in (
+                docs
+            ):  # 2024/03/14 - unstructured fills page as None for some formats like csv
+                if "page" in d.metadata and d.metadata["page"] is None:
+                    d.metadata["page"] = -1
+
             all_docs.extend(docs)
 
             # Add hash to filename mapping and hash to doc ids mapping
@@ -238,3 +283,6 @@ def get_md5_hash(file_path: Path) -> str:
             buf = file.read(HASH_BLOCKSIZE)
 
     return hasher.hexdigest()
+
+
+

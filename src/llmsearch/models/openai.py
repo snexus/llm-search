@@ -1,6 +1,7 @@
+from langchain_openai import ChatOpenAI
+
 from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import OpenAIModelConfig
-from langchain_openai import ChatOpenAI
 
 # from langchain_openai import ChatOpenAI
 

@@ -1,10 +1,10 @@
 import torch
 import transformers
 from langchain_community.llms import HuggingFacePipeline
+from transformers import BitsAndBytesConfig
 
 from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import HuggingFaceModelConfig
-from transformers import BitsAndBytesConfig
 
 
 class HuggingFaceModel(AbstractLLMModel):

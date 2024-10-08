@@ -30,6 +30,11 @@ dev = [
     "sphinx_rtd_theme"
 ]
 
+azureparser = [
+"azure-ai-documentintelligence==1.0.0b3",
+"azure-identity==1.17.1"
+]
+
 [project.urls]
 Homepage = "https://github.com/snexus/llm-search"
 Documentation = "https://llm-search.readthedocs.io/en/latest/"

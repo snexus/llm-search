@@ -1,5 +1,6 @@
-from llmsearch.embeddings import get_changed_or_new_files
 import pandas as pd
+
+from llmsearch.embeddings import get_changed_or_new_files
 
 
 def test_new_only():

@@ -1,18 +1,16 @@
 import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import List, Tuple
 
 import pandas as pd
-
+from langchain_community.embeddings import (HuggingFaceInstructEmbeddings,
+                                            SentenceTransformerEmbeddings)
 from langchain_huggingface import HuggingFaceEmbeddings
-
-from langchain_community.embeddings import (
-    HuggingFaceInstructEmbeddings,
-    SentenceTransformerEmbeddings,
-)
 from loguru import logger
 
-from llmsearch.config import Config, Document, EmbeddingModel, EmbeddingModelType
+from llmsearch.config import (Config, Document, EmbeddingModel,
+                              EmbeddingModelType)
 from llmsearch.parsers.splitter import DocumentSplitter
 from llmsearch.splade import SparseEmbeddingsSplade
 
@@ -78,7 +76,7 @@ def get_embedding_model(config: EmbeddingModel):
 
 def create_embeddings(config: Config, vs: VectorStore):
     splitter = DocumentSplitter(config)
-    all_docs, all_hash_filename_mappings, all_hash_docid_mappings = splitter.split()
+    all_docs, all_hash_filename_mappings, all_hash_docid_mappings, all_labels = splitter.split()
 
     vs.create_index_from_documents(all_docs=all_docs)
 
@@ -86,8 +84,33 @@ def create_embeddings(config: Config, vs: VectorStore):
     splade.generate_embeddings_from_docs(docs=all_docs)
 
     save_document_hashes(config, all_hash_filename_mappings, all_hash_docid_mappings)
+    update_document_labels(config, all_labels)
     logger.info("ALL DONE.")
 
+
+def update_document_labels(config: Config, all_labels: List[str]):
+    logger.info("Updating document labels...")
+    labels_fn = Path(os.path.join(config.embeddings.embeddings_path, "labels.txt"))
+    labels = load_document_labels(labels_fn)
+
+    labels = list(set(labels + all_labels))
+    save_document_labels(labels_fn, labels)
+
+
+def load_document_labels(path: Path) -> List[str]:
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            strings = [line.strip() for line in f.readlines()]
+            return strings
+    except FileNotFoundError:
+        logger.warning("List of labels wasn't found, returning []")
+        return []
+    
+def save_document_labels(path: Path, labels: List[str]) -> None:
+    logger.info(f"Saving document labels to {path}")
+    with open(path, 'w', encoding='utf-8') as f:
+        for string in labels:
+            f.write(string + '\n')  # Write each string followed by a newline
 
 def update_embeddings(config: Config, vs: VectorStore) -> dict:
     splitter = DocumentSplitter(config)
@@ -182,7 +205,7 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
     if len(changed_or_new_df) > 0:
         splitter = DocumentSplitter(config)
 
-        new_docs, new_fn_hash_mappings, new_docid_hash_mappings = splitter.split(
+        new_docs, new_fn_hash_mappings, new_docid_hash_mappings, all_labels = splitter.split(
             restrict_filenames=changed_or_new_df.loc[:, "filename"].tolist()
         )
 
@@ -197,6 +220,7 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
         splade.add_embeddings(new_docs)
         stats["scanned_files"] = len(changed_or_new_df)
         stats["scanned_chunks"] = len(new_docs)
+        update_document_labels(config, all_labels)
 
     stats["updated_n_files"] = len(existing_fn_hash_mappings)
     # Save changed mappings

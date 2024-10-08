@@ -2,18 +2,13 @@ import string
 from typing import List
 
 from loguru import logger
-from llmsearch.config import (
-    SuffixAppend,
-    ObsidianAdvancedURI,
-    ResponseModel,
-    SemanticSearchOutput,
-    Config,
-)
+
+from llmsearch.config import (Config, Document, ObsidianAdvancedURI,
+                              ResponseModel, SemanticSearchOutput,
+                              SuffixAppend)
+from llmsearch.database.crud import create_response
 from llmsearch.ranking import get_relevant_documents
 from llmsearch.utils import LLMBundle
-from llmsearch.database.crud import create_response
-
-from llmsearch.config import Document
 
 
 def get_and_parse_response(
@@ -22,6 +17,7 @@ def get_and_parse_response(
     config: Config,
     persist_db_session=None,
     label: str = "",
+    source_chunk_type: str = ""
 ) -> ResponseModel:
     """Performs retieval augmented search (RAG).
 
@@ -65,7 +61,7 @@ def get_and_parse_response(
     semantic_search_config = config.semantic_search
     most_relevant_docs, score = get_relevant_documents(
         original_query, queries, llm_bundle, semantic_search_config, label=label, 
-        offset_max_chars = offset_max_chars
+        offset_max_chars = offset_max_chars, source_chunk_type = source_chunk_type
     )
 
     # Append chat history to the documments, if enabled

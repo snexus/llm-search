@@ -1,0 +1,45 @@
+cache_folder: /storage/llm/cache
+
+embeddings:
+  embedding_model:
+    type: sentence_transformer
+    model_name: 'Alibaba-NLP/gte-large-en-v1.5'
+    additional_kwargs:
+      trust_remote_code: true
+
+  chunk_sizes:
+    - 1024
+
+  embeddings_path: /storage/llm/embeddings2
+  document_settings:
+  - doc_path: /storage/llm/pdf_docs2
+    scan_extensions: 
+      - epub
+      - md
+      - pdf
+    pdf_table_parser: azuredoc # gmft # azuredoc # gmft
+    # pdf_image_parser:
+    #     image_parser: gemini-1.5-pro # gemini-1.5-flash
+    #     system_instructions: |
+    #         You are an research assistant. You analyze the image to extract detailed information. Response must be a Markdown string in the follwing format:
+    #         - First line is a heading with image caption, starting with '# '
+    #         - Second line is empty
+    #         - From the third line on - detailed data points and related metadata, extracted from the image, in Markdown format. Don't use Markdown tables.
+    passage_prefix: "passage: "
+
+
+semantic_search:
+  search_type: similarity #mmr #similarity # mmr
+  replace_output_path:
+    - substring_search: "/storage"
+      substring_replace: "okular:///storage"
+
+  append_suffix:
+    append_template: "#page={page}"
+
+  max_k: 25
+
+  max_char_size: 16384
+  query_prefix: "query: "
+  hyde:
+    enabled: False

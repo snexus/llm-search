@@ -1,6 +1,6 @@
-from collections import defaultdict
 import os
 import pickle
+from collections import defaultdict
 from typing import List, Tuple
 
 import numpy as np

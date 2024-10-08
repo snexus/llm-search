@@ -1,16 +1,13 @@
-import torch
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
-from typing import List
-from llmsearch.config import SemanticSearchConfig
-
-# from llmsearch.utils import LLMBundle
-from typing import Tuple
 import statistics
+# from llmsearch.utils import LLMBundle
+from typing import List, Tuple
 
+import torch
 from loguru import logger
 from sentence_transformers.cross_encoder import CrossEncoder
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-from llmsearch.config import Document
+from llmsearch.config import Document, SemanticSearchConfig
 
 
 class MarcoReranker:
@@ -85,6 +82,7 @@ def get_relevant_documents(
     llm_bundle,
     config: SemanticSearchConfig,
     label: str,
+    source_chunk_type: str, 
     offset_max_chars: int = 0
 ) -> Tuple[List[Document], float]:
     most_relevant_docs = []
@@ -122,6 +120,10 @@ def get_relevant_documents(
             # Add label to filter, if present
             if label:
                 filter.update({"label": label})
+            
+            if source_chunk_type:
+                filter.update({"source_chunk_type": source_chunk_type})
+
 
             if (
                 not filter
@@ -134,6 +136,11 @@ def get_relevant_documents(
                 query, k=config.max_k, filter=filter
             )
             dense_search_doc_ids = [r[0].metadata["document_id"] for r in res]
+
+
+            # 2024/08/05 Sparse can't filter out table chunks yet, thus restrict to dense search
+            # if source_chunk_type == 'table':
+            #     sparse_search_docs_ids = set()
 
             # Create union of documents fetched using sprase and dense embeddings
             all_doc_ids = (

@@ -4,7 +4,6 @@ from typing import List, Union
 
 from loguru import logger
 from unstructured.documents.elements import NarrativeText, Text, Title
-
 from unstructured.partition.auto import partition
 
 

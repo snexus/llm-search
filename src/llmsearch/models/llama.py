@@ -1,12 +1,14 @@
-from typing import Dict, Generator, Optional
+from typing import Any, Dict, Generator, List, Optional
+
+from langchain_core.callbacks import (CallbackManager,
+                                      CallbackManagerForLLMRun,
+                                      StreamingStdOutCallbackHandler)
+from langchain_core.language_models import LLM
+from llama_cpp import Llama
+from loguru import logger
 
 from llmsearch.models.abstract import AbstractLLMModel
 from llmsearch.models.config import LlamaModelConfig
-from typing import Any, List
-from llama_cpp import Llama
-from loguru import logger
-from langchain_core.callbacks import CallbackManager, CallbackManagerForLLMRun, StreamingStdOutCallbackHandler
-from langchain_core.language_models import LLM
 
 # class LlamaModel(AbstractLLMModel):
 #     def __init__(self, config: LlamaModelConfig):

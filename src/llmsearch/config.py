@@ -1,28 +1,20 @@
 from enum import Enum
 from io import StringIO
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union, Literal
+from typing import Any, Dict, List, Literal, Optional, Union
+from uuid import UUID, uuid4
 
 import yaml
 from loguru import logger
-from pydantic import (
-    BaseModel,
-    DirectoryPath,
-    Field,
-    field_validator,
-    ConfigDict,
-    ValidationInfo,
-)
-from uuid import UUID, uuid4
+from pydantic import (BaseModel, ConfigDict, DirectoryPath, Field,
+                      ValidationInfo, field_validator)
+
+from llmsearch.models.config import (AzureOpenAIModelConfig,
+                                     HuggingFaceModelConfig, LlamaModelConfig,
+                                     OpenAIModelConfig)
 
 # from pydantic.typing import Literal  # type: ignore
 
-from llmsearch.models.config import (
-    HuggingFaceModelConfig,
-    LlamaModelConfig,
-    OpenAIModelConfig,
-    AzureOpenAIModelConfig,
-)
 
 models_config = {
     "llamacpp": LlamaModelConfig,
@@ -56,6 +48,24 @@ class RerankerModel(Enum):
     BGE_RERANKER = "bge"
 
 
+class PDFTableParser(str, Enum):
+    GMFT = "gmft"
+    AZUREDOC = "azuredoc"
+
+
+class PDFImageParser(str, Enum):
+    GEMINI_15_FLASH = "gemini-1.5-flash"
+    GEMINI_15_PRO= "gemini-1.5-pro"
+
+class PDFImageParseSettings(BaseModel):
+    image_parser: PDFImageParser
+    system_instruction: str = """You are an research assistant. You analyze the image to extract detailed information. Response must be a Markdown string in the follwing format:
+- First line is a heading with image caption, starting with '# '
+- Second line is empty
+- From the third line on - detailed data points and related metadata, extracted from the image, in Markdown format. Don't use Markdown tables. 
+"""
+    user_instruction: str = """From the image, extract detailed quantitative and qualitative data points."""
+
 class EmbeddingModelType(str, Enum):
     huggingface = "huggingface"
     instruct = "instruct"
@@ -80,6 +90,12 @@ class DocumentPathSettings(BaseModel):
 
     scan_extensions: List[str]
     """List of extensions to scan."""
+
+    pdf_table_parser:  Optional[PDFTableParser] = None
+    """If enabled, will parse tables in pdf files using a specific of a parser."""
+
+    pdf_image_parser: Optional[PDFImageParseSettings] = None
+    """If enabled, will parse images in pdf files using a specific of a parser."""
 
     additional_parser_settings: Dict[str, Any] = Field(default_factory=dict)
     """Optional parser settings (parser dependent)"""
@@ -280,7 +296,7 @@ class LLMConfig(BaseModel):
         if type_ not in models_config:
             raise TypeError(f"Uknown model type {value}. Allowed types: ")
 
-        config_type = models_config[type_]
+        config_type = models_config[type_] # type: ignore
         logger.info(
             f"Loading model paramaters in configuration class {config_type.__name__}"
         )

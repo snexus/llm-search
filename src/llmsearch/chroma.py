@@ -1,9 +1,9 @@
 import gc
 import shutil
-import tqdm
 from pathlib import Path
 from typing import List, Optional, Tuple
 
+import tqdm
 from langchain_community.vectorstores import Chroma
 from loguru import logger
 
