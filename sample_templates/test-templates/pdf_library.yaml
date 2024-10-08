@@ -17,7 +17,7 @@ embeddings:
       - epub
       - md
       - pdf
-    pdf_table_parser: azuredoc # gmft
+    pdf_table_parser: azuredoc # gmft # azuredoc # gmft
     # pdf_image_parser:
     #     image_parser: gemini-1.5-pro # gemini-1.5-flash
     #     system_instructions: |

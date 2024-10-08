@@ -16,6 +16,8 @@ The purpose of this package is to offer a convenient question-answering (RAG) sy
     * Other common formats are supported by `Unstructured` pre-processor:
         * List of formats see [here](https://unstructured-io.github.io/unstructured/core/partition.html).
 
+* Support for table parsing via open-source gmft (https://github.com/conjuncts/gmft) or Azure Document Intelligence.
+
 * Supports multiple collection of documents, and filtering the results by a collection.
 
 * An ability to update the embeddings incrementally, without a need to re-index the entire document base.
