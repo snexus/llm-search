@@ -21,6 +21,8 @@ Features
 
 * Support for table parsing via open-source gmft (https://github.com/conjuncts/gmft) or Azure Document Intelligence.
 
+* Optional support for image parsing using Gemini API.
+
 * Supports multiple collection of documents, and filtering the results by a collection.
 
 * An ability to update the embeddings incrementally, without a need to re-index the entire document base.
