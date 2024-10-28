@@ -26,9 +26,13 @@ Install Latest Version
     # Install packages using pip
     pip install pyllmsearch
 
-    # Optional - install packages using uv
+    # Optional dependencues for Azure parser
+    pip install "pyllmsearch[azureparser]"
+
+    # Preferred method (much faster) - install packages using uv
     pip install uv
     uv pip install pyllmsearch
+
 
 
 
@@ -55,3 +59,6 @@ Install from source
 
     # Install the package
     pip install . # or `pip install -e .` for development
+    
+    # For Azure parser, install with optional dependencies
+    pip install ."[azureparser]"
