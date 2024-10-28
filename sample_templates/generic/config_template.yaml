@@ -32,6 +32,7 @@ embeddings:
         remove_images: True # Remove image links
     
     # Optional setting
+    # For azuredoc support - pip install "pyllmsearch[azureparser]"
     pdf_table_parser: gmft # azuredoc
 
     # Optional setting
@@ -65,7 +66,12 @@ semantic_search:
 
   # Will ensure that context provided to LLM is less than max_char_size. Useful for locally hosted models and limited hardware. 
   # Reduce if out of CUDA memory.
-  max_char_size: 4096 
+  max_char_size: 16384 # Reduce if necessary for locally hosted LLMs
+
+  # Maximum number of text chunks to retrive for dense and sparse embeddings
+  # Total number of chunks is max_k * 2
+  max_k: 25
+  
   query_prefix: "query: " # Often queries have to be prefixed for embedding models, such as e5
 
   hyde:
