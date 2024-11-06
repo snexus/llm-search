@@ -188,6 +188,9 @@ class AzureDocIntelligenceTableParser:
     def detect_and_parse_tables(self) -> List[AzureParsedTable]:
         tables = self.table_pages_extractor.extract_table_pages()
 
+        if not tables:
+            return []
+
         with ThreadPoolExecutor(max_workers=min(10, len(tables))) as executor:
             future_to_fn = {
                 executor.submit(self._analyze_document, fn, page_mapping): (
