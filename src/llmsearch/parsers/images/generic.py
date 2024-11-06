@@ -91,7 +91,11 @@ class GenericPDFImageParser:
             for img in page.get_images():
                 xref = img[0]
                 data = doc.extract_image(xref)
-                out_fn = self._resize_and_save_image(data, page.number, xref)
+                try:
+                    out_fn = self._resize_and_save_image(data, page.number, xref)
+                except Exception as ex:
+                    logger.error(f"An exception occured when opening the image: {str(ex)}")
+                    out_fn = None
                 if out_fn:
                     out_images.append(
                         PDFImage(
@@ -131,7 +135,7 @@ class GenericPDFImageParser:
                 / f"{self.pdf_fn.stem}_page_{page_num}_xref_{xref_num}.png"
             )
             logger.debug(f"Saving file: {out_fn}")
-            img.save(out_fn)
+            img.convert("RGB").save(out_fn)
 
         return out_fn
 
@@ -160,13 +164,17 @@ def log_attempt_number(retry_state):
     logger.error(
             f"API call attempt {retry_state.attempt_number} failed with error: {error_message}. Retrying..."
         )
-    # logger.error(f"API call attempt failed. Retrying: {retry_state.attempt_number}...")
 
+
+def on_retry_failed(retry_state):
+    logger.error("API calls failed for maximum number of retries. Skipping image processing for this graph.")
+    return retry_state.args[0]
 
 @retry(
     wait=wait_random_exponential(min=5, max=60),
     stop=stop_after_attempt(6),
     after=log_attempt_number,
+    retry_error_callback= on_retry_failed,
 )
 def analyze_single_image(
     pdf_image: PDFImage, image_analyzer: Callable, i: int
