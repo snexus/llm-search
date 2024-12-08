@@ -5,6 +5,7 @@ embeddings:
   embeddings_path: /path/to/embedding/folder ## specify a folder where embeddings will be saved.
   
   embedding_model: # Optional embedding model specification, default is e5-large-v2. Swap to a smaller model if out of CUDA memory
+    # Supported types: "huggingface", "instruct", "openai"
     type: sentence_transformer # other supported types - "huggingface" and "instruct"
     model_name: "intfloat/e5-large-v2"
   

@@ -1,0 +1,40 @@
+cache_folder: /storage/llm/cache
+
+embeddings:
+  embeddings_path: /storage/llm/embeddings_md2
+  
+  embedding_model:
+    type: openai
+    model_name: "text-embedding-3-large"
+    additional_kwargs:
+      dimensions: 1024
+
+  splade_config:
+    n_batch: 5
+
+  chunk_sizes:
+    - 1024
+
+  document_settings:
+  - doc_path: /storage/llm/md_docs2
+    scan_extensions: 
+      - md
+      - pdf
+    passage_prefix: "passage: "
+    label: "md"
+
+
+semantic_search:
+  search_type: similarity 
+  replace_output_path:
+    - substring_search: "/storage"
+      substring_replace: "okular:///storage"
+
+  append_suffix:
+    append_template: "#page={page}"
+
+  max_char_size: 8192
+  max_k: 15
+  query_prefix: "query: "
+  hyde:
+    enabled: False

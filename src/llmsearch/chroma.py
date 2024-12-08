@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 import tqdm
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from loguru import logger
 
 from llmsearch.config import Config
@@ -77,8 +77,8 @@ class VectorStoreChroma(VectorStore):
                     metadatas=[doc.metadata for doc in group],
                 )
         logger.info("Generated embeddings. Persisting...")
-        if vectordb is not None:
-            vectordb.persist()
+        # if vectordb is not None:
+            # vectordb.persist()
         vectordb = None
 
     def _load_retriever(self, **kwargs):
@@ -105,13 +105,13 @@ class VectorStoreChroma(VectorStore):
                 metadatas=[doc.metadata for doc in group],
             )
         logger.info("Generated embeddings. Persisting...")
-        self.vectordb.persist()
+        # self.vectordb.persist()
 
     def delete_by_id(self, ids: List[str]):
         logger.warning(f"Deleting {len(ids)} chunks.")
         # vectordb = Chroma(persist_directory=self._persist_folder, embedding_function=self._embeddings)
         self.vectordb.delete(ids=ids)
-        self.vectordb.persist()
+        # self.vectordb.persist()
 
     def get_documents_by_id(self, document_ids: List[str]) -> List[Document]:
         """Retrieves documents by ids

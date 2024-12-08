@@ -1,18 +1,23 @@
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple, Union
 
+from dotenv import load_dotenv
 import pandas as pd
-from langchain_community.embeddings import (HuggingFaceInstructEmbeddings,
-                                            SentenceTransformerEmbeddings)
+from langchain_community.embeddings import (
+    HuggingFaceInstructEmbeddings,
+    SentenceTransformerEmbeddings,
+)
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from loguru import logger
 
-from llmsearch.config import (Config, Document, EmbeddingModel,
-                              EmbeddingModelType)
+from llmsearch.config import Config, Document, EmbeddingModel, EmbeddingModelType
 from llmsearch.parsers.splitter import DocumentSplitter
 from llmsearch.splade import SparseEmbeddingsSplade
+
+load_dotenv()
 
 MODELS = {
     EmbeddingModelType.instruct: HuggingFaceInstructEmbeddings,
@@ -65,18 +70,50 @@ def get_embedding_model(config: EmbeddingModel):
     """
 
     logger.info(f"Embedding model config: {config}")
-    model_type = MODELS.get(config.type, None)
 
-    if model_type is None:
+    if config.type in (
+        EmbeddingModelType.huggingface,
+        EmbeddingModelType.instruct,
+        EmbeddingModelType.sentence_transformer,
+    ):
+        model_type: Optional[
+            Union[
+                HuggingFaceEmbeddings,
+                HuggingFaceInstructEmbeddings,
+                SentenceTransformerEmbeddings,
+            ]
+        ] = MODELS.get(config.type, None) # type: ignore
+
+        if model_type is None:
+            raise TypeError(f"Invalid model type passed: {config.type}")
+        return model_type(
+            model_name=config.model_name, model_kwargs=config.additional_kwargs
+        )  # type: ignore
+
+    elif config.type is EmbeddingModelType.openai:
+        return get_openai_embedding_model(config)
+    else:
         raise TypeError(f"Unknown model type. Got {config.type}")
-
-    return model_type(model_name=config.model_name, model_kwargs = config.additional_kwargs)
     # return model_type(model_name=config.model_name, **config.additional_kwargs)
+
+
+def get_openai_embedding_model(config: EmbeddingModel) -> OpenAIEmbeddings:
+    if not os.getenv("OPENAI_API_KEY"):
+        raise KeyError("OPENAI_API_KEY wasn't found. Please refer to .env_template to create .env")
+
+    logger.info("Initializing OpenAI embeddings model.")
+    return OpenAIEmbeddings(
+        model = config.model_name,
+        **config.additional_kwargs
+    )
+
 
 
 def create_embeddings(config: Config, vs: VectorStore):
     splitter = DocumentSplitter(config)
-    all_docs, all_hash_filename_mappings, all_hash_docid_mappings, all_labels = splitter.split()
+    all_docs, all_hash_filename_mappings, all_hash_docid_mappings, all_labels = (
+        splitter.split()
+    )
 
     vs.create_index_from_documents(all_docs=all_docs)
 
@@ -99,18 +136,20 @@ def update_document_labels(config: Config, all_labels: List[str]):
 
 def load_document_labels(path: Path) -> List[str]:
     try:
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, "r", encoding="utf-8") as f:
             strings = [line.strip() for line in f.readlines()]
             return strings
     except FileNotFoundError:
         logger.warning("List of labels wasn't found, returning []")
         return []
-    
+
+
 def save_document_labels(path: Path, labels: List[str]) -> None:
     logger.info(f"Saving document labels to {path}")
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         for string in labels:
-            f.write(string + '\n')  # Write each string followed by a newline
+            f.write(string + "\n")  # Write each string followed by a newline
+
 
 def update_embeddings(config: Config, vs: VectorStore) -> dict:
     splitter = DocumentSplitter(config)
@@ -205,8 +244,10 @@ def update_embeddings(config: Config, vs: VectorStore) -> dict:
     if len(changed_or_new_df) > 0:
         splitter = DocumentSplitter(config)
 
-        new_docs, new_fn_hash_mappings, new_docid_hash_mappings, all_labels = splitter.split(
-            restrict_filenames=changed_or_new_df.loc[:, "filename"].tolist()
+        new_docs, new_fn_hash_mappings, new_docid_hash_mappings, all_labels = (
+            splitter.split(
+                restrict_filenames=changed_or_new_df.loc[:, "filename"].tolist()
+            )
         )
 
         existing_fn_hash_mappings, existing_docid_hash_mappings = add_mappings(

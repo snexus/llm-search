@@ -8,7 +8,7 @@ The purpose of this package is to offer a convenient question-answering (RAG) sy
 
 ## Features
 
-* Supported formats
+* Supported document formats
     * Build-in parsers:
         * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features like cleaning image links, adding custom metadata, and more.
         * `.pdf` - MuPDF-based parser.
@@ -16,21 +16,27 @@ The purpose of this package is to offer a convenient question-answering (RAG) sy
     * Other common formats are supported by `Unstructured` pre-processor:
         * List of formats see [here](https://unstructured-io.github.io/unstructured/core/partition.html).
 
-* Support for table parsing via open-source gmft (https://github.com/conjuncts/gmft) or Azure Document Intelligence.
+* Allows interaction with embedded documents, internally supporting the following models and methods (including locally hosted):
+    * OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).
+    * HuggingFace models.
+    * Llama cpp supported models - for full list see [here](https://github.com/ggerganov/llama.cpp#description).
 
-* Optional support for image parsing using Gemini API.
-
-* Supports multiple collection of documents, and filtering the results by a collection.
-
-* An ability to update the embeddings incrementally, without a need to re-index the entire document base.
+* Interoperability with LiteLLM + Ollama via OpenAI API, supporting hundreds of different models (see [Model configuration for LiteLLM](sample_templates/llm/litellm.yaml))
 
 * Generates dense embeddings from a folder of documents and stores them in a vector database ([ChromaDB](https://github.com/chroma-core/chroma)).
   * The following embedding models are supported:
     * Hugging Face embeddings.
     * Sentence-transformers-based models, e.g., `multilingual-e5-base`.
     * Instructor-based models, e.g., `instructor-large`.
+    * OpenAI embeddings.
 
 * Generates sparse embeddings using SPLADE (https://github.com/naver/splade) to enable hybrid search (sparse + dense).
+
+* An ability to update the embeddings incrementally, without a need to re-index the entire document base.
+
+* Support for table parsing via open-source gmft (https://github.com/conjuncts/gmft) or Azure Document Intelligence.
+
+* Optional support for image parsing using Gemini API.
 
 * Supports the "Retrieve and Re-rank" strategy for semantic search, see [here](https://www.sbert.net/examples/applications/retrieve_rerank/README.html).
     * Besides the originally `ms-marco-MiniLM` cross-encoder, more modern `bge-reranker` is supported.
@@ -44,13 +50,6 @@ The purpose of this package is to offer a convenient question-answering (RAG) sy
 
 * Supprts optional chat history with question contextualization
 
-* Allows interaction with embedded documents, internally supporting the following models and methods (including locally hosted):
-    * OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).
-    * HuggingFace models.
-    * Llama cpp supported models - for full list see [here](https://github.com/ggerganov/llama.cpp#description).
-    * AutoGPTQ models (temporarily disabled due to broken dependencies).
-
-* Interoperability with LiteLLM + Ollama via OpenAI API, supporting hundreds of different models (see [Model configuration for LiteLLM](sample_templates/llm/litellm.yaml))
 
 * Other features
     * Simple CLI and web interfaces.

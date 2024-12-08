@@ -1,30 +1,31 @@
 llama-cpp-python==0.2.76
 chromadb~=0.5.5
-langchain~=0.2.14
-langchain-community~=0.2.12
-langchain-openai~=0.1.22
-langchain-huggingface~=0.0.3
+langchain>=0.3,<0.4
+langchain-community>=0.3,<0.4
+langchain-openai>=0.2,<0.3
+langchain-huggingface>=0.1,<0.2
+langchain-chroma>=0.1.4,<0.2
 pydantic~=2.7
-transformers~=4.41
-sentence-transformers==3.0.1
+transformers~=4.47
+sentence-transformers==3.3.1
 pypdf2~=3.0.1
 ebooklib==0.18
 # sentencepiece==0.20
 setuptools==67.7.2
 loguru
 python-dotenv
-accelerate~=0.33
+accelerate~=1.2.0
 protobuf==3.20.2
 termcolor
-openai~=1.41
+openai~=1.57
 einops # required for Mosaic models
 click 
 bitsandbytes==0.43.1
 # auto-gptq==0.2.0
 InstructorEmbedding==1.0.1
-unstructured~=0.14.5
-pymupdf==1.24.9
-streamlit~=1.28
+unstructured~=0.16.9
+pymupdf==1.25.0
+streamlit~=1.40
 python-docx~=1.1
 six==1.16.0 ; python_version >= "3.10" and python_version < "4.0"
 sniffio==1.3.0 ; python_version >= "3.10" and python_version < "4.0"
@@ -34,8 +35,8 @@ sympy==1.11.1 ; python_version >= "3.10" and python_version < "4.0"
 tenacity==8.2.3 ; python_version >= "3.10" and python_version < "4.0"
 threadpoolctl==3.1.0 ; python_version >= "3.10" and python_version < "4.0"
 tiktoken==0.7.0 ; python_version >= "3.10" and python_version < "4.0"
-tokenizers==0.19.1; python_version >= "3.10" and python_version < "4.0"
+tokenizers>=0.21,<0.22; python_version >= "3.10" and python_version < "4.0"
 tqdm==4.65.0 ; python_version >= "3.10" and python_version < "4.0"
 # transformers==4.29.2 ; python_version >= "3.10" and python_version < "4.0"
 gmft==0.2.1
-google-generativeai~=0.7
+google-generativeai~=0.8.3
