@@ -4,6 +4,7 @@ from typing import List, Optional, Union
 
 from langchain.chains.base import Chain
 from langchain.chains.question_answering import load_qa_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.caches import BaseCache, InMemoryCache
 from langchain_core.output_parsers.string import StrOutputParser
 from langchain_core.prompts import PromptTemplate
@@ -72,7 +73,8 @@ def get_llm_bundle(config: Config) -> LLMBundle:
 
     set_cache_folder(str(config.cache_folder))
     llm = get_llm(config.llm.params)  # type: ignore
-    chain = load_qa_chain(llm=llm.model, chain_type=CHAIN_TYPE, prompt=llm.prompt)
+    # chain = load_qa_chain(llm=llm.model, chain_type=CHAIN_TYPE, prompt=llm.prompt)
+    chain = create_stuff_documents_chain(llm=llm.model, prompt=llm.prompt)
 
     store = VectorStoreChroma(
         persist_folder=str(config.embeddings.embeddings_path), config=config

@@ -73,20 +73,21 @@ def get_and_parse_response(
             )
         )
 
-    res = llm_bundle.chain(
-        {"input_documents": most_relevant_docs, "question": original_query},
+    res = llm_bundle.chain.invoke(
+        {"context": most_relevant_docs, "question": original_query},
         return_only_outputs=False,
     )
+    
 
-    save_chat_history(llm_bundle, question=original_query, answer=res["output_text"])
+    save_chat_history(llm_bundle, question=original_query, answer=res)
 
     out = ResponseModel(
-        response=res["output_text"],
+        response=res, #type: ignore 
         question=query,
         average_score=score,
         hyde_response=hyde_response,
     )
-    for doc in res["input_documents"]:
+    for doc in most_relevant_docs:
         doc_name = doc.metadata["source"]
 
         for replace_setting in semantic_search_config.replace_output_path:

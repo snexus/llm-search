@@ -70,6 +70,7 @@ class EmbeddingModelType(str, Enum):
     huggingface = "huggingface"
     instruct = "instruct"
     sentence_transformer = "sentence_transformer"
+    openai = "openai"
 
 
 class EmbeddingModel(BaseModel):
