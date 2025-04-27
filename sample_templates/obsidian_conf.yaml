@@ -8,7 +8,6 @@ embeddings:
     additional_kwargs:
       trust_remote_code: true
 
-    # model_name: "intfloat/e5-large-v2"
   splade_config:
     n_batch: 2
 
@@ -56,7 +55,7 @@ semantic_search:
   append_suffix:
     append_template: "&heading={heading}"
 
-  max_char_size: 4096
+  max_char_size: 8192
   query_prefix: "query: "
   multiquery:
     enabled: False

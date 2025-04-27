@@ -1,9 +1,12 @@
+"""Web application for LLMSearch"""
+
 import argparse
 import gc
+import io
 import os
 from io import StringIO
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Union
 
 import langchain
 import streamlit as st
@@ -16,8 +19,12 @@ from streamlit import chat_message
 
 from llmsearch.chroma import VectorStoreChroma
 from llmsearch.config import Config
-from llmsearch.embeddings import (EmbeddingsHashNotExistError,
-                                  create_embeddings, update_embeddings, load_document_labels)
+from llmsearch.embeddings import (
+    EmbeddingsHashNotExistError,
+    create_embeddings,
+    load_document_labels,
+    update_embeddings,
+)
 from llmsearch.process import get_and_parse_response
 from llmsearch.utils import get_llm_bundle, set_cache_folder
 
@@ -25,7 +32,10 @@ st.set_page_config(page_title="LLMSearch", page_icon=":robot:", layout="wide")
 
 load_dotenv()
 
-langchain.debug = True
+langchain.debug = True  # type: ignore
+
+# See https://github.com/VikParuchuri/marker/issues/442
+torch.classes.__path__ = []  # add this line to manually set it to empty.
 
 
 @st.cache_data
@@ -78,15 +88,15 @@ def udpate_index(doc_config_path: str, model_config_file):
     with st.spinner("Updating index, please wait..."):
         logger.debug("Unloading model...")
         unload_model()
-        config = load_config(doc_config_path, model_config_file)
-        set_cache_folder(str(config.cache_folder))
+        conf = load_config(doc_config_path, model_config_file)
+        set_cache_folder(str(conf.cache_folder))
 
         vs = VectorStoreChroma(
-            persist_folder=str(config.embeddings.embeddings_path), config=config
+            persist_folder=str(conf.embeddings.embeddings_path), config=conf
         )
         try:
             logger.debug("Updating embeddings")
-            stats = update_embeddings(config, vs)
+            stats = update_embeddings(conf, vs)
         except EmbeddingsHashNotExistError:
             st.error(
                 "Couldn't find hash files. Please re-create the index using current version of the app."
@@ -120,20 +130,23 @@ def load_config(doc_config, model_config) -> Config:
     config_dict = {**doc_config_dict, **model_config_dict}
     return Config(**config_dict)
 
+
 @st.cache_data
 def load_labels(embedding_path: str) -> Dict[str, str]:
     labels_fn = Path(os.path.join(embedding_path, "labels.txt"))
     all_labels = {Path(label).name: label for label in load_document_labels(labels_fn)}
     return all_labels
 
+
 @st.cache_data
-def load_yaml_file(config) -> dict:
-    if isinstance(config, str):
-        logger.info(f"Loading doc config from a file: {config}")
-        with open(config, "r") as f:
+def load_yaml_file(conf: Union[str, io.BytesIO]) -> dict:
+    """Loads YAML file and returns a dictionary"""
+    if isinstance(conf, str):
+        logger.info(f"Loading doc config from a file: {conf}")
+        with open(conf, "r", encoding="utf-8") as f:
             string_data = f.read()
     else:
-        stringio = StringIO(config.getvalue().decode("utf-8"))
+        stringio = StringIO(conf.getvalue().decode("utf-8"))
         string_data = stringio.read()
 
     config_dict = yaml.safe_load(string_data)
@@ -160,15 +173,17 @@ def unload_model():
     with torch.no_grad():
         torch.cuda.empty_cache()
 
+
 def clear_chat_history():
     if st.session_state["llm_bundle"] is not None:
         st.session_state["llm_bundle"].conversation_history_settings.history = []
-        
+
         # Clear LLM Cache
         st.session_state["llm_bundle"].llm_cache.clear()
-        
+
         # Clear Streamlit Cache
         st.cache_data.clear()
+
 
 @st.cache_data
 def generate_response(
@@ -178,12 +193,16 @@ def generate_response(
     _config: Config,
     _bundle,
     label_filter: str = "",
-    source_chunk_type_filter: str = ""
+    source_chunk_type_filter: str = "",
 ):
     # _config and _bundle are under scored so paratemeters aren't hashed
 
     output = get_and_parse_response(
-        query=question, config=_config, llm_bundle=_bundle, label=label_filter, source_chunk_type=source_chunk_type_filter
+        query=question,
+        config=_config,
+        llm_bundle=_bundle,
+        label=label_filter,
+        source_chunk_type=source_chunk_type_filter,
     )
     return output
 
@@ -191,7 +210,7 @@ def generate_response(
 @st.cache_data
 def get_config_paths(config_dir: str) -> Dict[str, str]:
     root = Path(config_dir)
-    config_paths = sorted([p for p in root.glob("*.yaml")])
+    # config_paths = sorted([p for p in root.glob("*.yaml")])
     config_path_names = {p.name: str(p) for p in root.glob("*.yaml")}
     return config_path_names
 
@@ -209,24 +228,23 @@ def reload_model(doc_config_path: str, model_config_file: str):
     logger.debug(f"Reload model got DOC CONFIG FILE NAME: {doc_config_path}")
     logger.debug(f"Reload model got MODEL CONFIG FILE NAME: {model_config_file}")
     with st.spinner("Loading configuration"):
-        config = load_config(doc_config_path, model_config_file)
-        if config.check_embeddings_exist():
-            st.session_state["llm_bundle"] = get_llm_bundle(config)
+        conf = load_config(doc_config_path, model_config_file)
+        if conf.check_embeddings_exist():
+            st.session_state["llm_bundle"] = get_llm_bundle(conf)
             st.session_state["llm_config"] = {
-                "config": config,
+                "config": conf,
                 "doc_config_path": doc_config_path,
                 "model_config_file": model_config_file,
             }
         else:
             st.error(
                 "Couldn't find embeddings in {}. Please generate first.".format(
-                    config.embeddings.embeddings_path
+                    conf.embeddings.embeddings_path
                 )
             )
-            update_embeddings_button = st.button(
-                "Generate", on_click=generate_index, args=(config,), type="secondary"
+            _ = st.button(
+                "Generate", on_click=generate_index, args=(conf,), type="secondary"
             )
-    
 
     logger.debug("Setting LLM Cache")
     set_llm_cache(st.session_state["llm_bundle"].llm_cache)
@@ -256,7 +274,7 @@ if Path(args.cli_doc_config_path).is_dir():
     doc_config_name = st.sidebar.selectbox(
         label="Choose config", options=sorted(list(config_paths.keys())), index=0
     )
-    doc_config_path = config_paths[doc_config_name] # type: ignore
+    doc_config_path = config_paths[doc_config_name]  # type: ignore
     model_config_file = args.cli_model_config_path
     logger.debug(f"CONFIG FILE: {doc_config_path}")
 
@@ -305,19 +323,19 @@ if st.session_state["llm_bundle"] is not None:
 
     if document_labels:
         label_filter = st.sidebar.selectbox(
-            label="Restrict search to:", options=["-"] + sorted(list(document_labels.keys()))
+            label="Restrict search to:",
+            options=["-"] + sorted(list(document_labels.keys())),
         )
         if label_filter is None or label_filter == "-":
             label_filter = ""
-        
-    
+
     # tables_only_filter = st.sidebar.checkbox(label="Prioritize tables")
     # if tables_only_filter:
-        # source_chunk_type_filter="table"
+    # source_chunk_type_filter="table"
     # else:
-        # source_chunk_type_filter=""
-    
-    source_chunk_type_filter=""
+    # source_chunk_type_filter=""
+
+    source_chunk_type_filter = ""
 
     text = st.chat_input("Enter text", disabled=False)
     is_hyde = st.sidebar.checkbox(
@@ -341,29 +359,31 @@ if st.session_state["llm_bundle"] is not None:
                 "llm_bundle"
             ].conversation_history_settings.max_history_length,
         )
-        conv_history_rewrite_query =  st.sidebar.checkbox(
-            label = "Contextualize user question (LLM calls: 2)", 
-            value=True        )
-        
-        clear_conv_history = st.sidebar.button("Clear history", on_click=clear_chat_history, type = "secondary")
+        conv_history_rewrite_query = st.sidebar.checkbox(
+            label="Contextualize user question (LLM calls: 2)", value=True
+        )
+
+        clear_conv_history = st.sidebar.button(
+            "Clear history", on_click=clear_chat_history, type="secondary"
+        )
 
     if text:
         # Dynamically switch hyde
         st.session_state["llm_bundle"].hyde_enabled = is_hyde
         st.session_state["llm_bundle"].multiquery_enabled = is_multiquery
         st.session_state["llm_bundle"].conversation_history_settings.enabled = (
-                conv_history_enabled
-            )
+            conv_history_enabled
+        )
 
         # Set conversation history settings
         if conv_history_enabled:
 
-            st.session_state["llm_bundle"].conversation_history_settings.max_history_length = (
-                conv_history_max_length
-            )
-            st.session_state["llm_bundle"].conversation_history_settings.rewrite_query = (
-                conv_history_rewrite_query
-            )
+            st.session_state[
+                "llm_bundle"
+            ].conversation_history_settings.max_history_length = conv_history_max_length
+            st.session_state[
+                "llm_bundle"
+            ].conversation_history_settings.rewrite_query = conv_history_rewrite_query
 
         output = generate_response(
             question=text,
@@ -371,8 +391,8 @@ if st.session_state["llm_bundle"] is not None:
             use_multiquery=st.session_state["llm_bundle"].multiquery_enabled,
             _bundle=st.session_state["llm_bundle"],
             _config=config,
-            label_filter=document_labels.get(label_filter,""),
-            source_chunk_type_filter = source_chunk_type_filter
+            label_filter=document_labels.get(label_filter, ""),
+            source_chunk_type_filter=source_chunk_type_filter,
         )
 
         # Add assistant response to chat history

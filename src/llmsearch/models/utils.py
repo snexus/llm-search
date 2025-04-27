@@ -2,16 +2,17 @@ from typing import Union
 
 from llmsearch.models.azureopenai import AzureOpenAIModel
 from llmsearch.models.config import (  # AutoGPTQModelConfig,
-    AzureOpenAIModelConfig, HuggingFaceModelConfig, LlamaModelConfig,
+    AzureOpenAIModelConfig, HuggingFaceModelConfig,
+    #   LlamaModelConfig,
     OpenAIModelConfig)
 from llmsearch.models.hf import HuggingFaceModel
-from llmsearch.models.llama import LlamaModel
+# from llmsearch.models.llama import LlamaModel
 from llmsearch.models.openai import OpenAIModel
 
 # from llmsearch.models.autogptq import AutoGPTQModel
 
 model_mappings = {
-    LlamaModelConfig: LlamaModel,
+    # LlamaModelConfig: LlamaModel,
     HuggingFaceModelConfig: HuggingFaceModel,
     OpenAIModelConfig: OpenAIModel,
     AzureOpenAIModelConfig: AzureOpenAIModel,
@@ -22,7 +23,7 @@ model_mappings = {
 def get_llm(
     llm_config: Union[
         OpenAIModelConfig,
-        LlamaModelConfig,
+        # LlamaModelConfig,
         # AutoGPTQModelConfig,
         HuggingFaceModelConfig,
     ]

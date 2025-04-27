@@ -4,10 +4,13 @@
 
 [Documentation](https://llm-search.readthedocs.io/en/latest/)
 
-The purpose of this package is to offer a convenient question-answering (RAG) system with a simple YAML-based configuration that enables interaction with multiple collections of local documents. Special attention is given to improvements in various components of the system **in addition to basic LLM-based RAGs** - better document parsing, hybrid search, HyDE enabled search, chat history, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
+The purpose of this package is to offer an advanced question-answering (RAG) system with a simple YAML-based configuration that enables interaction with a collection of local documents. Special attention is given to improvements in various components of the system **in addition to basic LLM-based RAGs** - better document parsing, hybrid search, HyDE, chat history, deep linking, re-ranking, the ability to customize embeddings, and more. The package is designed to work with custom Large Language Models (LLMs) – whether from OpenAI or installed locally.
+
+Interaction with the package is supported through the built-in frontend, or by exposing an MCP server, allowing clients like Cursor, Windsurf or VSCode GH Copilot to interact with the RAG system.
 
 ## Features
 
+* Fast, incremental parsing and embedding of medium size document bases (tested on up to few gigabytes of markdown and pdfs)
 * Supported document formats
     * Build-in parsers:
         * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features like cleaning image links, adding custom metadata, and more.
@@ -17,11 +20,12 @@ The purpose of this package is to offer a convenient question-answering (RAG) sy
         * List of formats see [here](https://unstructured-io.github.io/unstructured/core/partition.html).
 
 * Allows interaction with embedded documents, internally supporting the following models and methods (including locally hosted):
-    * OpenAI models (ChatGPT 3.5/4 and Azure OpenAI).
+    * OpenAI compatible models and APIs.
     * HuggingFace models.
-    * Llama cpp supported models - for full list see [here](https://github.com/ggerganov/llama.cpp#description).
 
 * Interoperability with LiteLLM + Ollama via OpenAI API, supporting hundreds of different models (see [Model configuration for LiteLLM](sample_templates/llm/litellm.yaml))
+
+* SSE MCP Server enabling interface with popular MCP clients.
 
 * Generates dense embeddings from a folder of documents and stores them in a vector database ([ChromaDB](https://github.com/chroma-core/chroma)).
   * The following embedding models are supported:
@@ -50,12 +54,11 @@ The purpose of this package is to offer a convenient question-answering (RAG) sy
 
 * Supprts optional chat history with question contextualization
 
-
 * Other features
-    * Simple CLI and web interfaces.
+    * Simple web interfaces.
     * Deep linking into document sections - jump to an individual PDF page or a header in a markdown file.
     * Ability to save responses to an offline database for future analysis.
-    * Experimental API
+    * FastAPI based API + MCP server, allo
 
 
 ## Demo

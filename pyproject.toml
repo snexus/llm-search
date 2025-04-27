@@ -5,16 +5,42 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyllmsearch"
 description = "LLM Powered Advanced RAG Application"
-dynamic = ["dependencies", "version"]
+# dynamic = ["dependencies", "version"]
+dynamic = ["version"]
 keywords = ["llm", "rag", "retrieval-augemented-generation","large-language-models",  "local", "splade", "hyde", "reranking", "chroma", "openai"]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "langchain-community>=0.3.22",
+    "langchain>=0.3.24",
+    "langchain-huggingface>=0.1.2",
+    "langchain-chroma>=0.2.3",
+    "python-dotenv>=1.1.0",
+    "loguru>=0.7.3",
+    "click>=8.1.8",
+    "openai>=1.76.0",
+    "streamlit>=1.44.1",
+    "tenacity>=9.1.2",
+    "tqdm>=4.67.1",
+    "gmft==0.2.1",
+    "pypdf2>=3.0.1",
+    "pydantic>=2.11.3",
+    "instructorembedding>=1.0.1",
+    "unstructured>=0.17.2",
+    "tiktoken>=0.9.0",
+    "tokenizers>=0.21.1",
+    "langchain-openai>=0.3.14",
+    "python-docx>=1.1.2",
+    "pymupdf>=1.25.5",
+    "termcolor>=3.0.1",
+    "fastapi-mcp>=0.3.3",
 ]
 
 [project.optional-dependencies]
@@ -35,6 +61,10 @@ azureparser = [
 "azure-identity==1.17.1"
 ]
 
+googleparser = [
+    "google-generativeai>=0.8.5",
+  ]
+
 [project.urls]
 Homepage = "https://github.com/snexus/llm-search"
 Documentation = "https://llm-search.readthedocs.io/en/latest/"
@@ -46,9 +76,30 @@ local_scheme = "no-local-version"
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+# [tool.setuptools.dynamic]
+# dependencies = {file = ["requirements.txt"]}
 
+[tool.flake8]
+docstring-convention = "all"
+ignore = [
+  "D107",
+  "D212",
+  "E501",
+  "W503",
+  "W605",
+  "D203",
+  "D100",
+  "D400",
+  "D415",
+  "D104",
+  "D203",
+  "D213",
+  "D401",
+  "D406",
+  "D417",
+]
+exclude = [ "venv" ]
+max-line-length = 119
 
 [tool.ruff]
 # Decrease the maximum line length to 79 characters.

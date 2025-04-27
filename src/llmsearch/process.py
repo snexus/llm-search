@@ -3,9 +3,14 @@ from typing import List
 
 from loguru import logger
 
-from llmsearch.config import (Config, Document, ObsidianAdvancedURI,
-                              ResponseModel, SemanticSearchOutput,
-                              SuffixAppend)
+from llmsearch.config import (
+    Config,
+    Document,
+    ObsidianAdvancedURI,
+    ResponseModel,
+    SemanticSearchOutput,
+    SuffixAppend,
+)
 from llmsearch.database.crud import create_response
 from llmsearch.ranking import get_relevant_documents
 from llmsearch.utils import LLMBundle
@@ -17,7 +22,7 @@ def get_and_parse_response(
     config: Config,
     persist_db_session=None,
     label: str = "",
-    source_chunk_type: str = ""
+    source_chunk_type: str = "",
 ) -> ResponseModel:
     """Performs retieval augmented search (RAG).
 
@@ -57,11 +62,16 @@ def get_and_parse_response(
         offset_max_chars = len(llm_bundle.conversation_history_settings.chat_history)
     else:
         offset_max_chars = 0
-        
+
     semantic_search_config = config.semantic_search
     most_relevant_docs, score = get_relevant_documents(
-        original_query, queries, llm_bundle, semantic_search_config, label=label, 
-        offset_max_chars = offset_max_chars, source_chunk_type = source_chunk_type
+        original_query,
+        queries,
+        llm_bundle,
+        semantic_search_config,
+        label=label,
+        offset_max_chars=offset_max_chars,
+        source_chunk_type=source_chunk_type,
     )
 
     # Append chat history to the documments, if enabled
@@ -77,12 +87,11 @@ def get_and_parse_response(
         {"context": most_relevant_docs, "question": original_query},
         return_only_outputs=False,
     )
-    
 
     save_chat_history(llm_bundle, question=original_query, answer=res)
 
     out = ResponseModel(
-        response=res, #type: ignore 
+        response=res,  # type: ignore
         question=query,
         average_score=score,
         hyde_response=hyde_response,
@@ -202,7 +211,9 @@ def get_multiquery_response(
 ) -> List[str]:
     if llm_bundle.multiquery_chain is None:
         raise TypeError("MultiQuery chain is not initialised. exiting.")
-    res = llm_bundle.multiquery_chain.invoke(dict(question=query, n_versions=n_versions))
+    res = llm_bundle.multiquery_chain.invoke(
+        dict(question=query, n_versions=n_versions)
+    )
 
     logger.info(f"MultiQuery: got response: {res}")
     queries = [q.strip() for q in res.strip().split("\n") if q.strip()]
@@ -215,17 +226,17 @@ def get_multiquery_response(
     return queries
 
 
-#def expand_query_with_history(llm_bundle: LLMBundle, original_query: str) -> str:
-    #"""If enabled, adds chat history to the original question."""
+# def expand_query_with_history(llm_bundle: LLMBundle, original_query: str) -> str:
+# """If enabled, adds chat history to the original question."""
 
-    #if llm_bundle.conversation_history_settings is None:
-        #return original_query
+# if llm_bundle.conversation_history_settings is None:
+# return original_query
 
-    #expanded_query = (
-        #original_query + llm_bundle.conversation_history_settings.chat_history
-    #)
-    #logger.info(f"Expanded query by chat history: {expanded_query}")
-    #return expanded_query
+# expanded_query = (
+# original_query + llm_bundle.conversation_history_settings.chat_history
+# )
+# logger.info(f"Expanded query by chat history: {expanded_query}")
+# return expanded_query
 
 
 def save_chat_history(llm_bundle: LLMBundle, question: str, answer: str) -> None:
@@ -247,8 +258,10 @@ def contextualize_query_with_history_chat(
         return user_question
 
     res = llm_bundle.history_contextualization_chain.invoke(
-        {'chat_history': llm_bundle.conversation_history_settings.chat_history,
-        'user_question':user_question}
+        {
+            "chat_history": llm_bundle.conversation_history_settings.chat_history,
+            "user_question": user_question,
+        }
     )
     logger.info("Got history contextualized query: %s", res)
     return res
