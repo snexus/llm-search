@@ -7,7 +7,7 @@ embeddings:
   embedding_model: # Optional embedding model specification, default is e5-large-v2. Swap to a smaller model if out of CUDA memory
     # Supported types: "huggingface", "instruct", "openai"
     type: sentence_transformer # other supported types - "huggingface" and "instruct"
-    model_name: "intfloat/e5-large-v2"
+    model_name: "vsolatorio/GIST-Embedding-v0"
   
   splade_config: # Optional batch size of sparse embeddings. Reduce if getting out-of-memory errors on CUDA.
     n_batch: 5

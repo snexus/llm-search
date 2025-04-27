@@ -46,11 +46,14 @@ To interact with the documents using one of the supported LLMs, follow these ste
 Here `path/to/config/folder` points to a folder of one or more document config files. The tool will scans the configs and allows to switch between them.
 
 
-API (Experimental)
------------------
+API and MCP Server
+------------------
 
-To launch an api, supply a path config file in the `FASTAPI_LLM_CONFIG` environment variable and launch `llmsearchapi` 
+To launch FastAPI/MCP server, supply a path semantic search config file in the `FASTAPI_RAG_CONFIG` and path to llm config in `FASTAPI_LLM_CONFIG` environment variable and launch `llmsearchapi` 
 
 .. code-block:: bash
 
-    FASTAPI_LLM_CONFIG="/path/to/config.yaml" llmsearchapi
+    FASTAPI_RAG_CONFIG="/path/to/config.yaml" FASTAPI_LLM_CONFIG="/path/to/llm.yaml" llmsearchapi
+
+1. The API server will be available at `http://localhost:8000/docs` and can be used to interact with the documents using the LLMs.
+2. The MCP server will be available at `http://localhost:8000/mcp` and can be configured via any MCP client, assuming SSE MCP server which should point to the same URL.

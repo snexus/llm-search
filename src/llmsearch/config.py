@@ -6,12 +6,21 @@ from uuid import UUID, uuid4
 
 import yaml
 from loguru import logger
-from pydantic import (BaseModel, ConfigDict, DirectoryPath, Field,
-                      ValidationInfo, field_validator)
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    DirectoryPath,
+    Field,
+    ValidationInfo,
+    field_validator,
+)
 
-from llmsearch.models.config import (AzureOpenAIModelConfig,
-                                     HuggingFaceModelConfig, LlamaModelConfig,
-                                     OpenAIModelConfig)
+from llmsearch.models.config import (
+    AzureOpenAIModelConfig,
+    HuggingFaceModelConfig,
+    LlamaModelConfig,
+    OpenAIModelConfig,
+)
 
 # from pydantic.typing import Literal  # type: ignore
 
@@ -55,7 +64,8 @@ class PDFTableParser(str, Enum):
 
 class PDFImageParser(str, Enum):
     GEMINI_15_FLASH = "gemini-1.5-flash"
-    GEMINI_15_PRO= "gemini-1.5-pro"
+    GEMINI_15_PRO = "gemini-1.5-pro"
+
 
 class PDFImageParseSettings(BaseModel):
     image_parser: PDFImageParser
@@ -64,7 +74,10 @@ class PDFImageParseSettings(BaseModel):
 - Second line is empty
 - From the third line on - detailed data points and related metadata, extracted from the image, in Markdown format. Don't use Markdown tables. 
 """
-    user_instruction: str = """From the image, extract detailed quantitative and qualitative data points."""
+    user_instruction: str = (
+        """From the image, extract detailed quantitative and qualitative data points."""
+    )
+
 
 class EmbeddingModelType(str, Enum):
     huggingface = "huggingface"
@@ -92,7 +105,7 @@ class DocumentPathSettings(BaseModel):
     scan_extensions: List[str]
     """List of extensions to scan."""
 
-    pdf_table_parser:  Optional[PDFTableParser] = None
+    pdf_table_parser: Optional[PDFTableParser] = None
     """If enabled, will parse tables in pdf files using a specific of a parser."""
 
     pdf_image_parser: Optional[PDFImageParseSettings] = None
@@ -102,7 +115,6 @@ class DocumentPathSettings(BaseModel):
     """Optional parser settings (parser dependent)"""
 
     passage_prefix: str = ""
-
 
     label: str = ""  # Optional label, will be included in the metadata
     """Optional label for the document set, will be included in the metadata."""
@@ -140,7 +152,6 @@ class EmbeddingsConfig(BaseModel):
 
     splade_config: EmbedddingsSpladeConfig = EmbedddingsSpladeConfig(n_batch=5)
     """Specifies settings for sparse embeddings (SPLADE)."""
-
 
     @property
     def labels(self) -> List[str]:
@@ -220,7 +231,7 @@ return only reformulated question. Do NOT mention it is 'reformulated question',
 
     User question: {user_question}
     """
-    
+
     template_header: str = "\nChat History:\n=============\n"
     template_qa_pairs: str = "User: {question}\nAssistant: {answer}\n\n"
 
@@ -253,25 +264,25 @@ class SemanticSearchConfig(BaseModel):
     replace_output_path: List[ReplaceOutputPath] = Field(default_factory=list)
 
     obsidian_advanced_uri: Optional[ObsidianAdvancedURI] = None
-    
+
     append_suffix: Optional[SuffixAppend] = None
     """Allows to append suffix to document URL. Useful for deep linking to allow opening with external application, e.g. Obsidian."""
-    
+
     reranker: RerankerSettings = RerankerSettings()
     """Configures re-ranker settings."""
-    
+
     max_k: int = 15
     """Maximum number of documents to retrieve for dense OR sparse embedding (if using both, number of documents will be k*2)"""
-    
+
     max_char_size: int = 2048
     """Maximum character size for query + documents to fit into context window of LLM."""
-    
+
     query_prefix: str = ""
     """Prefix query with string BEFORE retrieval using embedding model."""
-    
+
     hyde: HydeSettings = HydeSettings()
     """Optional configuration for HyDE."""
-    
+
     multiquery: MultiQuerySettings = MultiQuerySettings()
     """Optional configuration for multi-query"""
 
@@ -297,7 +308,7 @@ class LLMConfig(BaseModel):
         if type_ not in models_config:
             raise TypeError(f"Uknown model type {value}. Allowed types: ")
 
-        config_type = models_config[type_] # type: ignore
+        config_type = models_config[type_]  # type: ignore
         logger.info(
             f"Loading model paramaters in configuration class {config_type.__name__}"
         )
@@ -366,9 +377,10 @@ def get_doc_with_model_config(doc_config, model_config) -> Config:
 
 
 def load_yaml_file(config) -> dict:
+    """Loads YAML file or string and returns a dictionary"""
     if isinstance(config, str):
         logger.info(f"Loading doc config from a file: {config}")
-        with open(config, "r") as f:
+        with open(config, "r", encoding="utf-8") as f:
             string_data = f.read()
     else:
         stringio = StringIO(config.getvalue().decode("utf-8"))
@@ -376,4 +388,3 @@ def load_yaml_file(config) -> dict:
 
     config_dict = yaml.safe_load(string_data)
     return config_dict
-
