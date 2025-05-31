@@ -20,12 +20,6 @@ An example of OpenAI gpt4o-mini is shown below:
    :language: yaml
 
 
-llamacpp
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. literalinclude:: ../sample_templates/llm/llamacpp.yaml
-   :language: yaml
-
 Ollama + Litellm
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
