@@ -16,4 +16,4 @@ llm:
        temperature: 0.2
        model: "any"
        api_key: "any"
-       base_url: "http://0.0.0.0:8000"
+       base_url: "http://0.0.0.0:8000" 

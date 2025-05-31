@@ -75,6 +75,8 @@ semantic_search:
   
   query_prefix: "query: " # Often queries have to be prefixed for embedding models, such as e5
 
+  score_cutoff: -3.0 # Optional reranker score cutoff. Documents below this score will be excluded from the returned document list
+
   hyde:
     enabled: False
   

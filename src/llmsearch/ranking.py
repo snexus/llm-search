@@ -2,6 +2,7 @@ import statistics
 # from llmsearch.utils import LLMBundle
 from typing import List, Tuple
 
+from sentence_transformers.util import semantic_search
 import torch
 from loguru import logger
 from sentence_transformers.cross_encoder import CrossEncoder
@@ -183,6 +184,11 @@ def get_relevant_documents(
     len_ = 0
 
     for doc in docs:
+        # Skip document with lower than cutoff score, if specified
+        if config.score_cutoff is not None and doc.metadata['score'] < config.score_cutoff:
+            logger.info(f"Skipping document {doc.metadata['document_id']} with score: {doc.metadata['score']}")
+            continue
+        # if doc.metadata['score'] 
         doc_length = len(doc.page_content)
         if len_ + doc_length < config.max_char_size - offset_max_chars:
             most_relevant_docs.append(doc)
