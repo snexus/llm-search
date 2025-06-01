@@ -1,6 +1,10 @@
 """FastAPI server for LLMSearch."""
 
 import os
+
+# This is a temporary solution due to incompatimbility of ChromaDB with latest version of Protobuf
+os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
+
 from functools import lru_cache
 from typing import Any, List
 
