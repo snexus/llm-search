@@ -128,6 +128,14 @@ class DocumentPathSettings(BaseModel):
                 )
         return value
 
+    @field_validator("doc_path")
+    def validate_path(cls, value):
+        path = Path(value)
+        if not path.exists():
+            raise TypeError("Provided doc_path doesn't exist.")
+        if not path.is_dir():
+            raise TypeError("Provided doc_path is not a directory.")
+        return value
 
 class EmbedddingsSpladeConfig(BaseModel):
     n_batch: int = 3
@@ -274,7 +282,10 @@ class SemanticSearchConfig(BaseModel):
     max_k: int = 15
     """Maximum number of documents to retrieve for dense OR sparse embedding (if using both, number of documents will be k*2)"""
 
-    max_char_size: int = 2048
+    score_cutoff: Optional[float] = None
+    """Documents with score less than specified will be excluded from relevant documents"""
+
+    max_char_size: int = 16384
     """Maximum character size for query + documents to fit into context window of LLM."""
 
     query_prefix: str = ""
