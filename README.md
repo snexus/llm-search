@@ -58,7 +58,7 @@ Interaction with the package is supported through the built-in frontend, or by e
     * Simple web interfaces.
     * Deep linking into document sections - jump to an individual PDF page or a header in a markdown file.
     * Ability to save responses to an offline database for future analysis.
-    * FastAPI based API + MCP server, allo
+    * FastAPI based API + MCP server, allowing communicating with RAG via any mcp client, including VSCode/Windsurf/Cursor and others.
 
 
 ## Demo
