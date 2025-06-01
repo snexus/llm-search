@@ -60,8 +60,8 @@ semantic_search:
   multiquery:
     enabled: False
   conversation_history_settings:
-    enabled: True
-    rewrite_query: True
+    enabled: False
+    rewrite_query: False
     max_history_length: 2
 
 

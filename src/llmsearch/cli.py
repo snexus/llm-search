@@ -1,5 +1,8 @@
 import os
 
+# This is a temporary solution due to incompatimbility of ChromaDB with latest version of Protobuf
+os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
+
 import click
 import streamlit.web.cli
 from loguru import logger

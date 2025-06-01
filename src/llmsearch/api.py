@@ -1,6 +1,10 @@
 """FastAPI server for LLMSearch."""
 
 import os
+
+# This is a temporary solution due to incompatimbility of ChromaDB with latest version of Protobuf
+os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
+
 from functools import lru_cache
 from typing import Any, List
 
@@ -24,7 +28,7 @@ from llmsearch.utils import LLMBundle, get_llm_bundle
 
 
 load_dotenv()
-langchain.debug = True  # Enable debug mode for langchain # type: ignore
+langchain.debug = False
 
 
 # Load the configuration
@@ -101,7 +105,7 @@ mcp = FastApiMCP(
     description="pyLLMSearch MCP Server",
     describe_all_responses=True,  # Include all possible response schemas
     describe_full_response_schema=True,  # Include full JSON schema in descriptions
-    include_operations=["rag_retrieve_chunks", "rag_generate_answer"],
+    include_operations=["rag_retrieve_chunks", "rag_generate_answer", "rag_generate_answer_simple"],
 )
 
 
@@ -145,6 +149,26 @@ async def llmsearch(
     )
     return output.model_dump()
 
+@api_app.get("/rag", operation_id="rag_generate_answer_simple")
+async def llmsearch_simple(
+    question: str,
+    label: str = "",
+    llm_bundle: LLMBundle = Depends(get_llm_bundle_cached),
+) -> str:
+    """Retrieves answer to the question from the embedded documents, using semantic search."""
+    if label and (label not in get_config().embeddings.labels):
+        raise HTTPException(
+            status_code=404,
+            detail=f"Label '{label}' doesn't exist. Use GET /labels to get a list of labels.",
+        )
+
+    output = get_and_parse_response(
+        query=question,
+        llm_bundle=llm_bundle,
+        config=get_config(),
+        label=label,
+    )
+    return output.response
 
 @api_app.get("/semantic/{question}", operation_id="rag_retrieve_chunks")
 async def semanticsearch(question: str):
