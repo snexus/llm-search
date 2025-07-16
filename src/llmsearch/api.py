@@ -1,10 +1,15 @@
 """FastAPI server for LLMSearch."""
 
 import os
+import gc
+
+import torch
+
 
 # This is a temporary solution due to incompatimbility of ChromaDB with latest version of Protobuf
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
+from llmsearch.chroma import VectorStoreChroma
 from functools import lru_cache
 from typing import Any, List
 
@@ -23,6 +28,11 @@ from llmsearch.config import Config, ResponseModel, get_doc_with_model_config
 from llmsearch.process import get_and_parse_response
 from llmsearch.ranking import get_relevant_documents
 from llmsearch.utils import LLMBundle, get_llm_bundle
+
+from llmsearch.embeddings import (
+    EmbeddingsHashNotExistError,
+    update_embeddings,
+)
 
 # from sqlalchemy.orm import Session
 
@@ -105,7 +115,7 @@ mcp = FastApiMCP(
     description="pyLLMSearch MCP Server",
     describe_all_responses=True,  # Include all possible response schemas
     describe_full_response_schema=True,  # Include full JSON schema in descriptions
-    include_operations=["rag_retrieve_chunks", "rag_generate_answer", "rag_generate_answer_simple"],
+    include_operations=["rag_retrieve_chunks", "rag_generate_answer", "rag_generate_answer_simple", "rag_update_index"],
 )
 
 
@@ -126,6 +136,75 @@ api_app.add_middleware(
 def test():
     """Test endpoint to check if the API is running."""
     return {"message": "Welcome to LLMSearch API"}
+
+
+def set_cache_folder(cache_folder_root: str):
+    """Set temporary cache folder for HF models and transformers"""
+
+    sentence_transformers_home = cache_folder_root
+    transformers_cache = os.path.join(cache_folder_root, "transformers")
+    hf_home = os.path.join(cache_folder_root, "hf_home")
+
+    logger.info(f"Setting SENTENCE_TRANSFORMERS_HOME folder: {sentence_transformers_home}")
+    logger.info(f"Setting TRANSFORMERS_CACHE folder: {transformers_cache}")
+    logger.info(f"Setting HF_HOME: {hf_home}")
+    logger.info(f"Setting MODELS_CACHE_FOLDER: {cache_folder_root}")
+
+    os.environ["SENTENCE_TRANSFORMERS_HOME"] = sentence_transformers_home
+    os.environ["TRANSFORMERS_CACHE"] = transformers_cache
+    os.environ["HF_HOME"] = hf_home
+    os.environ["MODELS_CACHE_FOLDER"] = cache_folder_root
+
+
+def unload_model(llm_bundle: LLMBundle):
+    """Unloads llm_bundle from the state to free up the GPU memory"""
+
+    llm_bundle.store = None  # type: ignore
+    llm_bundle.chain = None  # type: ignore
+    llm_bundle.reranker = None
+    llm_bundle.hyde_chain = None
+    llm_bundle.multiquery_chain = None
+
+    get_cached_llm_bundle.cache_clear()
+    gc.collect()
+
+    llm_bundle = None  # type: ignore
+    gc.collect()
+
+    with torch.no_grad():
+        torch.cuda.empty_cache()
+
+
+@api_app.put("/update", operation_id="rag_update_index")
+def update_index(llm_bundle: LLMBundle = Depends(get_llm_bundle_cached), 
+                 config: Config = Depends(get_config)) -> Any:
+    """Updates the index with the latest documents."""
+
+    set_cache_folder(str(config.cache_folder))
+
+    vs = VectorStoreChroma(persist_folder=str(config.embeddings.embeddings_path), config=config)
+    try:
+        logger.debug("Updating embeddings")
+        stats = update_embeddings(config, vs)
+    except EmbeddingsHashNotExistError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="Couldn't find hash files. Please re-create the index using current version of the app.",
+        ) from exc
+    else:
+        return stats
+    finally:
+        logger.debug("Cleaning memory and re-Loading model...")
+
+        vs.unload()
+
+        vs = None  # type: ignore
+
+        gc.collect()
+        with torch.no_grad():
+            torch.cuda.empty_cache()
+
+        unload_model(llm_bundle)
 
 
 @api_app.get("/llm", response_model=ResponseModel, operation_id="rag_generate_answer")
@@ -149,6 +228,7 @@ async def llmsearch(
     )
     return output.model_dump()
 
+
 @api_app.get("/rag", operation_id="rag_generate_answer_simple")
 async def llmsearch_simple(
     question: str,
@@ -169,6 +249,7 @@ async def llmsearch_simple(
         label=label,
     )
     return output.response
+
 
 @api_app.get("/semantic/{question}", operation_id="rag_retrieve_chunks")
 async def semanticsearch(question: str):
