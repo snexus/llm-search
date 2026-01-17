@@ -55,6 +55,7 @@ class CustomDocumentExtension(str, Enum):
 class RerankerModel(Enum):
     MARCO_RERANKER = "marco"
     BGE_RERANKER = "bge"
+    ZERANK2_RERANKER = "zerank2"
 
 
 class PDFTableParser(str, Enum):

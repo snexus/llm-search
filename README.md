@@ -10,7 +10,8 @@ Interaction with the package is supported through the built-in frontend, or by e
 
 ## Features
 
-* Fast, incremental parsing and embedding of medium size document bases (tested on up to few gigabytes of markdown and pdfs)
+* Fast parsing and embedding of medium size document bases (tested on up to few gigabytes of markdown and pdfs)
+* Incremental updates for new documents, without a need to re-index the entire document base.
 * Supported document formats
     * Build-in parsers:
         * `.md` - Divides files based on logical components such as headings, subheadings, and code blocks. Supports additional features like cleaning image links, adding custom metadata, and more.
@@ -18,8 +19,12 @@ Interaction with the package is supported through the built-in frontend, or by e
         * `.docx` - custom parser, supports nested tables.
     * Other common formats are supported by `Unstructured` pre-processor:
         * List of formats see [here](https://unstructured-io.github.io/unstructured/core/partition.html).
+* FastAPI based API + MCP server, allowing communicating with RAG via any mcp client, including VSCode/Windsurf/Cursor and others.
 
-* Allows interaction with embedded documents, internally supporting the following models and methods (including locally hosted):
+* Deep linking into document sections - jump to an individual PDF page or a header in a markdown file.
+
+* Allows interaction with embedded documents, internally supporting the following models and 
+methods (including locally hosted):
     * OpenAI compatible models and APIs.
     * HuggingFace models.
 
@@ -27,23 +32,24 @@ Interaction with the package is supported through the built-in frontend, or by e
 
 * SSE MCP Server enabling interface with popular MCP clients.
 
-* Generates dense embeddings from a folder of documents and stores them in a vector database ([ChromaDB](https://github.com/chroma-core/chroma)).
-  * The following embedding models are supported:
-    * Hugging Face embeddings.
-    * Sentence-transformers-based models, e.g., `multilingual-e5-base`.
-    * Instructor-based models, e.g., `instructor-large`.
-    * OpenAI embeddings.
+* Hybrid search and Reranking
+    * Dense embeddings from a folder of documents and stores them in a vector database ([ChromaDB](https://github.com/chroma-core/chroma)).
+    * The following embedding models are supported:
+        * Hugging Face embeddings.
+        * Sentence-transformers-based models.
+        * Instructor-based models.
+        * OpenAI embeddings.
 
-* Generates sparse embeddings using SPLADE (https://github.com/naver/splade) to enable hybrid search (sparse + dense).
+    * Sparse embeddings using SPLADE (https://github.com/naver/splade) to enable hybrid search (sparse + dense).
 
-* An ability to update the embeddings incrementally, without a need to re-index the entire document base.
+    * Supports the "Retrieve and Re-rank" strategy for semantic search, see [here](https://www.sbert.net/examples/applications/retrieve_rerank/README.html).
+        * Besides the originally `ms-marco-MiniLM` cross-encoder, more modern `bge-reranker-v2-m3` and `zerank-2` is supported.
+
 
 * Support for table parsing via open-source gmft (https://github.com/conjuncts/gmft) or Azure Document Intelligence.
 
 * Optional support for image parsing using Gemini API.
 
-* Supports the "Retrieve and Re-rank" strategy for semantic search, see [here](https://www.sbert.net/examples/applications/retrieve_rerank/README.html).
-    * Besides the originally `ms-marco-MiniLM` cross-encoder, more modern `bge-reranker` is supported.
 
 * Supports HyDE (Hypothetical Document Embeddings) - see [here](https://arxiv.org/pdf/2212.10496.pdf).
     * WARNING: Enabling HyDE (via config OR webapp) can significantly alter the quality of the results. Please make sure to read the paper before enabling.
@@ -56,9 +62,8 @@ Interaction with the package is supported through the built-in frontend, or by e
 
 * Other features
     * Simple web interfaces.
-    * Deep linking into document sections - jump to an individual PDF page or a header in a markdown file.
     * Ability to save responses to an offline database for future analysis.
-    * FastAPI based API + MCP server, allowing communicating with RAG via any mcp client, including VSCode/Windsurf/Cursor and others.
+
 
 
 ## Demo

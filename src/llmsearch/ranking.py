@@ -27,12 +27,27 @@ class MarcoReranker:
         scores = self.model.predict(features).tolist()
         return scores
 
+class Zerank2:
+    def __init__(
+        self, cross_encoder_model: str = "zeroentropy/zerank-2"
+    ) -> None:
+        logger.info("Initializing Reranker...")
+        self._crdss_encoder_model_name = cross_encoder_model
+        self.model = CrossEncoder(cross_encoder_model)
+        logger.info("Initialized Zerank-2 Reranker")
+
+    def get_scores(self, query: str, docs: List[Document]) -> List[float]:
+        logger.info("Reranking documents ... ")
+
+        features = [(query, doc.page_content) for doc in docs]
+        scores = self.model.predict(features).tolist()
+        return scores
 
 class BGEReranker:
     def __init__(self) -> None:
-        self.tokenizer = AutoTokenizer.from_pretrained("BAAI/bge-reranker-base")
+        self.tokenizer = AutoTokenizer.from_pretrained("BAAI/bge-reranker-v2-m3")
         self.model = AutoModelForSequenceClassification.from_pretrained(
-            "BAAI/bge-reranker-base"
+            "BAAI/bge-reranker-v2-m3"
         )
         self.model.eval()
         logger.info("Initialized BGE-base Reranker")
