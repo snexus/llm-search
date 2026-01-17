@@ -2,9 +2,9 @@ import os
 from dataclasses import dataclass
 from typing import List, Optional, Union
 
-from langchain.chains.base import Chain
+from langchain_classic.chains.base import Chain
 # from langchain.chains.question_answering import load_qa_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.caches import BaseCache, InMemoryCache
 from langchain_core.output_parsers.string import StrOutputParser
 from langchain_core.prompts import PromptTemplate
@@ -18,7 +18,7 @@ from llmsearch.config import Config, ConversrationHistorySettings, RerankerModel
 from llmsearch.database.config import Base, DBSettings, get_local_session
 from llmsearch.embeddings import VectorStore
 from llmsearch.models.utils import get_llm
-from llmsearch.ranking import BGEReranker, MarcoReranker
+from llmsearch.ranking import BGEReranker, MarcoReranker, Zerank2
 from llmsearch.splade import SparseEmbeddingsSplade
 
 CHAIN_TYPE = "stuff"
@@ -89,6 +89,9 @@ def get_llm_bundle(config: Config) -> LLMBundle:
             reranker = BGEReranker()
         elif config.semantic_search.reranker.model == RerankerModel.MARCO_RERANKER:
             reranker = MarcoReranker()
+
+        elif config.semantic_search.reranker.model == RerankerModel.ZERANK2_RERANKER:
+            reranker = Zerank2()
         else:
             raise TypeError(
                 "Invalid reranker type: {}", config.semantic_search.reranker.model

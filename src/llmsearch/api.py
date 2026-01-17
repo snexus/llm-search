@@ -229,7 +229,7 @@ async def llmsearch(
     return output.model_dump()
 
 
-@api_app.get("/rag", operation_id="rag_generate_answer_simple")
+@api_app.get("/rag_text_response", operation_id="rag_generate_answer_simple")
 async def llmsearch_simple(
     question: str,
     label: str = "",
@@ -251,9 +251,9 @@ async def llmsearch_simple(
     return output.response
 
 
-@api_app.get("/semantic/{question}", operation_id="rag_retrieve_chunks")
+@api_app.get("/rag_chunks", operation_id="rag_retrieve_chunks")
 async def semanticsearch(question: str):
-    """Retrieves information relevant to the question from the embedded documents, using semantic search."""
+    """Retrieves chunks of information relevant to the question from the embedded documents, using semantic search."""
     docs = get_relevant_documents(
         original_query=question,
         queries=[question],

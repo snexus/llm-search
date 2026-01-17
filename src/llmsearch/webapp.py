@@ -13,7 +13,7 @@ import streamlit as st
 import torch
 import yaml
 from dotenv import load_dotenv
-from langchain.globals import set_llm_cache
+from langchain_core.globals import set_llm_cache
 from loguru import logger
 from streamlit import chat_message
 

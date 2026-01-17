@@ -5,10 +5,11 @@ from typing import List, Optional, Tuple, Union
 
 from dotenv import load_dotenv
 import pandas as pd
-from langchain_community.embeddings import (
-    HuggingFaceInstructEmbeddings,
-    SentenceTransformerEmbeddings,
-)
+
+# from langchain_community.embeddings import (
+#     HuggingFaceInstructEmbeddings,
+#     SentenceTransformerEmbeddings,
+# )
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import OpenAIEmbeddings
 from loguru import logger
@@ -20,8 +21,9 @@ from llmsearch.splade import SparseEmbeddingsSplade
 load_dotenv()
 
 MODELS = {
-    EmbeddingModelType.instruct: HuggingFaceInstructEmbeddings,
-    EmbeddingModelType.sentence_transformer: SentenceTransformerEmbeddings,
+    EmbeddingModelType.instruct: HuggingFaceEmbeddings,
+    # EmbeddingModelType.sentence_transformer: SentenceTransformerEmbeddings,
+    EmbeddingModelType.sentence_transformer: HuggingFaceEmbeddings,
     EmbeddingModelType.huggingface: HuggingFaceEmbeddings,
 }
 
@@ -76,13 +78,9 @@ def get_embedding_model(config: EmbeddingModel):
         EmbeddingModelType.instruct,
         EmbeddingModelType.sentence_transformer,
     ):
-        model_type: Optional[
-            Union[
-                HuggingFaceEmbeddings,
-                HuggingFaceInstructEmbeddings,
-                SentenceTransformerEmbeddings,
-            ]
-        ] = MODELS.get(config.type, None) # type: ignore
+        model_type: Optional[HuggingFaceEmbeddings,] = MODELS.get(
+            config.type, None
+        )  # type: ignore
 
         if model_type is None:
             raise TypeError(f"Invalid model type passed: {config.type}")
@@ -99,14 +97,12 @@ def get_embedding_model(config: EmbeddingModel):
 
 def get_openai_embedding_model(config: EmbeddingModel) -> OpenAIEmbeddings:
     if not os.getenv("OPENAI_API_KEY"):
-        raise KeyError("OPENAI_API_KEY wasn't found. Please refer to .env_template to create .env")
+        raise KeyError(
+            "OPENAI_API_KEY wasn't found. Please refer to .env_template to create .env"
+        )
 
     logger.info("Initializing OpenAI embeddings model.")
-    return OpenAIEmbeddings(
-        model = config.model_name,
-        **config.additional_kwargs
-    )
-
+    return OpenAIEmbeddings(model=config.model_name, **config.additional_kwargs)
 
 
 def create_embeddings(config: Config, vs: VectorStore):
